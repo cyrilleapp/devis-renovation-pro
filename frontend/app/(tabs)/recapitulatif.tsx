@@ -95,8 +95,8 @@ export default function RecapitulatifScreen() {
       </View>
 
       <Card>
-        <Text style={styles.infoLabel}>Client: {clientNom}</Text>
-        <Text style={styles.infoLabel}>TVA: {tvaTaux}%</Text>
+        <Text style={styles.infoLabel}>Client: {formData.clientNom}</Text>
+        <Text style={styles.infoLabel}>TVA: {formData.tvaTaux}%</Text>
       </Card>
 
       <Text style={styles.sectionTitle}>Postes de travaux</Text>
