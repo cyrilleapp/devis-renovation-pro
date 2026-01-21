@@ -509,7 +509,17 @@ export default function NouveauDevisScreen() {
         )}
 
         <View style={styles.section}>
-          <Button title="Continuer vers le récapitulatif" onPress={handleSubmit} />
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => {
+              console.log('BOUTON CLIQUÉ !');
+              handleSubmit();
+            }}
+          >
+            <Text style={styles.submitButtonText}>
+              Continuer vers le récapitulatif
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
