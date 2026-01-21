@@ -151,7 +151,7 @@ export default function RecapitulatifScreen() {
           <Text style={styles.summaryValue}>{formatPrice(totalHT)}</Text>
         </View>
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>TVA ({tvaTaux}%)</Text>
+          <Text style={styles.summaryLabel}>TVA ({formData.tvaTaux}%)</Text>
           <Text style={styles.summaryValue}>{formatPrice(totalTTC - totalHT)}</Text>
         </View>
         <View style={styles.divider} />
