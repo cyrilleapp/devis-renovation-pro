@@ -270,19 +270,7 @@ export default function NouveauDevisScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cuisine</Text>
             <Card>
-              <Input
-                label="Type de cuisine"
-                value={cuisineData.type}
-                onChangeText={(value) => setCuisineData({ ...cuisineData, type: value })}
-                placeholder="Sélectionner..."
-              />
-              <Input
-                label="Longueur (mètres linéaires)"
-                value={cuisineData.quantite}
-                onChangeText={(value) => setCuisineData({ ...cuisineData, quantite: value })}
-                keyboardType="numeric"
-                placeholder="5"
-              />
+              <Text style={styles.fieldLabel}>Type de cuisine</Text>
               <View style={styles.typesList}>
                 {cuisineTypes.map((type) => (
                   <TouchableOpacity
@@ -304,6 +292,13 @@ export default function NouveauDevisScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              <Input
+                label="Longueur (mètres linéaires)"
+                value={cuisineData.quantite}
+                onChangeText={(value) => setCuisineData({ ...cuisineData, quantite: value })}
+                keyboardType="numeric"
+                placeholder="5"
+              />
             </Card>
           </View>
         )}
