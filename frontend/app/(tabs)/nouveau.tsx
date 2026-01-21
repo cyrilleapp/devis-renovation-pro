@@ -307,13 +307,7 @@ export default function NouveauDevisScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cloison</Text>
             <Card>
-              <Input
-                label="Surface (m²)"
-                value={cloisonData.quantite}
-                onChangeText={(value) => setCloisonData({ ...cloisonData, quantite: value })}
-                keyboardType="numeric"
-                placeholder="20"
-              />
+              <Text style={styles.fieldLabel}>Type de cloison</Text>
               <View style={styles.typesList}>
                 {cloisons.map((type) => (
                   <TouchableOpacity
@@ -335,6 +329,13 @@ export default function NouveauDevisScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              <Input
+                label="Surface (m²)"
+                value={cloisonData.quantite}
+                onChangeText={(value) => setCloisonData({ ...cloisonData, quantite: value })}
+                keyboardType="numeric"
+                placeholder="20"
+              />
             </Card>
           </View>
         )}
