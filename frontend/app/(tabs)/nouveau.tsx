@@ -509,7 +509,7 @@ export default function NouveauDevisScreen() {
         )}
 
         <View style={styles.section}>
-          <Button title="Continuer vers le récapitulatif" onPress={handleSubmit} loading={loading} />
+          <Button title="Continuer vers le récapitulatif" onPress={handleSubmit} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
