@@ -47,13 +47,16 @@ export default function RecapitulatifScreen() {
   };
 
   const handleCreate = async () => {
+    if (!formData) return;
+    
     setLoading(true);
     try {
       const devis = await devisService.create({
-        client_nom: clientNom,
-        tva_taux: tvaTaux,
+        client_nom: formData.clientNom,
+        tva_taux: formData.tvaTaux,
         postes,
       });
+      clearFormData();
       Alert.alert('Succès', 'Devis créé avec succès!', [
         {
           text: 'OK',
