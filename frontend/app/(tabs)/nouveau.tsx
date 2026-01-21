@@ -17,6 +17,7 @@ import { Colors, Spacing, FontSize } from '../../constants/theme';
 import { devisService, PosteCreate } from '../../services/devisService';
 import { referenceService } from '../../services/referenceService';
 import { Ionicons } from '@expo/vector-icons';
+import { useDevisStore } from '../../store/devisStore';
 
 type Category = 'cuisine' | 'cloison' | 'peinture' | 'parquet';
 
