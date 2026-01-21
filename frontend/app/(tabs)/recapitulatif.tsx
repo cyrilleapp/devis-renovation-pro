@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,24 +6,29 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import Slider from '@react-native-community/slider';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Colors, Spacing, FontSize } from '../../constants/theme';
 import { devisService, PosteCreate } from '../../services/devisService';
+import { useDevisStore } from '../../store/devisStore';
 
 export default function RecapitulatifScreen() {
-  const params = useLocalSearchParams();
   const router = useRouter();
+  const { formData, clearFormData } = useDevisStore();
   
-  // Parse data from params
-  const clientNom = params.clientNom as string;
-  const tvaTaux = parseFloat(params.tvaTaux as string);
-  const postesData = JSON.parse(params.postes as string) as PosteCreate[];
-  
-  const [postes, setPostes] = useState(postesData);
+  const [postes, setPostes] = useState<PosteCreate[]>([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!formData) {
+      Alert.alert('Erreur', 'Aucune donnée de devis trouvée');
+      router.back();
+      return;
+    }
+    setPostes(formData.postes);
+  }, [formData]);
 
   const updatePostePrice = (index: number, newPrice: number) => {
     const newPostes = [...postes];
