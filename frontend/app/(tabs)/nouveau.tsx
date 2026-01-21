@@ -344,13 +344,7 @@ export default function NouveauDevisScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Peinture</Text>
             <Card>
-              <Input
-                label="Surface (m²)"
-                value={peintureData.quantite}
-                onChangeText={(value) => setPeintureData({ ...peintureData, quantite: value })}
-                keyboardType="numeric"
-                placeholder="50"
-              />
+              <Text style={styles.fieldLabel}>Type de peinture</Text>
               <View style={styles.typesList}>
                 {peintures.map((type) => (
                   <TouchableOpacity
@@ -372,6 +366,13 @@ export default function NouveauDevisScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              <Input
+                label="Surface (m²)"
+                value={peintureData.quantite}
+                onChangeText={(value) => setPeintureData({ ...peintureData, quantite: value })}
+                keyboardType="numeric"
+                placeholder="50"
+              />
             </Card>
           </View>
         )}
@@ -380,13 +381,7 @@ export default function NouveauDevisScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Parquet</Text>
             <Card>
-              <Input
-                label="Surface (m²)"
-                value={parquetData.quantite}
-                onChangeText={(value) => setParquetData({ ...parquetData, quantite: value })}
-                keyboardType="numeric"
-                placeholder="30"
-              />
+              <Text style={styles.fieldLabel}>Type de parquet</Text>
               <View style={styles.typesList}>
                 {parquets.map((type) => (
                   <TouchableOpacity
@@ -408,6 +403,13 @@ export default function NouveauDevisScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              <Input
+                label="Surface (m²)"
+                value={parquetData.quantite}
+                onChangeText={(value) => setParquetData({ ...parquetData, quantite: value })}
+                keyboardType="numeric"
+                placeholder="30"
+              />
             </Card>
           </View>
         )}
