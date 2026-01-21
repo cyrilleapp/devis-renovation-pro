@@ -349,34 +349,68 @@ export default function NouveauDevisScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Peinture</Text>
             <Card>
-              <Text style={styles.fieldLabel}>Type de peinture</Text>
+              <Text style={styles.fieldLabel}>Peinture mur</Text>
               <View style={styles.typesList}>
                 {peintures.map((type) => (
-                  <TouchableOpacity
-                    key={type.id}
-                    style={[
-                      styles.typeButton,
-                      peintureData.type === type.id && styles.typeButtonSelected,
-                    ]}
-                    onPress={() => setPeintureData({ ...peintureData, type: type.id })}
-                  >
-                    <Text
+                  type.nom.toLowerCase().includes('mur') && (
+                    <TouchableOpacity
+                      key={type.id}
                       style={[
-                        styles.typeButtonText,
-                        peintureData.type === type.id && styles.typeButtonTextSelected,
+                        styles.typeButton,
+                        peintureData.type_mur === type.id && styles.typeButtonSelected,
                       ]}
+                      onPress={() => setPeintureData({ ...peintureData, type_mur: type.id })}
                     >
-                      {type.nom}
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={[
+                          styles.typeButtonText,
+                          peintureData.type_mur === type.id && styles.typeButtonTextSelected,
+                        ]}
+                      >
+                        {type.nom}
+                      </Text>
+                    </TouchableOpacity>
+                  )
                 ))}
               </View>
               <Input
-                label="Surface (m²)"
-                value={peintureData.quantite}
-                onChangeText={(value) => setPeintureData({ ...peintureData, quantite: value })}
+                label="Surface mur (m²)"
+                value={peintureData.quantite_mur}
+                onChangeText={(value) => setPeintureData({ ...peintureData, quantite_mur: value })}
                 keyboardType="numeric"
-                placeholder="50"
+                placeholder="30"
+              />
+
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Peinture plafond</Text>
+              <View style={styles.typesList}>
+                {peintures.map((type) => (
+                  type.nom.toLowerCase().includes('plafond') && (
+                    <TouchableOpacity
+                      key={type.id}
+                      style={[
+                        styles.typeButton,
+                        peintureData.type_plafond === type.id && styles.typeButtonSelected,
+                      ]}
+                      onPress={() => setPeintureData({ ...peintureData, type_plafond: type.id })}
+                    >
+                      <Text
+                        style={[
+                          styles.typeButtonText,
+                          peintureData.type_plafond === type.id && styles.typeButtonTextSelected,
+                        ]}
+                      >
+                        {type.nom}
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                ))}
+              </View>
+              <Input
+                label="Surface plafond (m²)"
+                value={peintureData.quantite_plafond}
+                onChangeText={(value) => setPeintureData({ ...peintureData, quantite_plafond: value })}
+                keyboardType="numeric"
+                placeholder="20"
               />
             </Card>
           </View>
