@@ -167,16 +167,19 @@ backend:
 
 frontend:
   - task: "Interface utilisateur"
-    implemented: false
-    working: "NA"
-    file: "/app/frontend/src/App.js"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    implemented: true
+    working: false
+    file: "/app/frontend/app/(tabs)/nouveau.tsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Frontend non testé selon les instructions - Tests limités au backend uniquement."
+        - working: false
+          agent: "user"
+          comment: "PROBLÈME RAPPORTÉ: Bouton 'Continuer vers le récapitulatif' ne répond pas aux clics dans l'onglet 'Nouveau Devis'. Aucun console.log ne s'affiche quand on clique dessus. Scénario: S'inscrire avec test3@test.com/test123, aller dans Nouveau Devis, remplir formulaire (Test Client, TVA 20, Cuisine Kit Semi-équipée, 5 mètres), cliquer sur bouton - pas de réaction."
 
 metadata:
   created_by: "testing_agent"
