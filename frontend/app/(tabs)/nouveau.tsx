@@ -466,6 +466,12 @@ const styles = StyleSheet.create({
   categoryTextSelected: {
     color: Colors.primary,
   },
+  fieldLabel: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.text,
+    marginBottom: Spacing.sm,
+  },
   typesList: {
     marginTop: Spacing.md,
   },
