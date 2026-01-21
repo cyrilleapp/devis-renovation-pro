@@ -467,7 +467,7 @@ export default function NouveauDevisScreen() {
         )}
 
         <View style={styles.section}>
-          <Button title="Créer le devis" onPress={handleSubmit} loading={loading} />
+          <Button title="Continuer vers le récapitulatif" onPress={handleSubmit} loading={loading} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
