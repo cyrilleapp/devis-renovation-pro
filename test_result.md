@@ -189,11 +189,14 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tests backend complets terminés"
-  stuck_tasks: []
+    - "Interface utilisateur"
+  stuck_tasks: 
+    - "Interface utilisateur"
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
       message: "Tests backend complets réalisés avec succès. Tous les endpoints testés selon le scénario demandé : authentification, données de référence, CRUD devis complet avec calculs corrects, et génération PDF. Taux de réussite : 100% (16/16 tests). L'API est entièrement fonctionnelle et prête pour l'intégration frontend."
+    - agent: "user"
+      message: "PROBLÈME CRITIQUE: Bouton 'Continuer vers le récapitulatif' dans l'onglet 'Nouveau Devis' ne répond pas aux clics. Aucun console.log ne s'affiche. Scénario de test: S'inscrire avec test3@test.com/test123, remplir formulaire (Test Client, TVA 20, Cuisine Kit Semi-équipée, 5 mètres), cliquer sur bouton - pas de réaction. Nécessite diagnostic urgent."
