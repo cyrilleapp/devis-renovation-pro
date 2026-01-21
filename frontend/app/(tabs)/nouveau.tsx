@@ -104,6 +104,11 @@ export default function NouveauDevisScreen() {
   };
 
   const handleSubmit = async () => {
+    console.log('=== DEBUT VALIDATION ===');
+    console.log('Client nom:', clientNom);
+    console.log('TVA:', tvaTaux);
+    console.log('Categories selectionnees:', selectedCategories);
+    
     if (!clientNom) {
       Alert.alert('Erreur', 'Veuillez saisir le nom du client');
       return;
@@ -115,49 +120,64 @@ export default function NouveauDevisScreen() {
     }
 
     const postes: PosteCreate[] = [];
+    const errors: string[] = [];
 
     // Build postes based on selected categories
-    if (selectedCategories.includes('cuisine') && cuisineData.quantite && cuisineData.type) {
-      const type = cuisineTypes.find((t) => t.id === cuisineData.type);
-      if (type) {
-        const prix_default = (type.cout_min + type.cout_max) / 2;
-        postes.push({
-          categorie: 'cuisine',
-          reference_id: type.id,
-          reference_nom: type.nom,
-          quantite: parseFloat(cuisineData.quantite),
-          unite: '€/m linéaire',
-          prix_min: type.cout_min,
-          prix_max: type.cout_max,
-          prix_default,
-          prix_ajuste: prix_default,
-        });
+    if (selectedCategories.includes('cuisine')) {
+      console.log('Cuisine data:', cuisineData);
+      if (!cuisineData.quantite || !cuisineData.type) {
+        errors.push('Cuisine: Veuillez remplir le type et la longueur');
+      } else {
+        const type = cuisineTypes.find((t) => t.id === cuisineData.type);
+        if (type) {
+          const prix_default = (type.cout_min + type.cout_max) / 2;
+          postes.push({
+            categorie: 'cuisine',
+            reference_id: type.id,
+            reference_nom: type.nom,
+            quantite: parseFloat(cuisineData.quantite),
+            unite: '€/m linéaire',
+            prix_min: type.cout_min,
+            prix_max: type.cout_max,
+            prix_default,
+            prix_ajuste: prix_default,
+          });
+        }
       }
     }
 
-    if (selectedCategories.includes('cloison') && cloisonData.quantite && cloisonData.type) {
-      const type = cloisons.find((t) => t.id === cloisonData.type);
-      if (type) {
-        const prix_default = (type.pose_incluse_min + type.pose_incluse_max) / 2;
-        postes.push({
-          categorie: 'cloison',
-          reference_id: type.id,
-          reference_nom: type.nom,
-          quantite: parseFloat(cloisonData.quantite),
-          unite: '€/m²',
-          prix_min: type.pose_incluse_min,
-          prix_max: type.pose_incluse_max,
-          prix_default,
-          prix_ajuste: prix_default,
-        });
+    if (selectedCategories.includes('cloison')) {
+      console.log('Cloison data:', cloisonData);
+      if (!cloisonData.quantite || !cloisonData.type) {
+        errors.push('Cloison: Veuillez remplir le type et la surface');
+      } else {
+        const type = cloisons.find((t) => t.id === cloisonData.type);
+        if (type) {
+          const prix_default = (type.pose_incluse_min + type.pose_incluse_max) / 2;
+          postes.push({
+            categorie: 'cloison',
+            reference_id: type.id,
+            reference_nom: type.nom,
+            quantite: parseFloat(cloisonData.quantite),
+            unite: '€/m²',
+            prix_min: type.pose_incluse_min,
+            prix_max: type.pose_incluse_max,
+            prix_default,
+            prix_ajuste: prix_default,
+          });
+        }
       }
     }
 
     if (selectedCategories.includes('peinture')) {
+      console.log('Peinture data:', peintureData);
+      let hasAtLeastOne = false;
+      
       // Peinture mur
       if (peintureData.quantite_mur && peintureData.type_mur) {
         const type = peintures.find((t) => t.id === peintureData.type_mur);
         if (type) {
+          hasAtLeastOne = true;
           const prix_default = (type.prix_min + type.prix_max) / 2;
           postes.push({
             categorie: 'peinture',
@@ -177,6 +197,7 @@ export default function NouveauDevisScreen() {
       if (peintureData.quantite_plafond && peintureData.type_plafond) {
         const type = peintures.find((t) => t.id === peintureData.type_plafond);
         if (type) {
+          hasAtLeastOne = true;
           const prix_default = (type.prix_min + type.prix_max) / 2;
           postes.push({
             categorie: 'peinture',
@@ -191,24 +212,41 @@ export default function NouveauDevisScreen() {
           });
         }
       }
+      
+      if (!hasAtLeastOne) {
+        errors.push('Peinture: Veuillez remplir au moins mur OU plafond');
+      }
     }
 
-    if (selectedCategories.includes('parquet') && parquetData.quantite && parquetData.type) {
-      const type = parquets.find((t) => t.id === parquetData.type);
-      if (type) {
-        const prix_default = (type.pose_incluse_min + type.pose_incluse_max) / 2;
-        postes.push({
-          categorie: 'parquet',
-          reference_id: type.id,
-          reference_nom: type.nom,
-          quantite: parseFloat(parquetData.quantite),
-          unite: type.unite,
-          prix_min: type.pose_incluse_min,
-          prix_max: type.pose_incluse_max,
-          prix_default,
-          prix_ajuste: prix_default,
-        });
+    if (selectedCategories.includes('parquet')) {
+      console.log('Parquet data:', parquetData);
+      if (!parquetData.quantite || !parquetData.type) {
+        errors.push('Parquet: Veuillez remplir le type et la surface');
+      } else {
+        const type = parquets.find((t) => t.id === parquetData.type);
+        if (type) {
+          const prix_default = (type.pose_incluse_min + type.pose_incluse_max) / 2;
+          postes.push({
+            categorie: 'parquet',
+            reference_id: type.id,
+            reference_nom: type.nom,
+            quantite: parseFloat(parquetData.quantite),
+            unite: type.unite,
+            prix_min: type.pose_incluse_min,
+            prix_max: type.pose_incluse_max,
+            prix_default,
+            prix_ajuste: prix_default,
+          });
+        }
       }
+    }
+
+    console.log('Erreurs:', errors);
+    console.log('Postes crees:', postes);
+
+    if (errors.length > 0) {
+      Alert.alert('Erreur', errors.join('\n\n'));
+      return;
     }
 
     if (postes.length === 0) {
@@ -217,6 +255,7 @@ export default function NouveauDevisScreen() {
     }
 
     // Store data in zustand store
+    console.log('Stockage des donnees dans le store...');
     setFormData({
       clientNom,
       tvaTaux: parseFloat(tvaTaux),
@@ -224,6 +263,7 @@ export default function NouveauDevisScreen() {
     });
 
     // Navigate to recapitulatif
+    console.log('Navigation vers recapitulatif...');
     router.push('/(tabs)/recapitulatif');
   };
 
