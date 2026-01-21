@@ -42,7 +42,7 @@ export default function RecapitulatifScreen() {
       const prix = poste.prix_ajuste || poste.prix_default;
       totalHT += poste.quantite * prix;
     });
-    const totalTTC = totalHT * (1 + tvaTaux / 100);
+    const totalTTC = totalHT * (1 + formData.tvaTaux / 100);
     return { totalHT, totalTTC };
   };
 
