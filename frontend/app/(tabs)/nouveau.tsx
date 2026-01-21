@@ -23,6 +23,7 @@ type Category = 'cuisine' | 'cloison' | 'peinture' | 'parquet';
 
 export default function NouveauDevisScreen() {
   const router = useRouter();
+  const { setFormData } = useDevisStore();
   const [loading, setLoading] = useState(false);
   const [clientNom, setClientNom] = useState('');
   const [tvaTaux, setTvaTaux] = useState('20');
