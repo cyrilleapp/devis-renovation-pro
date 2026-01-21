@@ -81,6 +81,10 @@ export default function RecapitulatifScreen() {
     }).format(price);
   };
 
+  if (!formData) {
+    return null;
+  }
+
   const { totalHT, totalTTC } = calculateTotal();
 
   return (
