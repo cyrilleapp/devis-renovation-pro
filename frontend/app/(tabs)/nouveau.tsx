@@ -32,7 +32,12 @@ export default function NouveauDevisScreen() {
   // Form data for each category
   const [cuisineData, setCuisineData] = useState({ quantite: '', type: '' });
   const [cloisonData, setCloisonData] = useState({ quantite: '', type: '' });
-  const [peintureData, setPeintureData] = useState({ quantite: '', type: '' });
+  const [peintureData, setPeintureData] = useState({ 
+    quantite_mur: '', 
+    quantite_plafond: '', 
+    type_mur: '', 
+    type_plafond: '' 
+  });
   const [parquetData, setParquetData] = useState({ quantite: '', type: '' });
   
   // Reference data
