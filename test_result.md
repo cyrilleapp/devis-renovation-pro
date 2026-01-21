@@ -168,9 +168,9 @@ backend:
 frontend:
   - task: "Interface utilisateur"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/app/(tabs)/nouveau.tsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -183,6 +183,9 @@ frontend:
         - working: false
           agent: "testing"
           comment: "PROBLÈME IDENTIFIÉ ET PARTIELLEMENT RÉSOLU: Le bouton fonctionne correctement (console.log 'BOUTON CLIQUÉ !' s'affiche), la validation s'exécute et la navigation est tentée. CEPENDANT, erreur JavaScript dans recapitulatif.tsx ligne 45: 'tvaTaux is not defined' - variable non définie dans calculateTotal(). J'ai corrigé cette erreur en remplaçant 'tvaTaux' par 'formData.tvaTaux'. Le bouton clique maintenant mais la navigation échoue à cause de cette erreur JS."
+        - working: true
+          agent: "testing"
+          comment: "✅ PROBLÈME RÉSOLU COMPLÈTEMENT: Après restart du service Expo, le fix fonctionne parfaitement. Le bouton 'Continuer vers le récapitulatif' répond aux clics, affiche 'BOUTON CLIQUÉ !', exécute la validation, et navigue avec succès vers l'écran récapitulatif. L'erreur JavaScript 'tvaTaux is not defined' a été corrigée. Le flux complet fonctionne: authentification → nouveau devis → remplissage formulaire → validation → récapitulatif avec calculs corrects (47 500,00 € pour 5m de Kit Semi-équipée)."
 
 metadata:
   created_by: "testing_agent"
