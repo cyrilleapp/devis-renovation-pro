@@ -216,15 +216,15 @@ export default function NouveauDevisScreen() {
       return;
     }
 
-    // Navigate to recapitulatif with data
-    router.push({
-      pathname: '/(tabs)/recapitulatif',
-      params: {
-        clientNom,
-        tvaTaux,
-        postes: JSON.stringify(postes),
-      },
+    // Store data in zustand store
+    setFormData({
+      clientNom,
+      tvaTaux: parseFloat(tvaTaux),
+      postes,
     });
+
+    // Navigate to recapitulatif
+    router.push('/(tabs)/recapitulatif');
   };
 
   return (
