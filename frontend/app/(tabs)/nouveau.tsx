@@ -151,21 +151,43 @@ export default function NouveauDevisScreen() {
       }
     }
 
-    if (selectedCategories.includes('peinture') && peintureData.quantite && peintureData.type) {
-      const type = peintures.find((t) => t.id === peintureData.type);
-      if (type) {
-        const prix_default = (type.prix_min + type.prix_max) / 2;
-        postes.push({
-          categorie: 'peinture',
-          reference_id: type.id,
-          reference_nom: type.nom,
-          quantite: parseFloat(peintureData.quantite),
-          unite: type.unite,
-          prix_min: type.prix_min,
-          prix_max: type.prix_max,
-          prix_default,
-          prix_ajuste: prix_default,
-        });
+    if (selectedCategories.includes('peinture')) {
+      // Peinture mur
+      if (peintureData.quantite_mur && peintureData.type_mur) {
+        const type = peintures.find((t) => t.id === peintureData.type_mur);
+        if (type) {
+          const prix_default = (type.prix_min + type.prix_max) / 2;
+          postes.push({
+            categorie: 'peinture',
+            reference_id: type.id,
+            reference_nom: `${type.nom} (mur)`,
+            quantite: parseFloat(peintureData.quantite_mur),
+            unite: type.unite,
+            prix_min: type.prix_min,
+            prix_max: type.prix_max,
+            prix_default,
+            prix_ajuste: prix_default,
+          });
+        }
+      }
+      
+      // Peinture plafond
+      if (peintureData.quantite_plafond && peintureData.type_plafond) {
+        const type = peintures.find((t) => t.id === peintureData.type_plafond);
+        if (type) {
+          const prix_default = (type.prix_min + type.prix_max) / 2;
+          postes.push({
+            categorie: 'peinture',
+            reference_id: type.id,
+            reference_nom: `${type.nom} (plafond)`,
+            quantite: parseFloat(peintureData.quantite_plafond),
+            unite: type.unite,
+            prix_min: type.prix_min,
+            prix_max: type.prix_max,
+            prix_default,
+            prix_ajuste: prix_default,
+          });
+        }
       }
     }
 
