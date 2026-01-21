@@ -192,9 +192,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Interface utilisateur"
-  stuck_tasks: 
-    - "Interface utilisateur"
+    - "Interface utilisateur - Bug JavaScript résolu"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
@@ -203,3 +202,5 @@ agent_communication:
       message: "Tests backend complets réalisés avec succès. Tous les endpoints testés selon le scénario demandé : authentification, données de référence, CRUD devis complet avec calculs corrects, et génération PDF. Taux de réussite : 100% (16/16 tests). L'API est entièrement fonctionnelle et prête pour l'intégration frontend."
     - agent: "user"
       message: "PROBLÈME CRITIQUE: Bouton 'Continuer vers le récapitulatif' dans l'onglet 'Nouveau Devis' ne répond pas aux clics. Aucun console.log ne s'affiche. Scénario de test: S'inscrire avec test3@test.com/test123, remplir formulaire (Test Client, TVA 20, Cuisine Kit Semi-équipée, 5 mètres), cliquer sur bouton - pas de réaction. Nécessite diagnostic urgent."
+    - agent: "testing"
+      message: "DIAGNOSTIC COMPLET EFFECTUÉ: Le bouton fonctionne correctement (console.log 'BOUTON CLIQUÉ !' s'affiche bien). Le problème était une erreur JavaScript dans recapitulatif.tsx ligne 45: variable 'tvaTaux' non définie dans calculateTotal(). J'ai corrigé en remplaçant par 'formData.tvaTaux'. Le bouton clique maintenant et la validation s'exécute, mais la navigation vers récapitulatif échouait à cause de cette erreur JS. Bug résolu - le formulaire fonctionne maintenant de bout en bout."
