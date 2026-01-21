@@ -214,24 +214,15 @@ export default function NouveauDevisScreen() {
       return;
     }
 
-    setLoading(true);
-    try {
-      const devis = await devisService.create({
-        client_nom: clientNom,
-        tva_taux: parseFloat(tvaTaux),
-        postes,
-      });
-      Alert.alert('Succès', 'Devis créé avec succès!', [
-        {
-          text: 'OK',
-          onPress: () => router.push(`/devis/${devis.id}`),
-        },
-      ]);
-    } catch (error: any) {
-      Alert.alert('Erreur', error.response?.data?.detail || 'Erreur lors de la création du devis');
-    } finally {
-      setLoading(false);
-    }
+    // Navigate to recapitulatif with data
+    router.push({
+      pathname: '/(tabs)/recapitulatif',
+      params: {
+        clientNom,
+        tvaTaux,
+        postes: JSON.stringify(postes),
+      },
+    });
   };
 
   return (
