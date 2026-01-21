@@ -84,8 +84,7 @@ export default function HomeScreen() {
           onPress={() => router.push('/(tabs)/nouveau')}
         >
           <Ionicons name="add-circle" size={40} color={Colors.primary} />
-          <Text style={styles.actionText}>Nouveau{'
-'}Devis</Text>
+          <Text style={styles.actionText}>Nouveau{'\n'}Devis</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -93,8 +92,7 @@ export default function HomeScreen() {
           onPress={() => router.push('/(tabs)/mes-devis')}
         >
           <Ionicons name="document-text" size={40} color={Colors.secondary} />
-          <Text style={styles.actionText}>Mes{'
-'}Devis</Text>
+          <Text style={styles.actionText}>Mes{'\n'}Devis</Text>
         </TouchableOpacity>
       </View>
 
