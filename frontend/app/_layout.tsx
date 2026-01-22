@@ -1,29 +1,23 @@
 import React, { useEffect } from 'react';
-import { Stack, Redirect, useSegments, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useAuthStore } from '../store/authStore';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { Colors } from '../constants/theme';
 
 export default function RootLayout() {
   const { isLoading, isAuthenticated, loadToken } = useAuthStore();
-  const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     loadToken();
   }, []);
 
+  // Simplified - allow access to tabs even without auth for testing
   useEffect(() => {
     if (isLoading) return;
-
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!isAuthenticated && !inAuthGroup) {
-      router.replace('/(auth)/login');
-    } else if (isAuthenticated && inAuthGroup) {
-      router.replace('/(tabs)');
-    }
-  }, [isAuthenticated, isLoading, segments]);
+    
+    // Don't force redirect, let users access the app
+  }, [isAuthenticated, isLoading]);
 
   if (isLoading) {
     return (
