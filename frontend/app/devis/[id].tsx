@@ -43,16 +43,53 @@ export default function DevisDetailScreen() {
 
   const handleExportPDF = async () => {
     try {
-      const pdfUrl = devisService.getPdfUrl(id);
-      const canOpen = await Linking.canOpenURL(pdfUrl);
-      if (canOpen) {
-        await Linking.openURL(pdfUrl);
-      } else {
-        Alert.alert('Erreur', 'Impossible d\'ouvrir le PDF');
+      setLoading(true);
+      
+      // Get auth token
+      const token = await AsyncStorage.getItem('auth_token');
+      if (!token) {
+        Alert.alert('Erreur', 'Vous devez être connecté pour télécharger le PDF');
+        return;
       }
-    } catch (error) {
+      
+      const API_URL = 'https://quickbuild-app.preview.emergentagent.com';
+      const pdfUrl = `${API_URL}/api/devis/${id}/pdf`;
+      
+      // Create filename
+      const filename = `Devis_${devis?.numero_devis || id}.pdf`;
+      const fileUri = `${FileSystem.documentDirectory}${filename}`;
+      
+      // Download with authentication
+      const downloadResult = await FileSystem.downloadAsync(
+        pdfUrl,
+        fileUri,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      if (downloadResult.status === 200) {
+        // Check if sharing is available
+        const isSharingAvailable = await Sharing.isAvailableAsync();
+        if (isSharingAvailable) {
+          await Sharing.shareAsync(downloadResult.uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Partager le devis',
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          Alert.alert('Succès', `PDF téléchargé : ${filename}`);
+        }
+      } else {
+        throw new Error('Échec du téléchargement');
+      }
+    } catch (error: any) {
       console.error('Error exporting PDF:', error);
       Alert.alert('Erreur', 'Impossible d\'exporter le PDF');
+    } finally {
+      setLoading(false);
     }
   };
 
