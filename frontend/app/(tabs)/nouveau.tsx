@@ -611,13 +611,13 @@ export default function NouveauDevisScreen() {
               <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options</Text>
               <TouchableOpacity
                 style={styles.switchContainer}
-                onPress={() => setCloisonData({ ...cloisonData, avec_pose: !cloisonData.avec_pose })}
+                onPress={() => setCloisonData({ ...cloisonData, pose_et_fourniture: !cloisonData.pose_et_fourniture })}
               >
                 <Text style={styles.switchLabel}>
-                  {cloisonData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'}
+                  {cloisonData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'}
                 </Text>
-                <View style={[styles.switch, cloisonData.avec_pose && styles.switchActive]}>
-                  <View style={[styles.switchThumb, cloisonData.avec_pose && styles.switchThumbActive]} />
+                <View style={[styles.switch, cloisonData.pose_et_fourniture && styles.switchActive]}>
+                  <View style={[styles.switchThumb, cloisonData.pose_et_fourniture && styles.switchThumbActive]} />
                 </View>
               </TouchableOpacity>
               
