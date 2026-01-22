@@ -13,6 +13,7 @@ import { Button } from '../../components/Button';
 import { Colors, Spacing, FontSize } from '../../constants/theme';
 import { devisService, PosteCreate } from '../../services/devisService';
 import { useDevisStore } from '../../store/devisStore';
+import { useAuthStore } from '../../store/authStore';
 
 export default function RecapitulatifScreen() {
   const router = useRouter();
