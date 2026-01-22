@@ -279,6 +279,7 @@ export default function NouveauDevisScreen() {
 
     if (selectedCategories.includes('cloison')) {
       console.log('Cloison data:', cloisonData);
+      console.log('Options cloison sélectionnées:', selectedCloisonOptions);
       if (!cloisonData.quantite || !cloisonData.type) {
         errors.push('Cloison: Veuillez remplir le type et la surface');
       } else {
@@ -299,6 +300,26 @@ export default function NouveauDevisScreen() {
               prix_max,
               prix_default,
               prix_ajuste: prix_default,
+            });
+            
+            // Ajouter les options/suppléments cloison sélectionnés (uniquement si Pose + Fourniture)
+            const surfaceCloison = parseFloat(cloisonData.quantite);
+            selectedCloisonOptions.forEach(optionId => {
+              const option = cloisonOptions.find(o => o.id === optionId);
+              if (option && (option.supplement_min > 0 || option.supplement_max > 0)) {
+                const supp_prix_default = (option.supplement_min + option.supplement_max) / 2;
+                postes.push({
+                  categorie: 'cloison',
+                  reference_id: option.id,
+                  reference_nom: option.nom,
+                  quantite: surfaceCloison,
+                  unite: option.unite,
+                  prix_min: option.supplement_min,
+                  prix_max: option.supplement_max,
+                  prix_default: supp_prix_default,
+                  prix_ajuste: supp_prix_default,
+                });
+              }
             });
           } else {
             const prix_min = type.pose_seule_min;
