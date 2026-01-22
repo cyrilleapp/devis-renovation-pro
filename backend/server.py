@@ -61,11 +61,12 @@ async def seed_database():
         
         # Insert all reference data
         await db.ref_cuisine_types.insert_many(REF_CUISINE_TYPES)
-        await db.ref_cuisine_elements.insert_many(REF_CUISINE_ELEMENTS)
-        await db.ref_cuisine_materiaux.insert_many(REF_CUISINE_MATERIAUX)
+        await db.ref_plans_travail.insert_many(REF_PLANS_TRAVAIL)
         await db.ref_cloisons.insert_many(REF_CLOISONS)
+        await db.ref_cloison_options.insert_many(REF_CLOISON_OPTIONS)
         await db.ref_peintures.insert_many(REF_PEINTURES)
         await db.ref_parquets.insert_many(REF_PARQUETS)
+        await db.ref_parquet_poses.insert_many(REF_PARQUET_POSES)
         await db.ref_extras.insert_many(REF_EXTRAS)
         
         logger.info("Database seeded successfully!")
