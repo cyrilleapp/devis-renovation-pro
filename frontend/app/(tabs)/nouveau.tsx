@@ -175,17 +175,40 @@ export default function NouveauDevisScreen() {
       } else {
         const type = cloisons.find((t) => t.id === cloisonData.type);
         if (type) {
-          const prix_default = (type.pose_incluse_min + type.pose_incluse_max) / 2;
+          // Utiliser fourniture ou pose incluse selon l'option
+          const prix_min = cloisonData.avec_pose ? type.pose_incluse_min : type.fourniture_min;
+          const prix_max = cloisonData.avec_pose ? type.pose_incluse_max : type.fourniture_max;
+          const prix_default = (prix_min + prix_max) / 2;
+          
           postes.push({
             categorie: 'cloison',
             reference_id: type.id,
-            reference_nom: type.nom,
+            reference_nom: `${type.nom} (${cloisonData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'})`,
             quantite: parseFloat(cloisonData.quantite),
             unite: '€/m²',
-            prix_min: type.pose_incluse_min,
-            prix_max: type.pose_incluse_max,
+            prix_min,
+            prix_max,
             prix_default,
             prix_ajuste: prix_default,
+          });
+          
+          // Ajouter les extras sélectionnés
+          cloisonData.extras.forEach(extraId => {
+            const extra = extras.find(e => e.id === extraId);
+            if (extra) {
+              const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+              postes.push({
+                categorie: 'cloison',
+                reference_id: extra.id,
+                reference_nom: `Extra: ${extra.nom}`,
+                quantite: 1,
+                unite: extra.unite,
+                prix_min: extra.cout_min,
+                prix_max: extra.cout_max,
+                prix_default: extra_prix_default,
+                prix_ajuste: extra_prix_default,
+              });
+            }
           });
         }
       }
