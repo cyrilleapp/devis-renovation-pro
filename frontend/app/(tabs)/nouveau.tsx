@@ -152,38 +152,37 @@ export default function NouveauDevisScreen() {
         const type = cuisineTypes.find((t) => t.id === cuisineData.type);
         if (type) {
           // Les tarifs cuisine sont des coûts globaux, on les divise par 5m pour obtenir un prix/m linéaire moyen
-          const prix_unitaire_min = type.cout_min / 5;
-          const prix_unitaire_max = type.cout_max / 5;
-          const prix_default = (prix_unitaire_min + prix_unitaire_max) / 2;
-          
-          // Fourniture cuisine
-          postes.push({
-            categorie: 'cuisine',
-            reference_id: type.id,
-            reference_nom: `${type.nom} (Fourniture)`,
-            quantite: parseFloat(cuisineData.quantite),
-            unite: '€/m linéaire',
-            prix_min: prix_unitaire_min,
-            prix_max: prix_unitaire_max,
-            prix_default,
-            prix_ajuste: prix_default,
-          });
-          
-          // Pose cuisine si option activée
-          if (cuisineData.avec_pose) {
-            const pose_min = type.pose_min / 5;
-            const pose_max = type.pose_max / 5;
-            const pose_default = (pose_min + pose_max) / 2;
+          if (cuisineData.pose_et_fourniture) {
+            // Pose + Fourniture : prix total (cout + pose)
+            const prix_min = (type.cout_min + type.pose_min) / 5;
+            const prix_max = (type.cout_max + type.pose_max) / 5;
+            const prix_default = (prix_min + prix_max) / 2;
             postes.push({
               categorie: 'cuisine',
-              reference_id: type.id + '_pose',
-              reference_nom: `${type.nom} (Pose)`,
+              reference_id: type.id,
+              reference_nom: `${type.nom} (Pose + Fourniture)`,
               quantite: parseFloat(cuisineData.quantite),
               unite: '€/m linéaire',
-              prix_min: pose_min,
-              prix_max: pose_max,
-              prix_default: pose_default,
-              prix_ajuste: pose_default,
+              prix_min,
+              prix_max,
+              prix_default,
+              prix_ajuste: prix_default,
+            });
+          } else {
+            // Pose seule
+            const prix_min = type.pose_min / 5;
+            const prix_max = type.pose_max / 5;
+            const prix_default = (prix_min + prix_max) / 2;
+            postes.push({
+              categorie: 'cuisine',
+              reference_id: type.id,
+              reference_nom: `${type.nom} (Pose seule)`,
+              quantite: parseFloat(cuisineData.quantite),
+              unite: '€/m linéaire',
+              prix_min,
+              prix_max,
+              prix_default,
+              prix_ajuste: prix_default,
             });
           }
           
