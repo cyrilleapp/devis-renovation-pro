@@ -506,13 +506,13 @@ export default function NouveauDevisScreen() {
               <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options</Text>
               <TouchableOpacity
                 style={styles.switchContainer}
-                onPress={() => setCuisineData({ ...cuisineData, avec_pose: !cuisineData.avec_pose })}
+                onPress={() => setCuisineData({ ...cuisineData, pose_et_fourniture: !cuisineData.pose_et_fourniture })}
               >
                 <Text style={styles.switchLabel}>
-                  {cuisineData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'}
+                  {cuisineData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'}
                 </Text>
-                <View style={[styles.switch, cuisineData.avec_pose && styles.switchActive]}>
-                  <View style={[styles.switchThumb, cuisineData.avec_pose && styles.switchThumbActive]} />
+                <View style={[styles.switch, cuisineData.pose_et_fourniture && styles.switchActive]}>
+                  <View style={[styles.switchThumb, cuisineData.pose_et_fourniture && styles.switchThumbActive]} />
                 </View>
               </TouchableOpacity>
               
