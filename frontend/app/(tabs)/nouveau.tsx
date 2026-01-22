@@ -689,6 +689,27 @@ export default function NouveauDevisScreen() {
                 keyboardType="numeric"
                 placeholder="20"
               />
+              
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
+              {extras.filter(e => e.categorie === 'peinture').map((extra) => (
+                <TouchableOpacity
+                  key={extra.id}
+                  style={styles.checkboxContainer}
+                  onPress={() => {
+                    const newExtras = peintureData.extras.includes(extra.id)
+                      ? peintureData.extras.filter(id => id !== extra.id)
+                      : [...peintureData.extras, extra.id];
+                    setPeintureData({ ...peintureData, extras: newExtras });
+                  }}
+                >
+                  <View style={[styles.checkbox, peintureData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                    {peintureData.extras.includes(extra.id) && (
+                      <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.checkboxLabel}>{extra.nom}</Text>
+                </TouchableOpacity>
+              ))}
             </Card>
           </View>
         )}
