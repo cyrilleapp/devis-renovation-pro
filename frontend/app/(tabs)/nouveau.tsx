@@ -388,58 +388,51 @@ export default function NouveauDevisScreen() {
       console.log('Parquet data:', parquetData);
       if (!parquetData.quantite || !parquetData.type) {
         errors.push('Parquet: Veuillez remplir le type et la surface');
+      } else if (!parquetData.pose_et_fourniture && !parquetData.type_pose) {
+        errors.push('Parquet: Veuillez sélectionner un type de pose');
       } else {
         const type = parquets.find((t) => t.id === parquetData.type);
+        const typePose = parquetPoses.find((p) => p.id === parquetData.type_pose);
+        
         if (type) {
           if (parquetData.pose_et_fourniture) {
-            // Pose + Fourniture = pose_incluse (matériel + pose)
-            const prix_min = type.pose_incluse_min;
-            const prix_max = type.pose_incluse_max;
-            const prix_default = (prix_min + prix_max) / 2;
-            postes.push({
-              categorie: 'parquet',
-              reference_id: type.id,
-              reference_nom: `${type.nom} (Pose + Fourniture)`,
-              quantite: parseFloat(parquetData.quantite),
-              unite: type.unite,
-              prix_min,
-              prix_max,
-              prix_default,
-              prix_ajuste: prix_default,
-            });
-          } else {
-            // Pose seule = pose_incluse - fourniture
-            const prix_min = type.pose_incluse_min - type.fourniture_max;
-            const prix_max = type.pose_incluse_max - type.fourniture_min;
-            const prix_default = (prix_min + prix_max) / 2;
-            postes.push({
-              categorie: 'parquet',
-              reference_id: type.id,
-              reference_nom: `${type.nom} (Pose seule)`,
-              quantite: parseFloat(parquetData.quantite),
-              unite: type.unite,
-              prix_min: Math.max(0, prix_min),
-              prix_max: Math.max(0, prix_max),
-              prix_default: Math.max(0, prix_default),
-              prix_ajuste: Math.max(0, prix_default),
-            });
-          }
-          
-          // Ajouter sous-couche si cochée et stratifié
-          if (parquetData.sous_couche && type.type === 'stratifie') {
-            const sousCoucheExtra = extras.find(e => e.nom === 'Sous-couche isolante');
-            if (sousCoucheExtra) {
-              const sc_prix_default = (sousCoucheExtra.cout_min + sousCoucheExtra.cout_max) / 2;
+            // Pose + Fourniture = fourniture + type de pose choisi
+            if (!typePose) {
+              errors.push('Parquet: Veuillez sélectionner un type de pose');
+            } else {
+              const prix_min = type.fourniture_min + typePose.prix_min;
+              const prix_max = type.fourniture_max + typePose.prix_max;
+              const prix_default = (prix_min + prix_max) / 2;
               postes.push({
                 categorie: 'parquet',
-                reference_id: sousCoucheExtra.id,
-                reference_nom: 'Sous-couche isolante',
+                reference_id: type.id,
+                reference_nom: `${type.nom} - ${typePose.nom} (Pose + Fourniture)`,
                 quantite: parseFloat(parquetData.quantite),
-                unite: sousCoucheExtra.unite,
-                prix_min: sousCoucheExtra.cout_min,
-                prix_max: sousCoucheExtra.cout_max,
-                prix_default: sc_prix_default,
-                prix_ajuste: sc_prix_default,
+                unite: type.unite,
+                prix_min,
+                prix_max,
+                prix_default,
+                prix_ajuste: prix_default,
+              });
+            }
+          } else {
+            // Pose seule = uniquement le prix du type de pose
+            if (!typePose) {
+              errors.push('Parquet: Veuillez sélectionner un type de pose');
+            } else {
+              const prix_min = typePose.prix_min;
+              const prix_max = typePose.prix_max;
+              const prix_default = (prix_min + prix_max) / 2;
+              postes.push({
+                categorie: 'parquet',
+                reference_id: type.id,
+                reference_nom: `${type.nom} - ${typePose.nom} (Pose seule)`,
+                quantite: parseFloat(parquetData.quantite),
+                unite: type.unite,
+                prix_min,
+                prix_max,
+                prix_default,
+                prix_ajuste: prix_default,
               });
             }
           }
