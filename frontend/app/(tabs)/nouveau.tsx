@@ -35,6 +35,7 @@ export default function NouveauDevisScreen() {
   const [cuisineData, setCuisineData] = useState({ 
     quantite: '', 
     type: '',
+    avec_pose: true, // Fourniture + pose ou fourniture seule
     extras: [] as string[], // IDs des extras sélectionnés
   });
   const [cloisonData, setCloisonData] = useState({ 
@@ -48,6 +49,7 @@ export default function NouveauDevisScreen() {
     quantite_plafond: '', 
     type_mur: '', 
     type_plafond: '',
+    avec_pose: true, // Fourniture + pose ou fourniture seule (inclut la main d'œuvre)
     extras: [] as string[],
   });
   const [parquetData, setParquetData] = useState({ 
