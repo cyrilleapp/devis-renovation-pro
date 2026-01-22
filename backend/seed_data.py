@@ -369,15 +369,6 @@ REF_EXTRAS = [
     {
         "id": generate_id(),
         "categorie": "peinture",
-        "nom": "Finition peinture sur cloison",
-        "description": "Finitions décoratives",
-        "cout_min": 15,
-        "cout_max": 35,
-        "unite": "m²"
-    },
-    {
-        "id": generate_id(),
-        "categorie": "peinture",
         "nom": "Pose de papier peint",
         "description": "Pose des rouleaux (main d'œuvre)",
         "cout_min": 25,
@@ -411,15 +402,6 @@ REF_EXTRAS = [
         "description": "Préparation et nivellement du sol",
         "cout_min": 15,
         "cout_max": 25,
-        "unite": "m²"
-    },
-    {
-        "id": generate_id(),
-        "categorie": "parquet",
-        "nom": "Sous-couche isolante",
-        "description": "Pour stratifié uniquement",
-        "cout_min": 0.5,
-        "cout_max": 9,
         "unite": "m²"
     },
     {
