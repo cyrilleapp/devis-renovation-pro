@@ -216,22 +216,38 @@ export default function NouveauDevisScreen() {
       } else {
         const type = cloisons.find((t) => t.id === cloisonData.type);
         if (type) {
-          // Utiliser fourniture ou pose incluse selon l'option
-          const prix_min = cloisonData.avec_pose ? type.pose_incluse_min : type.fourniture_min;
-          const prix_max = cloisonData.avec_pose ? type.pose_incluse_max : type.fourniture_max;
-          const prix_default = (prix_min + prix_max) / 2;
-          
-          postes.push({
-            categorie: 'cloison',
-            reference_id: type.id,
-            reference_nom: `${type.nom} (${cloisonData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'})`,
-            quantite: parseFloat(cloisonData.quantite),
-            unite: '€/m²',
-            prix_min,
-            prix_max,
-            prix_default,
-            prix_ajuste: prix_default,
-          });
+          // Pose + Fourniture = pose_incluse, Pose seule = pose_seule
+          if (cloisonData.pose_et_fourniture) {
+            const prix_min = type.pose_incluse_min;
+            const prix_max = type.pose_incluse_max;
+            const prix_default = (prix_min + prix_max) / 2;
+            postes.push({
+              categorie: 'cloison',
+              reference_id: type.id,
+              reference_nom: `${type.nom} (Pose + Fourniture)`,
+              quantite: parseFloat(cloisonData.quantite),
+              unite: '€/m²',
+              prix_min,
+              prix_max,
+              prix_default,
+              prix_ajuste: prix_default,
+            });
+          } else {
+            const prix_min = type.pose_seule_min;
+            const prix_max = type.pose_seule_max;
+            const prix_default = (prix_min + prix_max) / 2;
+            postes.push({
+              categorie: 'cloison',
+              reference_id: type.id,
+              reference_nom: `${type.nom} (Pose seule)`,
+              quantite: parseFloat(cloisonData.quantite),
+              unite: '€/m²',
+              prix_min,
+              prix_max,
+              prix_default,
+              prix_ajuste: prix_default,
+            });
+          }
           
           // Ajouter les extras sélectionnés
           cloisonData.extras.forEach(extraId => {
