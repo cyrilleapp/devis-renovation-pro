@@ -195,7 +195,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Interface utilisateur - Bug JavaScript résolu"
+    - "Fonctionnalité prix détaillés - Fourniture + Pose et Extras"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -207,3 +207,5 @@ agent_communication:
       message: "PROBLÈME CRITIQUE: Bouton 'Continuer vers le récapitulatif' dans l'onglet 'Nouveau Devis' ne répond pas aux clics. Aucun console.log ne s'affiche. Scénario de test: S'inscrire avec test3@test.com/test123, remplir formulaire (Test Client, TVA 20, Cuisine Kit Semi-équipée, 5 mètres), cliquer sur bouton - pas de réaction. Nécessite diagnostic urgent."
     - agent: "testing"
       message: "✅ PROBLÈME RÉSOLU COMPLÈTEMENT: Diagnostic effectué avec succès. Le bouton fonctionnait mais une erreur JavaScript dans recapitulatif.tsx empêchait la navigation. Erreur corrigée: ligne 45 'tvaTaux is not defined' → 'formData.tvaTaux'. Après restart du service Expo, le flux complet fonctionne parfaitement: authentification → nouveau devis → remplissage → validation → récapitulatif avec calculs corrects. L'application frontend est maintenant entièrement fonctionnelle."
+    - agent: "main"
+      message: "IMPLÉMENTATION TERMINÉE: Ajout des fonctionnalités de prix détaillés sur l'écran 'Nouveau Devis' (nouveau.tsx). Toutes les catégories (Cuisine, Cloison, Peinture, Parquet) ont maintenant: (1) Switch Fourniture seule / Fourniture + Pose, (2) Checkboxes pour extras disponibles. La logique handleSubmit génère les postes séparés (fourniture, pose, extras) pour un devis détaillé. L'écran récapitulatif affiche chaque ligne avec slider d'ajustement de prix."
