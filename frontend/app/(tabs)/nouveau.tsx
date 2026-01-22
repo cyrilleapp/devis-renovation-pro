@@ -186,16 +186,24 @@ export default function NouveauDevisScreen() {
           }
           
           // Ajouter les extras cuisine sélectionnés
+          const longueurCuisine = parseFloat(cuisineData.quantite);
           cuisineData.extras.forEach(extraId => {
             const extra = extras.find(e => e.id === extraId);
             if (extra) {
               const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
-              // Pour certains extras au m linéaire, utiliser la quantité
-              const quantite = extra.unite.includes('m linéaire') ? parseFloat(cuisineData.quantite) : 1;
+              // Déterminer la quantité selon l'unité
+              let quantite = 1; // Par défaut: forfait
+              if (extra.unite === 'm linéaire' || extra.unite.includes('linéaire')) {
+                quantite = longueurCuisine;
+              } else if (extra.unite === 'm²') {
+                quantite = longueurCuisine; // Surface approximative pour crédence
+              }
+              // sinon prestation, pose, unité, appareil, pièce, point = 1
+              
               postes.push({
                 categorie: 'cuisine',
                 reference_id: extra.id,
-                reference_nom: `Extra: ${extra.nom}`,
+                reference_nom: extra.nom,
                 quantite,
                 unite: extra.unite,
                 prix_min: extra.cout_min,
