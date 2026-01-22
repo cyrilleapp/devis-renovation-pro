@@ -270,17 +270,59 @@ export default function NouveauDevisScreen() {
       } else {
         const type = parquets.find((t) => t.id === parquetData.type);
         if (type) {
-          const prix_default = (type.pose_incluse_min + type.pose_incluse_max) / 2;
+          // Utiliser fourniture ou pose incluse selon l'option
+          const prix_min = parquetData.avec_pose ? type.pose_incluse_min : type.fourniture_min;
+          const prix_max = parquetData.avec_pose ? type.pose_incluse_max : type.fourniture_max;
+          const prix_default = (prix_min + prix_max) / 2;
+          
           postes.push({
             categorie: 'parquet',
             reference_id: type.id,
-            reference_nom: type.nom,
+            reference_nom: `${type.nom} (${parquetData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'})`,
             quantite: parseFloat(parquetData.quantite),
             unite: type.unite,
-            prix_min: type.pose_incluse_min,
-            prix_max: type.pose_incluse_max,
+            prix_min,
+            prix_max,
             prix_default,
             prix_ajuste: prix_default,
+          });
+          
+          // Ajouter sous-couche si cochée et stratifié
+          if (parquetData.sous_couche && type.type === 'stratifie') {
+            const sousCoucheExtra = extras.find(e => e.nom === 'Sous-couche isolante');
+            if (sousCoucheExtra) {
+              const sc_prix_default = (sousCoucheExtra.cout_min + sousCoucheExtra.cout_max) / 2;
+              postes.push({
+                categorie: 'parquet',
+                reference_id: sousCoucheExtra.id,
+                reference_nom: 'Sous-couche isolante',
+                quantite: parseFloat(parquetData.quantite),
+                unite: sousCoucheExtra.unite,
+                prix_min: sousCoucheExtra.cout_min,
+                prix_max: sousCoucheExtra.cout_max,
+                prix_default: sc_prix_default,
+                prix_ajuste: sc_prix_default,
+              });
+            }
+          }
+          
+          // Ajouter les extras sélectionnés
+          parquetData.extras.forEach(extraId => {
+            const extra = extras.find(e => e.id === extraId);
+            if (extra) {
+              const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+              postes.push({
+                categorie: 'parquet',
+                reference_id: extra.id,
+                reference_nom: `Extra: ${extra.nom}`,
+                quantite: parseFloat(parquetData.quantite),
+                unite: extra.unite,
+                prix_min: extra.cout_min,
+                prix_max: extra.cout_max,
+                prix_default: extra_prix_default,
+                prix_ajuste: extra_prix_default,
+              });
+            }
           });
         }
       }
