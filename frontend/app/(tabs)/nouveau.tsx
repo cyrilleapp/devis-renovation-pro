@@ -130,15 +130,18 @@ export default function NouveauDevisScreen() {
       } else {
         const type = cuisineTypes.find((t) => t.id === cuisineData.type);
         if (type) {
-          const prix_default = (type.cout_min + type.cout_max) / 2;
+          // Les tarifs cuisine sont des coûts globaux, on les divise par 5m pour obtenir un prix/m linéaire moyen
+          const prix_unitaire_min = type.cout_min / 5;
+          const prix_unitaire_max = type.cout_max / 5;
+          const prix_default = (prix_unitaire_min + prix_unitaire_max) / 2;
           postes.push({
             categorie: 'cuisine',
             reference_id: type.id,
             reference_nom: type.nom,
             quantite: parseFloat(cuisineData.quantite),
             unite: '€/m linéaire',
-            prix_min: type.cout_min,
-            prix_max: type.cout_max,
+            prix_min: prix_unitaire_min,
+            prix_max: prix_unitaire_max,
             prix_default,
             prix_ajuste: prix_default,
           });
