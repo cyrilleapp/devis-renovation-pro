@@ -577,6 +577,35 @@ export default function NouveauDevisScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options</Text>
+              <TouchableOpacity
+                style={styles.switchContainer}
+                onPress={() => setParquetData({ ...parquetData, avec_pose: !parquetData.avec_pose })}
+              >
+                <Text style={styles.switchLabel}>
+                  {parquetData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'}
+                </Text>
+                <View style={[styles.switch, parquetData.avec_pose && styles.switchActive]}>
+                  <View style={[styles.switchThumb, parquetData.avec_pose && styles.switchThumbActive]} />
+                </View>
+              </TouchableOpacity>
+              
+              {/* Sous-couche uniquement pour stratifié */}
+              {parquets.find(p => p.id === parquetData.type)?.type === 'stratifie' && (
+                <TouchableOpacity
+                  style={styles.switchContainer}
+                  onPress={() => setParquetData({ ...parquetData, sous_couche: !parquetData.sous_couche })}
+                >
+                  <Text style={styles.switchLabel}>
+                    Sous-couche isolante (0,5 - 9 €/m²)
+                  </Text>
+                  <View style={[styles.switch, parquetData.sous_couche && styles.switchActive]}>
+                    <View style={[styles.switchThumb, parquetData.sous_couche && styles.switchThumbActive]} />
+                  </View>
+                </TouchableOpacity>
+              )}
+              
               <Input
                 label="Surface (m²)"
                 value={parquetData.quantite}
@@ -584,6 +613,27 @@ export default function NouveauDevisScreen() {
                 keyboardType="numeric"
                 placeholder="30"
               />
+              
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
+              {extras.filter(e => e.categorie === 'parquet').map((extra) => (
+                <TouchableOpacity
+                  key={extra.id}
+                  style={styles.checkboxContainer}
+                  onPress={() => {
+                    const newExtras = parquetData.extras.includes(extra.id)
+                      ? parquetData.extras.filter(id => id !== extra.id)
+                      : [...parquetData.extras, extra.id];
+                    setParquetData({ ...parquetData, extras: newExtras });
+                  }}
+                >
+                  <View style={[styles.checkbox, parquetData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                    {parquetData.extras.includes(extra.id) && (
+                      <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.checkboxLabel}>{extra.nom}</Text>
+                </TouchableOpacity>
+              ))}
             </Card>
           </View>
         )}
