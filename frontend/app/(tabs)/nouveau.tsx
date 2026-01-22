@@ -333,11 +333,13 @@ export default function NouveauDevisScreen() {
           const extra = extras.find(e => e.id === extraId);
           if (extra) {
             const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+            // Quantité selon l'unité
+            const quantite = (extra.unite === 'm²') ? totalSurface : 1;
             postes.push({
               categorie: 'peinture',
               reference_id: extra.id,
-              reference_nom: `Extra: ${extra.nom}`,
-              quantite: totalSurface,
+              reference_nom: extra.nom,
+              quantite,
               unite: extra.unite,
               prix_min: extra.cout_min,
               prix_max: extra.cout_max,
