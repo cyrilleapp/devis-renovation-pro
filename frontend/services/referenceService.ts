@@ -6,18 +6,18 @@ export const referenceService = {
     return response.data;
   },
 
-  async getCuisineElements() {
-    const response = await api.get('/references/cuisine/elements');
-    return response.data;
-  },
-
-  async getCuisineMateriaux() {
-    const response = await api.get('/references/cuisine/materiaux');
+  async getPlansTravail() {
+    const response = await api.get('/references/cuisine/plans-travail');
     return response.data;
   },
 
   async getCloisons() {
     const response = await api.get('/references/cloisons');
+    return response.data;
+  },
+
+  async getCloisonOptions() {
+    const response = await api.get('/references/cloisons/options');
     return response.data;
   },
 
@@ -28,6 +28,11 @@ export const referenceService = {
 
   async getParquets() {
     const response = await api.get('/references/parquets');
+    return response.data;
+  },
+
+  async getParquetPoses() {
+    const response = await api.get('/references/parquets/poses');
     return response.data;
   },
 
