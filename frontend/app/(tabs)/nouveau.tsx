@@ -515,7 +515,6 @@ export default function NouveauDevisScreen() {
           <TouchableOpacity
             style={styles.submitButton}
             onPress={() => {
-              Alert.alert('Test', 'Le bouton fonctionne !');
               console.log('BOUTON CLIQUÉ !');
               handleSubmit();
             }}
