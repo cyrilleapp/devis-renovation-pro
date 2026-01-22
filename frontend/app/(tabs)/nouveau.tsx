@@ -282,6 +282,7 @@ export default function NouveauDevisScreen() {
           padding: 20,
         }}
         onPress={() => Alert.alert('Test', 'BOUTON TEST FONCTIONNE')}
+        pointerEvents="auto"
       >
         <Text style={{ color: 'white', fontWeight: 'bold' }}>TEST</Text>
       </TouchableOpacity>
