@@ -52,7 +52,7 @@ export default function DevisDetailScreen() {
         return;
       }
       
-      const API_URL = 'https://quickbuild-app.preview.emergentagent.com';
+      const API_URL = 'https://renoquote-2.preview.emergentagent.com';
       const pdfUrl = `${API_URL}/api/devis/${id}/pdf`;
       
       // Create filename
