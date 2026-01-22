@@ -32,104 +32,98 @@ REF_CUISINE_TYPES = [
     }
 ]
 
-REF_CUISINE_ELEMENTS = [
-    {"id": generate_id(), "nom": "Meuble haut (pose)", "tarif_min": 60, "tarif_max": 60, "unite": "€/unité"},
-    {"id": generate_id(), "nom": "Meuble bas (pose)", "tarif_min": 35, "tarif_max": 85, "unite": "€/m linéaire"},
-    {"id": generate_id(), "nom": "Évier + robinet (installation)", "tarif_min": 170, "tarif_max": 340, "unite": "€/pose"},
-    {"id": generate_id(), "nom": "Plaque de cuisson (installation)", "tarif_min": 50, "tarif_max": 50, "unite": "€/pose"},
-    {"id": generate_id(), "nom": "Hotte (installation)", "tarif_min": 70, "tarif_max": 300, "unite": "€/pose"},
-    {"id": generate_id(), "nom": "Appareil électroménager (installation)", "tarif_min": 40, "tarif_max": 40, "unite": "€/appareil"},
-    {"id": generate_id(), "nom": "Plan de travail (installation)", "tarif_min": 60, "tarif_max": 60, "unite": "€/m linéaire"},
-]
-
-REF_CUISINE_MATERIAUX = [
-    {"id": generate_id(), "nom": "Stratifié", "cout_min": 150, "cout_max": 600, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Bois", "cout_min": 300, "cout_max": 650, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Granite", "cout_min": 600, "cout_max": 800, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Quartz", "cout_min": 250, "cout_max": 450, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Marbre", "cout_min": 300, "cout_max": 600, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Céramique", "cout_min": 250, "cout_max": 600, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Résine", "cout_min": 250, "cout_max": 500, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Carrelage", "cout_min": 30, "cout_max": 150, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Béton", "cout_min": 200, "cout_max": 400, "unite": "€/m²"},
+# Plan de travail cuisine (nouveau)
+REF_PLANS_TRAVAIL = [
+    {"id": generate_id(), "nom": "Stratifié", "pose_seule_min": 50, "pose_seule_max": 90, "fourniture_pose_min": 70, "fourniture_pose_max": 150, "unite": "m²"},
+    {"id": generate_id(), "nom": "Bois", "pose_seule_min": 70, "pose_seule_max": 100, "fourniture_pose_min": 120, "fourniture_pose_max": 300, "unite": "m²"},
+    {"id": generate_id(), "nom": "Granite", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
+    {"id": generate_id(), "nom": "Quartz", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 400, "fourniture_pose_max": 650, "unite": "m²"},
+    {"id": generate_id(), "nom": "Marbre", "pose_seule_min": 200, "pose_seule_max": 200, "fourniture_pose_min": 500, "fourniture_pose_max": 800, "unite": "m²"},
+    {"id": generate_id(), "nom": "Céramique", "pose_seule_min": 200, "pose_seule_max": 200, "fourniture_pose_min": 600, "fourniture_pose_max": 1000, "unite": "m²"},
+    {"id": generate_id(), "nom": "Résine", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 400, "fourniture_pose_max": 700, "unite": "m²"},
+    {"id": generate_id(), "nom": "Carrelage", "pose_seule_min": 50, "pose_seule_max": 100, "fourniture_pose_min": 80, "fourniture_pose_max": 250, "unite": "m²"},
+    {"id": generate_id(), "nom": "Béton", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
 ]
 
 # ==================== CLOISON ====================
 REF_CLOISONS = [
     {
         "id": generate_id(),
-        "nom": "Plaque de plâtre standard",
+        "nom": "Plaque de plâtre",
         "fourniture_min": 10,
-        "fourniture_max": 15,
-        "pose_incluse_min": 40,
+        "fourniture_max": 25,
+        "pose_incluse_min": 30,
         "pose_incluse_max": 80,
-        "pose_seule_min": 30,
-        "pose_seule_max": 65,
-        "unite": "m²"
-    },
-    {
-        "id": generate_id(),
-        "nom": "Plaque hydrofuge",
-        "fourniture_min": 12,
-        "fourniture_max": 18,
-        "pose_incluse_min": 42,
-        "pose_incluse_max": 83,
-        "pose_seule_min": 30,
-        "pose_seule_max": 65,
-        "unite": "m²"
-    },
-    {
-        "id": generate_id(),
-        "nom": "Plaque coupe-feu",
-        "fourniture_min": 13,
-        "fourniture_max": 20,
-        "pose_incluse_min": 43,
-        "pose_incluse_max": 85,
-        "pose_seule_min": 30,
-        "pose_seule_max": 65,
+        "pose_seule_min": 40,
+        "pose_seule_max": 90,
         "unite": "m²"
     },
     {
         "id": generate_id(),
         "nom": "Cloison en bois",
         "fourniture_min": 25,
-        "fourniture_max": 120,
-        "pose_incluse_min": 40,
-        "pose_incluse_max": 200,
-        "pose_seule_min": 20,
-        "pose_seule_max": 120,
+        "fourniture_max": 60,
+        "pose_incluse_min": 60,
+        "pose_incluse_max": 120,
+        "pose_seule_min": 40,
+        "pose_seule_max": 70,
         "unite": "m²"
     },
     {
         "id": generate_id(),
         "nom": "Béton cellulaire",
-        "fourniture_min": 60,
-        "fourniture_max": 120,
-        "pose_incluse_min": 80,
-        "pose_incluse_max": 160,
-        "pose_seule_min": 20,
-        "pose_seule_max": 40,
+        "fourniture_min": 20,
+        "fourniture_max": 45,
+        "pose_incluse_min": 40,
+        "pose_incluse_max": 90,
+        "pose_seule_min": 80,
+        "pose_seule_max": 160,
+        "unite": "m²"
+    },
+    {
+        "id": generate_id(),
+        "nom": "Briques de verre",
+        "fourniture_min": 40,
+        "fourniture_max": 70,
+        "pose_incluse_min": 70,
+        "pose_incluse_max": 200,
+        "pose_seule_min": 120,
+        "pose_seule_max": 300,
+        "unite": "m²"
+    },
+    {
+        "id": generate_id(),
+        "nom": "Cloison amovible",
+        "fourniture_min": 50,
+        "fourniture_max": 100,
+        "pose_incluse_min": 150,
+        "pose_incluse_max": 500,
+        "pose_seule_min": 250,
+        "pose_seule_max": 700,
         "unite": "m²"
     },
 ]
 
+# Options cloison (visibles uniquement si Pose + Fourniture)
+REF_CLOISON_OPTIONS = [
+    {"id": generate_id(), "nom": "Supplément hydrofuge", "supplement_min": 0, "supplement_max": 0, "description": "Placo hydrofuge pour pièces humides", "unite": "m²"},
+    {"id": generate_id(), "nom": "Supplément phonique", "supplement_min": 5, "supplement_max": 5, "description": "Placo acoustique pour réduction des bruits", "unite": "m²"},
+    {"id": generate_id(), "nom": "Supplément coupe-feu", "supplement_min": 10, "supplement_max": 15, "description": "Placo ignifugé retardant la propagation du feu", "unite": "m²"},
+    {"id": generate_id(), "nom": "Supplément isolation", "supplement_min": 15, "supplement_max": 20, "description": "Isolation intérieure (matériau + main d'œuvre)", "unite": "m²"},
+    {"id": generate_id(), "nom": "Supplément doublage mur", "supplement_min": 3, "supplement_max": 10, "description": "Doublage mural avec isolant", "unite": "m²"},
+    {"id": generate_id(), "nom": "Supplément double peau", "supplement_min": 20, "supplement_max": 25, "description": "Double épaisseur de placo", "unite": "m²"},
+]
+
 # ==================== PEINTURE ====================
 REF_PEINTURES = [
-    # Support (pose)
-    {"id": generate_id(), "nom": "Peinture mur", "type": "support", "prix_min": 40, "prix_max": 50, "unite": "m²"},
+    # Support (pose) - tarifs mis à jour
+    {"id": generate_id(), "nom": "Peinture mur", "type": "support", "prix_min": 20, "prix_max": 30, "unite": "m²"},
     {"id": generate_id(), "nom": "Peinture plafond", "type": "support", "prix_min": 25, "prix_max": 50, "unite": "m²"},
-    # Types de peinture (fourniture)
-    {"id": generate_id(), "nom": "Peinture velours", "type": "peinture", "prix_min": 20, "prix_max": 20, "unite": "L"},
-    {"id": generate_id(), "nom": "Peinture satin/brillante", "type": "peinture", "prix_min": 13, "prix_max": 13, "unite": "L"},
-    {"id": generate_id(), "nom": "Peinture plafond (fourniture)", "type": "peinture", "prix_min": 18, "prix_max": 18, "unite": "L"},
-    {"id": generate_id(), "nom": "Peinture extérieure", "type": "peinture", "prix_min": 35, "prix_max": 35, "unite": "L"},
-    {"id": generate_id(), "nom": "Peinture sol", "type": "peinture", "prix_min": 15, "prix_max": 35, "unite": "L"},
-    {"id": generate_id(), "nom": "Peinture radiateur", "type": "peinture", "prix_min": 30, "prix_max": 30, "unite": "L"},
 ]
 
 # ==================== PARQUET ====================
 REF_PARQUETS = [
-    # Stratifié AC1-AC5 avec fourniture ET pose séparées
+    # Stratifié AC1-AC5
     {
         "id": generate_id(),
         "nom": "Stratifié AC1",
@@ -137,8 +131,6 @@ REF_PARQUETS = [
         "classe_ac": "AC1",
         "fourniture_min": 4,
         "fourniture_max": 6,
-        "pose_incluse_min": 24,
-        "pose_incluse_max": 46,
         "unite": "m²"
     },
     {
@@ -148,8 +140,6 @@ REF_PARQUETS = [
         "classe_ac": "AC2",
         "fourniture_min": 7,
         "fourniture_max": 13,
-        "pose_incluse_min": 27,
-        "pose_incluse_max": 53,
         "unite": "m²"
     },
     {
@@ -159,8 +149,6 @@ REF_PARQUETS = [
         "classe_ac": "AC3",
         "fourniture_min": 10,
         "fourniture_max": 20,
-        "pose_incluse_min": 30,
-        "pose_incluse_max": 60,
         "unite": "m²"
     },
     {
@@ -170,8 +158,6 @@ REF_PARQUETS = [
         "classe_ac": "AC4",
         "fourniture_min": 15,
         "fourniture_max": 30,
-        "pose_incluse_min": 35,
-        "pose_incluse_max": 70,
         "unite": "m²"
     },
     {
@@ -181,8 +167,6 @@ REF_PARQUETS = [
         "classe_ac": "AC5",
         "fourniture_min": 20,
         "fourniture_max": 45,
-        "pose_incluse_min": 40,
-        "pose_incluse_max": 85,
         "unite": "m²"
     },
     # Autres types
@@ -193,8 +177,6 @@ REF_PARQUETS = [
         "classe_ac": None,
         "fourniture_min": 20,
         "fourniture_max": 120,
-        "pose_incluse_min": 52,
-        "pose_incluse_max": 215,
         "unite": "m²"
     },
     {
@@ -204,10 +186,15 @@ REF_PARQUETS = [
         "classe_ac": None,
         "fourniture_min": 30,
         "fourniture_max": 150,
-        "pose_incluse_min": 69,
-        "pose_incluse_max": 340,
         "unite": "m²"
     },
+]
+
+# Types de pose parquet (nouveau)
+REF_PARQUET_POSES = [
+    {"id": generate_id(), "nom": "Pose flottante", "prix_min": 20, "prix_max": 40, "unite": "m²"},
+    {"id": generate_id(), "nom": "Pose collée", "prix_min": 30, "prix_max": 50, "unite": "m²"},
+    {"id": generate_id(), "nom": "Pose clouée", "prix_min": 40, "prix_max": 60, "unite": "m²"},
 ]
 
 # ==================== TAUX HORAIRES PROFESSIONNELS ====================
@@ -216,6 +203,8 @@ REF_PROFESSIONNELS = [
     {"id": generate_id(), "categorie": "parquet", "nom": "Parqueteur / Menuisier", "tarif_min": 20, "tarif_max": 30, "unite": "€/h"},
     # Peinture
     {"id": generate_id(), "categorie": "peinture", "nom": "Peintre", "tarif_min": 20, "tarif_max": 70, "unite": "€/h"},
+    # Cloison
+    {"id": generate_id(), "categorie": "cloison", "nom": "Plaquiste", "tarif_min": 30, "tarif_max": 60, "unite": "€/h"},
     # Cuisine
     {"id": generate_id(), "categorie": "cuisine", "nom": "Artisan indépendant (horaire)", "tarif_min": 30, "tarif_max": 50, "unite": "€/h"},
     {"id": generate_id(), "categorie": "cuisine", "nom": "Artisan indépendant (pose complète)", "tarif_min": 1000, "tarif_max": 4000, "unite": "€/prestation"},
@@ -303,7 +292,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "cuisine",
         "nom": "Électroménager (installation)",
-        "description": "Mise en service appareil électroménager",
+        "description": "Mise en service appareil électroménager (hors hotte et plaque)",
         "cout_min": 40,
         "cout_max": 40,
         "unite": "appareil"
@@ -315,8 +304,8 @@ REF_EXTRAS = [
         "categorie": "cloison",
         "nom": "Modification électrique",
         "description": "Ajout prise ou interrupteur",
-        "cout_min": 300,
-        "cout_max": 400,
+        "cout_min": 60,
+        "cout_max": 120,
         "unite": "point"
     },
     {
@@ -324,44 +313,35 @@ REF_EXTRAS = [
         "categorie": "cloison",
         "nom": "Bloc-porte intérieur",
         "description": "Fourniture + pose bloc-porte",
-        "cout_min": 150,
-        "cout_max": 350,
-        "unite": "pièce"
+        "cout_min": 80,
+        "cout_max": 300,
+        "unite": "unité"
     },
     {
         "id": generate_id(),
         "categorie": "cloison",
         "nom": "Pose chassis porte coulissante",
         "description": "Installation chassis à galandage",
-        "cout_min": 400,
-        "cout_max": 800,
+        "cout_min": 15,
+        "cout_max": 35,
         "unite": "pièce"
+    },
+    {
+        "id": generate_id(),
+        "categorie": "cloison",
+        "nom": "Enduits/joints et finitions",
+        "description": "Bandes, ponçage pour cloison",
+        "cout_min": 10,
+        "cout_max": 30,
+        "unite": "m²"
     },
     
     # === PEINTURE ===
     {
         "id": generate_id(),
         "categorie": "peinture",
-        "nom": "Travaux de préparation",
-        "description": "Dépose, ragréage, réparation",
-        "cout_min": 30,
-        "cout_max": 120,
-        "unite": "m²"
-    },
-    {
-        "id": generate_id(),
-        "categorie": "peinture",
-        "nom": "Enduits/joints et finitions",
-        "description": "Bandes, ponçage",
-        "cout_min": 15,
-        "cout_max": 35,
-        "unite": "m²"
-    },
-    {
-        "id": generate_id(),
-        "categorie": "peinture",
-        "nom": "Protection et nettoyage",
-        "description": "Nettoyage du chantier",
+        "nom": "Supplément préparation murs à rénover",
+        "description": "Travaux lourds de préparation pour murs abîmés",
         "cout_min": 10,
         "cout_max": 30,
         "unite": "m²"
@@ -371,8 +351,8 @@ REF_EXTRAS = [
         "categorie": "peinture",
         "nom": "Pose de papier peint",
         "description": "Pose des rouleaux (main d'œuvre)",
-        "cout_min": 25,
-        "cout_max": 35,
+        "cout_min": 6,
+        "cout_max": 6,
         "unite": "m²"
     },
     {
@@ -380,8 +360,8 @@ REF_EXTRAS = [
         "categorie": "peinture",
         "nom": "Pose parement décoratif",
         "description": "Pierre, brique, PVC",
-        "cout_min": 30,
-        "cout_max": 80,
+        "cout_min": 5,
+        "cout_max": 15,
         "unite": "m²"
     },
     
