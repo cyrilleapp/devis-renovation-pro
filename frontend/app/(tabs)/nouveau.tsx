@@ -272,21 +272,6 @@ export default function NouveauDevisScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <TouchableOpacity
-        style={{
-          position: 'absolute',
-          top: 10,
-          right: 10,
-          zIndex: 9999,
-          backgroundColor: 'red',
-          padding: 20,
-        }}
-        onPress={() => Alert.alert('Test', 'BOUTON TEST FONCTIONNE')}
-        pointerEvents="auto"
-      >
-        <Text style={{ color: 'white', fontWeight: 'bold' }}>TEST</Text>
-      </TouchableOpacity>
-      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Informations générales</Text>
