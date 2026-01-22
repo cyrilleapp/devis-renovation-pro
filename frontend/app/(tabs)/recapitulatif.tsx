@@ -17,6 +17,7 @@ import { useDevisStore } from '../../store/devisStore';
 export default function RecapitulatifScreen() {
   const router = useRouter();
   const { formData, clearFormData } = useDevisStore();
+  const { isAuthenticated } = useAuthStore();
   
   const [postes, setPostes] = useState<PosteCreate[]>([]);
   const [loading, setLoading] = useState(false);
