@@ -270,7 +270,7 @@ export default function NouveauDevisScreen() {
           postes.push({
             categorie: 'peinture',
             reference_id: type.id,
-            reference_nom: `${type.nom} (mur)`,
+            reference_nom: `${type.nom}`,
             quantite: parseFloat(peintureData.quantite_mur),
             unite: type.unite,
             prix_min: type.prix_min,
@@ -290,7 +290,7 @@ export default function NouveauDevisScreen() {
           postes.push({
             categorie: 'peinture',
             reference_id: type.id,
-            reference_nom: `${type.nom} (plafond)`,
+            reference_nom: `${type.nom}`,
             quantite: parseFloat(peintureData.quantite_plafond),
             unite: type.unite,
             prix_min: type.prix_min,
@@ -299,6 +299,28 @@ export default function NouveauDevisScreen() {
             prix_ajuste: prix_default,
           });
         }
+      }
+      
+      // Ajouter les extras peinture sélectionnés
+      if (hasAtLeastOne) {
+        const totalSurface = (parseFloat(peintureData.quantite_mur) || 0) + (parseFloat(peintureData.quantite_plafond) || 0);
+        peintureData.extras.forEach(extraId => {
+          const extra = extras.find(e => e.id === extraId);
+          if (extra) {
+            const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+            postes.push({
+              categorie: 'peinture',
+              reference_id: extra.id,
+              reference_nom: `Extra: ${extra.nom}`,
+              quantite: totalSurface,
+              unite: extra.unite,
+              prix_min: extra.cout_min,
+              prix_max: extra.cout_max,
+              prix_default: extra_prix_default,
+              prix_ajuste: extra_prix_default,
+            });
+          }
+        });
       }
       
       if (!hasAtLeastOne) {
