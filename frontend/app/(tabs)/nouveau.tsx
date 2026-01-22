@@ -71,16 +71,18 @@ export default function NouveauDevisScreen() {
 
   const loadReferenceData = async () => {
     try {
-      const [cuisineTypesData, cloisonsData, peinturesData, parquetsData] = await Promise.all([
+      const [cuisineTypesData, cloisonsData, peinturesData, parquetsData, extrasData] = await Promise.all([
         referenceService.getCuisineTypes(),
         referenceService.getCloisons(),
         referenceService.getPeintures(),
         referenceService.getParquets(),
+        referenceService.getExtras(),
       ]);
       setCuisineTypes(cuisineTypesData);
       setCloisons(cloisonsData);
       setPeintures(peinturesData.filter((p: any) => p.type === 'support'));
       setParquets(parquetsData);
+      setExtras(extrasData);
     } catch (error) {
       console.error('Error loading reference data:', error);
     }
