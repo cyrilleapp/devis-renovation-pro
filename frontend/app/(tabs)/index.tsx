@@ -24,18 +24,24 @@ export default function HomeScreen() {
   const loadRecentDevis = async () => {
     try {
       setLoading(true);
-      const data = await devisService.list();
-      setRecentDevis(data.slice(0, 3));
+      // Only load if authenticated
+      if (user) {
+        const data = await devisService.list();
+        setRecentDevis(data.slice(0, 3));
+      }
     } catch (error) {
       console.error('Error loading devis:', error);
+      // Don't show error for unauthenticated users
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadRecentDevis();
-  }, []);
+    if (user) {
+      loadRecentDevis();
+    }
+  }, [user]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
