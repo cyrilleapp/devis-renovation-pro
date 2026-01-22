@@ -258,15 +258,18 @@ export default function NouveauDevisScreen() {
           }
           
           // Ajouter les extras sélectionnés
+          const surfaceCloison = parseFloat(cloisonData.quantite);
           cloisonData.extras.forEach(extraId => {
             const extra = extras.find(e => e.id === extraId);
             if (extra) {
               const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+              // Les extras cloison sont généralement par pièce ou par point
+              const quantite = (extra.unite === 'm²') ? surfaceCloison : 1;
               postes.push({
                 categorie: 'cloison',
                 reference_id: extra.id,
-                reference_nom: `Extra: ${extra.nom}`,
-                quantite: 1,
+                reference_nom: extra.nom,
+                quantite,
                 unite: extra.unite,
                 prix_min: extra.cout_min,
                 prix_max: extra.cout_max,
