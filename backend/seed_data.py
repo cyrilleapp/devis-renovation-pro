@@ -33,8 +33,8 @@ REF_CUISINE_TYPES = [
 ]
 
 REF_CUISINE_ELEMENTS = [
-    {"id": generate_id(), "nom": "Meuble haut", "tarif_min": 60, "tarif_max": 60, "unite": "€/unité"},
-    {"id": generate_id(), "nom": "Meuble bas", "tarif_min": 35, "tarif_max": 85, "unite": "€/m linéaire"},
+    {"id": generate_id(), "nom": "Meuble haut (pose)", "tarif_min": 60, "tarif_max": 60, "unite": "€/unité"},
+    {"id": generate_id(), "nom": "Meuble bas (pose)", "tarif_min": 35, "tarif_max": 85, "unite": "€/m linéaire"},
     {"id": generate_id(), "nom": "Évier + robinet (installation)", "tarif_min": 170, "tarif_max": 340, "unite": "€/pose"},
     {"id": generate_id(), "nom": "Plaque de cuisson (installation)", "tarif_min": 50, "tarif_max": 50, "unite": "€/pose"},
     {"id": generate_id(), "nom": "Hotte (installation)", "tarif_min": 70, "tarif_max": 300, "unite": "€/pose"},
@@ -121,7 +121,7 @@ REF_PEINTURES = [
     # Types de peinture (fourniture)
     {"id": generate_id(), "nom": "Peinture velours", "type": "peinture", "prix_min": 20, "prix_max": 20, "unite": "€/L"},
     {"id": generate_id(), "nom": "Peinture satin/brillante", "type": "peinture", "prix_min": 13, "prix_max": 13, "unite": "€/L"},
-    {"id": generate_id(), "nom": "Peinture plafond", "type": "peinture", "prix_min": 18, "prix_max": 18, "unite": "€/L"},
+    {"id": generate_id(), "nom": "Peinture plafond (fourniture)", "type": "peinture", "prix_min": 18, "prix_max": 18, "unite": "€/L"},
     {"id": generate_id(), "nom": "Peinture extérieure", "type": "peinture", "prix_min": 35, "prix_max": 35, "unite": "€/L"},
     {"id": generate_id(), "nom": "Peinture sol", "type": "peinture", "prix_min": 15, "prix_max": 35, "unite": "€/L"},
     {"id": generate_id(), "nom": "Peinture radiateur", "type": "peinture", "prix_min": 30, "prix_max": 30, "unite": "€/L"},
@@ -210,6 +210,20 @@ REF_PARQUETS = [
     },
 ]
 
+# ==================== TAUX HORAIRES PROFESSIONNELS ====================
+REF_PROFESSIONNELS = [
+    # Parquet
+    {"id": generate_id(), "categorie": "parquet", "nom": "Parqueteur / Menuisier", "tarif_min": 20, "tarif_max": 30, "unite": "€/h"},
+    # Peinture
+    {"id": generate_id(), "categorie": "peinture", "nom": "Peintre", "tarif_min": 20, "tarif_max": 70, "unite": "€/h"},
+    # Cuisine
+    {"id": generate_id(), "categorie": "cuisine", "nom": "Artisan indépendant (horaire)", "tarif_min": 30, "tarif_max": 50, "unite": "€/h"},
+    {"id": generate_id(), "categorie": "cuisine", "nom": "Artisan indépendant (pose complète)", "tarif_min": 1000, "tarif_max": 4000, "unite": "€/prestation"},
+    {"id": generate_id(), "categorie": "cuisine", "nom": "Enseigne d'ameublement", "tarif_min": 400, "tarif_max": 650, "unite": "€/prestation"},
+    {"id": generate_id(), "categorie": "cuisine", "nom": "Cuisiniste", "tarif_min": 500, "tarif_max": 750, "unite": "€/prestation"},
+    {"id": generate_id(), "categorie": "cuisine", "nom": "Entreprise spécialisée", "tarif_min": 3000, "tarif_max": 8000, "unite": "€/prestation"},
+]
+
 # ==================== EXTRAS ====================
 REF_EXTRAS = [
     # === CUISINE ===
@@ -226,7 +240,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "cuisine",
         "nom": "Pose crédence",
-        "description": "Installation crédence",
+        "description": "Installation crédence (hors fourniture)",
         "cout_min": 16,
         "cout_max": 115,
         "unite": "€/m²"
@@ -244,10 +258,55 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "cuisine",
         "nom": "Raccordements électricité/plomberie (complets)",
-        "description": "Installation complète",
+        "description": "Installation complète électricité + plomberie",
         "cout_min": 200,
         "cout_max": 300,
         "unite": "€/prestation"
+    },
+    {
+        "id": generate_id(),
+        "categorie": "cuisine",
+        "nom": "Meuble haut supplémentaire",
+        "description": "Pose unitaire meuble haut",
+        "cout_min": 60,
+        "cout_max": 60,
+        "unite": "€/unité"
+    },
+    {
+        "id": generate_id(),
+        "categorie": "cuisine",
+        "nom": "Évier + robinet (installation)",
+        "description": "Mise en service évier et robinetterie",
+        "cout_min": 170,
+        "cout_max": 340,
+        "unite": "€/pose"
+    },
+    {
+        "id": generate_id(),
+        "categorie": "cuisine",
+        "nom": "Plaque de cuisson (installation)",
+        "description": "Installation plaque de cuisson",
+        "cout_min": 50,
+        "cout_max": 50,
+        "unite": "€/pose"
+    },
+    {
+        "id": generate_id(),
+        "categorie": "cuisine",
+        "nom": "Hotte (installation)",
+        "description": "Installation hotte aspirante",
+        "cout_min": 70,
+        "cout_max": 300,
+        "unite": "€/pose"
+    },
+    {
+        "id": generate_id(),
+        "categorie": "cuisine",
+        "nom": "Électroménager (installation)",
+        "description": "Mise en service appareil électroménager",
+        "cout_min": 40,
+        "cout_max": 40,
+        "unite": "€/appareil"
     },
     
     # === CLOISON ===
@@ -255,7 +314,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "cloison",
         "nom": "Modification électrique",
-        "description": "Prise, interrupteur",
+        "description": "Ajout prise ou interrupteur",
         "cout_min": 300,
         "cout_max": 400,
         "unite": "€/point"
@@ -264,7 +323,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "cloison",
         "nom": "Bloc-porte intérieur",
-        "description": "Fourniture bloc-porte",
+        "description": "Fourniture + pose bloc-porte",
         "cout_min": 150,
         "cout_max": 350,
         "unite": "€/pièce"
@@ -273,7 +332,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "cloison",
         "nom": "Pose chassis porte coulissante",
-        "description": "Installation chassis",
+        "description": "Installation chassis à galandage",
         "cout_min": 400,
         "cout_max": 800,
         "unite": "€/pièce"
@@ -320,7 +379,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "peinture",
         "nom": "Pose de papier peint",
-        "description": "Pose des rouleaux",
+        "description": "Pose des rouleaux (main d'œuvre)",
         "cout_min": 25,
         "cout_max": 35,
         "unite": "€/m²"
@@ -349,7 +408,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Ragréage",
-        "description": "Préparation sol",
+        "description": "Préparation et nivellement du sol",
         "cout_min": 15,
         "cout_max": 25,
         "unite": "€/m²"
@@ -366,7 +425,7 @@ REF_EXTRAS = [
     {
         "id": generate_id(),
         "categorie": "parquet",
-        "nom": "Plinthes en bois massif",
+        "nom": "Plinthes / Quarts-de-rond",
         "description": "Finition périmètre",
         "cout_min": 3,
         "cout_max": 4,
@@ -376,7 +435,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Ponçage préalable",
-        "description": "Rénovation",
+        "description": "Rénovation parquet existant",
         "cout_min": 15,
         "cout_max": 35,
         "unite": "€/m²"
@@ -385,7 +444,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Teinte avant finition",
-        "description": "Coloration bois",
+        "description": "Coloration du bois",
         "cout_min": 12,
         "cout_max": 20,
         "unite": "€/m²"
@@ -394,7 +453,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Vieillissement de parquet",
-        "description": "Effet vieilli",
+        "description": "Effet vieilli/patiné",
         "cout_min": 60,
         "cout_max": 80,
         "unite": "€/m²"
@@ -403,7 +462,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Finition vitrifiée",
-        "description": "Protection vernis",
+        "description": "Protection par vitrification",
         "cout_min": 25,
         "cout_max": 50,
         "unite": "€/m²"
@@ -412,7 +471,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Finition huilée",
-        "description": "Protection huile",
+        "description": "Protection par huile",
         "cout_min": 20,
         "cout_max": 50,
         "unite": "€/m²"
@@ -421,7 +480,7 @@ REF_EXTRAS = [
         "id": generate_id(),
         "categorie": "parquet",
         "nom": "Finition cirée",
-        "description": "Protection cire",
+        "description": "Protection par cire",
         "cout_min": 30,
         "cout_max": 60,
         "unite": "€/m²"
@@ -429,8 +488,8 @@ REF_EXTRAS = [
     {
         "id": generate_id(),
         "categorie": "parquet",
-        "nom": "Pose flottante",
-        "description": "Installation flottante",
+        "nom": "Pose flottante (main d'œuvre)",
+        "description": "Installation pose flottante",
         "cout_min": 20,
         "cout_max": 40,
         "unite": "€/m²"
@@ -438,8 +497,8 @@ REF_EXTRAS = [
     {
         "id": generate_id(),
         "categorie": "parquet",
-        "nom": "Pose collée",
-        "description": "Installation collée",
+        "nom": "Pose collée (main d'œuvre)",
+        "description": "Installation pose collée",
         "cout_min": 30,
         "cout_max": 50,
         "unite": "€/m²"
@@ -447,8 +506,8 @@ REF_EXTRAS = [
     {
         "id": generate_id(),
         "categorie": "parquet",
-        "nom": "Pose clouée",
-        "description": "Installation clouée",
+        "nom": "Pose clouée (main d'œuvre)",
+        "description": "Installation pose clouée",
         "cout_min": 40,
         "cout_max": 60,
         "unite": "€/m²"
