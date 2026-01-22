@@ -54,16 +54,30 @@ export default function NouveauDevisScreen() {
   const [parquetData, setParquetData] = useState({ 
     quantite: '', 
     type: '',
+    type_pose: '', // ID du type de pose (flottante, collée, clouée)
     pose_et_fourniture: true, // true = Pose + Fourniture, false = Pose seule
-    sous_couche: false, // Option sous-couche pour stratifié
     extras: [] as string[],
   });
   
+  // Cuisine - Plan de travail
+  const [planTravailData, setPlanTravailData] = useState({
+    quantite: '',
+    type: '',
+    pose_et_fourniture: true,
+  });
+  
+  // Cuisine - Nombre d'appareils électroménagers
+  const [nbAppareils, setNbAppareils] = useState('1');
+  
   // Reference data
   const [cuisineTypes, setCuisineTypes] = useState<any[]>([]);
+  const [plansTravail, setPlansTravail] = useState<any[]>([]);
   const [cloisons, setCloisons] = useState<any[]>([]);
+  const [cloisonOptions, setCloisonOptions] = useState<any[]>([]);
+  const [selectedCloisonOptions, setSelectedCloisonOptions] = useState<string[]>([]);
   const [peintures, setPeintures] = useState<any[]>([]);
   const [parquets, setParquets] = useState<any[]>([]);
+  const [parquetPoses, setParquetPoses] = useState<any[]>([]);
   const [extras, setExtras] = useState<any[]>([]);
 
   useEffect(() => {
@@ -72,17 +86,32 @@ export default function NouveauDevisScreen() {
 
   const loadReferenceData = async () => {
     try {
-      const [cuisineTypesData, cloisonsData, peinturesData, parquetsData, extrasData] = await Promise.all([
+      const [
+        cuisineTypesData, 
+        plansTravailData,
+        cloisonsData, 
+        cloisonOptionsData,
+        peinturesData, 
+        parquetsData, 
+        parquetPosesData,
+        extrasData
+      ] = await Promise.all([
         referenceService.getCuisineTypes(),
+        referenceService.getPlansTravail(),
         referenceService.getCloisons(),
+        referenceService.getCloisonOptions(),
         referenceService.getPeintures(),
         referenceService.getParquets(),
+        referenceService.getParquetPoses(),
         referenceService.getExtras(),
       ]);
       setCuisineTypes(cuisineTypesData);
+      setPlansTravail(plansTravailData);
       setCloisons(cloisonsData);
+      setCloisonOptions(cloisonOptionsData);
       setPeintures(peinturesData.filter((p: any) => p.type === 'support'));
       setParquets(parquetsData);
+      setParquetPoses(parquetPosesData);
       setExtras(extrasData);
     } catch (error) {
       console.error('Error loading reference data:', error);
