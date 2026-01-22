@@ -532,6 +532,7 @@ export default function NouveauDevisScreen() {
               handleSubmit();
             }}
             activeOpacity={0.7}
+            pointerEvents="auto"
           >
             <Text style={styles.submitButtonText}>
               Continuer vers le récapitulatif
