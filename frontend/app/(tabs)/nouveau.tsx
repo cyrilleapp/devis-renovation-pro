@@ -604,6 +604,62 @@ export default function NouveauDevisScreen() {
                 placeholder="5"
               />
               
+              {/* Plan de travail */}
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Plan de travail (optionnel)</Text>
+              <View style={styles.typesList}>
+                {plansTravail.map((type) => (
+                  <TouchableOpacity
+                    key={type.id}
+                    style={[
+                      styles.typeButton,
+                      planTravailData.type === type.id && styles.typeButtonSelected,
+                    ]}
+                    onPress={() => setPlanTravailData({ ...planTravailData, type: type.id })}
+                  >
+                    <Text
+                      style={[
+                        styles.typeButtonText,
+                        planTravailData.type === type.id && styles.typeButtonTextSelected,
+                      ]}
+                    >
+                      {type.nom}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              
+              {planTravailData.type && (
+                <>
+                  <TouchableOpacity
+                    style={styles.switchContainer}
+                    onPress={() => setPlanTravailData({ ...planTravailData, pose_et_fourniture: !planTravailData.pose_et_fourniture })}
+                  >
+                    <Text style={styles.switchLabel}>
+                      {planTravailData.pose_et_fourniture ? 'Plan: Pose + Fourniture' : 'Plan: Pose seule'}
+                    </Text>
+                    <View style={[styles.switch, planTravailData.pose_et_fourniture && styles.switchActive]}>
+                      <View style={[styles.switchThumb, planTravailData.pose_et_fourniture && styles.switchThumbActive]} />
+                    </View>
+                  </TouchableOpacity>
+                  <Input
+                    label="Surface plan de travail (m²)"
+                    value={planTravailData.quantite}
+                    onChangeText={(value) => setPlanTravailData({ ...planTravailData, quantite: value })}
+                    keyboardType="numeric"
+                    placeholder="2"
+                  />
+                </>
+              )}
+              
+              {/* Nombre d'appareils électroménagers */}
+              <Input
+                label="Nombre d'appareils électroménagers (hors hotte et plaque)"
+                value={nbAppareils}
+                onChangeText={setNbAppareils}
+                keyboardType="numeric"
+                placeholder="1"
+              />
+              
               <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
               {extras.filter(e => e.categorie === 'cuisine').map((extra) => (
                 <TouchableOpacity
