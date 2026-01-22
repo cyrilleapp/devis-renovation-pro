@@ -160,50 +160,50 @@ async def get_current_user(user_id: str = Depends(get_current_user_id)):
 # ==================== REFERENCE DATA ROUTES ====================
 @api_router.get("/references/cuisine/types")
 async def get_cuisine_types():
-    items = await db.ref_cuisine_types.find().to_list(100)
+    items = await db.ref_cuisine_types.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/cuisine/plans-travail")
 async def get_plans_travail():
-    items = await db.ref_plans_travail.find().to_list(100)
+    items = await db.ref_plans_travail.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/cloisons")
 async def get_cloisons():
-    items = await db.ref_cloisons.find().to_list(100)
+    items = await db.ref_cloisons.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/cloisons/options")
 async def get_cloison_options():
-    items = await db.ref_cloison_options.find().to_list(100)
+    items = await db.ref_cloison_options.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/peintures")
 async def get_peintures():
-    items = await db.ref_peintures.find().to_list(100)
+    items = await db.ref_peintures.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/parquets")
 async def get_parquets():
-    items = await db.ref_parquets.find().to_list(100)
+    items = await db.ref_parquets.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/parquets/poses")
 async def get_parquet_poses():
-    items = await db.ref_parquet_poses.find().to_list(100)
+    items = await db.ref_parquet_poses.find({}, {"_id": 0}).to_list(100)
     return items
 
 
 @api_router.get("/references/extras")
 async def get_extras(categorie: Optional[str] = None):
     query = {"categorie": categorie} if categorie else {}
-    items = await db.ref_extras.find(query).to_list(100)
+    items = await db.ref_extras.find(query, {"_id": 0}).to_list(100)
     return items
 
 
