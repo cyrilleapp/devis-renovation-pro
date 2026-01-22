@@ -504,6 +504,20 @@ export default function NouveauDevisScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+              
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options</Text>
+              <TouchableOpacity
+                style={styles.switchContainer}
+                onPress={() => setCuisineData({ ...cuisineData, avec_pose: !cuisineData.avec_pose })}
+              >
+                <Text style={styles.switchLabel}>
+                  {cuisineData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'}
+                </Text>
+                <View style={[styles.switch, cuisineData.avec_pose && styles.switchActive]}>
+                  <View style={[styles.switchThumb, cuisineData.avec_pose && styles.switchThumbActive]} />
+                </View>
+              </TouchableOpacity>
+              
               <Input
                 label="Longueur (mètres linéaires)"
                 value={cuisineData.quantite}
@@ -511,6 +525,27 @@ export default function NouveauDevisScreen() {
                 keyboardType="numeric"
                 placeholder="5"
               />
+              
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
+              {extras.filter(e => e.categorie === 'cuisine').map((extra) => (
+                <TouchableOpacity
+                  key={extra.id}
+                  style={styles.checkboxContainer}
+                  onPress={() => {
+                    const newExtras = cuisineData.extras.includes(extra.id)
+                      ? cuisineData.extras.filter(id => id !== extra.id)
+                      : [...cuisineData.extras, extra.id];
+                    setCuisineData({ ...cuisineData, extras: newExtras });
+                  }}
+                >
+                  <View style={[styles.checkbox, cuisineData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                    {cuisineData.extras.includes(extra.id) && (
+                      <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.checkboxLabel}>{extra.nom}</Text>
+                </TouchableOpacity>
+              ))}
             </Card>
           </View>
         )}
