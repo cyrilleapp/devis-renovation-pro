@@ -35,13 +35,13 @@ export default function NouveauDevisScreen() {
   const [cuisineData, setCuisineData] = useState({ 
     quantite: '', 
     type: '',
-    avec_pose: true, // Fourniture + pose ou fourniture seule
+    pose_et_fourniture: true, // true = Pose + Fourniture, false = Pose seule
     extras: [] as string[], // IDs des extras sélectionnés
   });
   const [cloisonData, setCloisonData] = useState({ 
     quantite: '', 
     type: '',
-    avec_pose: true, // Fourniture + pose ou fourniture seule
+    pose_et_fourniture: true, // true = Pose + Fourniture, false = Pose seule
     extras: [] as string[],
   });
   const [peintureData, setPeintureData] = useState({ 
@@ -49,13 +49,12 @@ export default function NouveauDevisScreen() {
     quantite_plafond: '', 
     type_mur: '', 
     type_plafond: '',
-    avec_pose: true, // Fourniture + pose ou fourniture seule (inclut la main d'œuvre)
     extras: [] as string[],
   });
   const [parquetData, setParquetData] = useState({ 
     quantite: '', 
     type: '',
-    avec_pose: true, // Fourniture + pose ou fourniture seule
+    pose_et_fourniture: true, // true = Pose + Fourniture, false = Pose seule
     sous_couche: false, // Option sous-couche pour stratifié
     extras: [] as string[],
   });
