@@ -23,7 +23,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const response = await authService.login(email, password);
       await AsyncStorage.setItem('auth_token', response.access_token);
-      global.authToken = response.access_token;
       set({ user: response.user, token: response.access_token, isAuthenticated: true });
     } catch (error) {
       throw error;
@@ -34,7 +33,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const response = await authService.register(email, password, nom);
       await AsyncStorage.setItem('auth_token', response.access_token);
-      global.authToken = response.access_token;
       set({ user: response.user, token: response.access_token, isAuthenticated: true });
     } catch (error) {
       throw error;
@@ -43,7 +41,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async () => {
     await AsyncStorage.removeItem('auth_token');
-    global.authToken = null;
     set({ user: null, token: null, isAuthenticated: false });
   },
 
