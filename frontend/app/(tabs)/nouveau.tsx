@@ -63,6 +63,7 @@ export default function NouveauDevisScreen() {
   const [cloisons, setCloisons] = useState<any[]>([]);
   const [peintures, setPeintures] = useState<any[]>([]);
   const [parquets, setParquets] = useState<any[]>([]);
+  const [extras, setExtras] = useState<any[]>([]);
 
   useEffect(() => {
     loadReferenceData();
