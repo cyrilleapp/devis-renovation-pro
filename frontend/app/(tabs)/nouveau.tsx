@@ -832,20 +832,29 @@ export default function NouveauDevisScreen() {
                 </View>
               </TouchableOpacity>
               
-              {/* Sous-couche uniquement pour stratifié */}
-              {parquets.find(p => p.id === parquetData.type)?.type === 'stratifie' && (
-                <TouchableOpacity
-                  style={styles.switchContainer}
-                  onPress={() => setParquetData({ ...parquetData, sous_couche: !parquetData.sous_couche })}
-                >
-                  <Text style={styles.switchLabel}>
-                    Sous-couche isolante (0,5 - 9 €/m²)
-                  </Text>
-                  <View style={[styles.switch, parquetData.sous_couche && styles.switchActive]}>
-                    <View style={[styles.switchThumb, parquetData.sous_couche && styles.switchThumbActive]} />
-                  </View>
-                </TouchableOpacity>
-              )}
+              {/* Type de pose (obligatoire) */}
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Type de pose *</Text>
+              <View style={styles.typesList}>
+                {parquetPoses.map((pose) => (
+                  <TouchableOpacity
+                    key={pose.id}
+                    style={[
+                      styles.typeButton,
+                      parquetData.type_pose === pose.id && styles.typeButtonSelected,
+                    ]}
+                    onPress={() => setParquetData({ ...parquetData, type_pose: pose.id })}
+                  >
+                    <Text
+                      style={[
+                        styles.typeButtonText,
+                        parquetData.type_pose === pose.id && styles.typeButtonTextSelected,
+                      ]}
+                    >
+                      {pose.nom} ({pose.prix_min}-{pose.prix_max}€/m²)
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
               
               <Input
                 label="Surface (m²)"
