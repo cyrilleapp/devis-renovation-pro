@@ -349,22 +349,39 @@ export default function NouveauDevisScreen() {
       } else {
         const type = parquets.find((t) => t.id === parquetData.type);
         if (type) {
-          // Utiliser fourniture ou pose incluse selon l'option
-          const prix_min = parquetData.avec_pose ? type.pose_incluse_min : type.fourniture_min;
-          const prix_max = parquetData.avec_pose ? type.pose_incluse_max : type.fourniture_max;
-          const prix_default = (prix_min + prix_max) / 2;
-          
-          postes.push({
-            categorie: 'parquet',
-            reference_id: type.id,
-            reference_nom: `${type.nom} (${parquetData.avec_pose ? 'Fourniture + Pose' : 'Fourniture seule'})`,
-            quantite: parseFloat(parquetData.quantite),
-            unite: type.unite,
-            prix_min,
-            prix_max,
-            prix_default,
-            prix_ajuste: prix_default,
-          });
+          if (parquetData.pose_et_fourniture) {
+            // Pose + Fourniture = pose_incluse (matériel + pose)
+            const prix_min = type.pose_incluse_min;
+            const prix_max = type.pose_incluse_max;
+            const prix_default = (prix_min + prix_max) / 2;
+            postes.push({
+              categorie: 'parquet',
+              reference_id: type.id,
+              reference_nom: `${type.nom} (Pose + Fourniture)`,
+              quantite: parseFloat(parquetData.quantite),
+              unite: type.unite,
+              prix_min,
+              prix_max,
+              prix_default,
+              prix_ajuste: prix_default,
+            });
+          } else {
+            // Pose seule = pose_incluse - fourniture
+            const prix_min = type.pose_incluse_min - type.fourniture_max;
+            const prix_max = type.pose_incluse_max - type.fourniture_min;
+            const prix_default = (prix_min + prix_max) / 2;
+            postes.push({
+              categorie: 'parquet',
+              reference_id: type.id,
+              reference_nom: `${type.nom} (Pose seule)`,
+              quantite: parseFloat(parquetData.quantite),
+              unite: type.unite,
+              prix_min: Math.max(0, prix_min),
+              prix_max: Math.max(0, prix_max),
+              prix_default: Math.max(0, prix_default),
+              prix_ajuste: Math.max(0, prix_default),
+            });
+          }
           
           // Ajouter sous-couche si cochée et stratifié
           if (parquetData.sous_couche && type.type === 'stratifie') {
