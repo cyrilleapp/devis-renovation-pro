@@ -158,47 +158,53 @@ async def get_current_user(user_id: str = Depends(get_current_user_id)):
 
 
 # ==================== REFERENCE DATA ROUTES ====================
-@api_router.get("/references/cuisine/types", response_model=List[RefCuisineType])
+@api_router.get("/references/cuisine/types")
 async def get_cuisine_types():
     items = await db.ref_cuisine_types.find().to_list(100)
-    return [RefCuisineType(**item) for item in items]
+    return items
 
 
-@api_router.get("/references/cuisine/elements", response_model=List[RefCuisineElement])
-async def get_cuisine_elements():
-    items = await db.ref_cuisine_elements.find().to_list(100)
-    return [RefCuisineElement(**item) for item in items]
+@api_router.get("/references/cuisine/plans-travail")
+async def get_plans_travail():
+    items = await db.ref_plans_travail.find().to_list(100)
+    return items
 
 
-@api_router.get("/references/cuisine/materiaux", response_model=List[RefCuisineMateriau])
-async def get_cuisine_materiaux():
-    items = await db.ref_cuisine_materiaux.find().to_list(100)
-    return [RefCuisineMateriau(**item) for item in items]
-
-
-@api_router.get("/references/cloisons", response_model=List[RefCloison])
+@api_router.get("/references/cloisons")
 async def get_cloisons():
     items = await db.ref_cloisons.find().to_list(100)
-    return [RefCloison(**item) for item in items]
+    return items
 
 
-@api_router.get("/references/peintures", response_model=List[RefPeinture])
+@api_router.get("/references/cloisons/options")
+async def get_cloison_options():
+    items = await db.ref_cloison_options.find().to_list(100)
+    return items
+
+
+@api_router.get("/references/peintures")
 async def get_peintures():
     items = await db.ref_peintures.find().to_list(100)
-    return [RefPeinture(**item) for item in items]
+    return items
 
 
-@api_router.get("/references/parquets", response_model=List[RefParquet])
+@api_router.get("/references/parquets")
 async def get_parquets():
     items = await db.ref_parquets.find().to_list(100)
-    return [RefParquet(**item) for item in items]
+    return items
 
 
-@api_router.get("/references/extras", response_model=List[RefExtra])
+@api_router.get("/references/parquets/poses")
+async def get_parquet_poses():
+    items = await db.ref_parquet_poses.find().to_list(100)
+    return items
+
+
+@api_router.get("/references/extras")
 async def get_extras(categorie: Optional[str] = None):
     query = {"categorie": categorie} if categorie else {}
     items = await db.ref_extras.find(query).to_list(100)
-    return [RefExtra(**item) for item in items]
+    return items
 
 
 # ==================== DEVIS ROUTES ====================
