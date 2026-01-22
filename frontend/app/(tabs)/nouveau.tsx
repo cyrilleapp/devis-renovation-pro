@@ -755,6 +755,34 @@ export default function NouveauDevisScreen() {
                 </View>
               </TouchableOpacity>
               
+              {/* Options/Suppléments cloison (visibles uniquement si Pose + Fourniture) */}
+              {cloisonData.pose_et_fourniture && cloisonOptions.length > 0 && (
+                <>
+                  <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Suppléments matériau</Text>
+                  {cloisonOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={styles.checkboxContainer}
+                      onPress={() => {
+                        const newOptions = selectedCloisonOptions.includes(option.id)
+                          ? selectedCloisonOptions.filter(id => id !== option.id)
+                          : [...selectedCloisonOptions, option.id];
+                        setSelectedCloisonOptions(newOptions);
+                      }}
+                    >
+                      <View style={[styles.checkbox, selectedCloisonOptions.includes(option.id) && styles.checkboxChecked]}>
+                        {selectedCloisonOptions.includes(option.id) && (
+                          <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                        )}
+                      </View>
+                      <Text style={styles.checkboxLabel}>
+                        {option.nom} {option.supplement_max > 0 ? `(+${option.supplement_min}-${option.supplement_max}€/m²)` : ''}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </>
+              )}
+              
               <Input
                 label="Surface (m²)"
                 value={cloisonData.quantite}
