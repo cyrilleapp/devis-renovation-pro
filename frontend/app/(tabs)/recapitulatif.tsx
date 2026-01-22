@@ -50,6 +50,18 @@ export default function RecapitulatifScreen() {
   const handleCreate = async () => {
     if (!formData) return;
     
+    if (!isAuthenticated) {
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez vous connecter pour créer un devis',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/(auth)/login') }
+        ]
+      );
+      return;
+    }
+    
     setLoading(true);
     try {
       const devis = await devisService.create({
