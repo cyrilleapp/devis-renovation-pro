@@ -65,7 +65,7 @@ REF_CLOISONS = [
         "pose_incluse_max": 80,
         "pose_seule_min": 30,
         "pose_seule_max": 65,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -76,7 +76,7 @@ REF_CLOISONS = [
         "pose_incluse_max": 83,
         "pose_seule_min": 30,
         "pose_seule_max": 65,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -87,7 +87,7 @@ REF_CLOISONS = [
         "pose_incluse_max": 85,
         "pose_seule_min": 30,
         "pose_seule_max": 65,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -98,7 +98,7 @@ REF_CLOISONS = [
         "pose_incluse_max": 200,
         "pose_seule_min": 20,
         "pose_seule_max": 120,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -109,22 +109,22 @@ REF_CLOISONS = [
         "pose_incluse_max": 160,
         "pose_seule_min": 20,
         "pose_seule_max": 40,
-        "unite": "€/m²"
+        "unite": "m²"
     },
 ]
 
 # ==================== PEINTURE ====================
 REF_PEINTURES = [
     # Support (pose)
-    {"id": generate_id(), "nom": "Peinture mur", "type": "support", "prix_min": 40, "prix_max": 50, "unite": "€/m²"},
-    {"id": generate_id(), "nom": "Peinture plafond", "type": "support", "prix_min": 25, "prix_max": 50, "unite": "€/m²"},
+    {"id": generate_id(), "nom": "Peinture mur", "type": "support", "prix_min": 40, "prix_max": 50, "unite": "m²"},
+    {"id": generate_id(), "nom": "Peinture plafond", "type": "support", "prix_min": 25, "prix_max": 50, "unite": "m²"},
     # Types de peinture (fourniture)
-    {"id": generate_id(), "nom": "Peinture velours", "type": "peinture", "prix_min": 20, "prix_max": 20, "unite": "€/L"},
-    {"id": generate_id(), "nom": "Peinture satin/brillante", "type": "peinture", "prix_min": 13, "prix_max": 13, "unite": "€/L"},
-    {"id": generate_id(), "nom": "Peinture plafond (fourniture)", "type": "peinture", "prix_min": 18, "prix_max": 18, "unite": "€/L"},
-    {"id": generate_id(), "nom": "Peinture extérieure", "type": "peinture", "prix_min": 35, "prix_max": 35, "unite": "€/L"},
-    {"id": generate_id(), "nom": "Peinture sol", "type": "peinture", "prix_min": 15, "prix_max": 35, "unite": "€/L"},
-    {"id": generate_id(), "nom": "Peinture radiateur", "type": "peinture", "prix_min": 30, "prix_max": 30, "unite": "€/L"},
+    {"id": generate_id(), "nom": "Peinture velours", "type": "peinture", "prix_min": 20, "prix_max": 20, "unite": "L"},
+    {"id": generate_id(), "nom": "Peinture satin/brillante", "type": "peinture", "prix_min": 13, "prix_max": 13, "unite": "L"},
+    {"id": generate_id(), "nom": "Peinture plafond (fourniture)", "type": "peinture", "prix_min": 18, "prix_max": 18, "unite": "L"},
+    {"id": generate_id(), "nom": "Peinture extérieure", "type": "peinture", "prix_min": 35, "prix_max": 35, "unite": "L"},
+    {"id": generate_id(), "nom": "Peinture sol", "type": "peinture", "prix_min": 15, "prix_max": 35, "unite": "L"},
+    {"id": generate_id(), "nom": "Peinture radiateur", "type": "peinture", "prix_min": 30, "prix_max": 30, "unite": "L"},
 ]
 
 # ==================== PARQUET ====================
@@ -139,7 +139,7 @@ REF_PARQUETS = [
         "fourniture_max": 6,
         "pose_incluse_min": 24,
         "pose_incluse_max": 46,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -150,7 +150,7 @@ REF_PARQUETS = [
         "fourniture_max": 13,
         "pose_incluse_min": 27,
         "pose_incluse_max": 53,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -161,7 +161,7 @@ REF_PARQUETS = [
         "fourniture_max": 20,
         "pose_incluse_min": 30,
         "pose_incluse_max": 60,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -172,7 +172,7 @@ REF_PARQUETS = [
         "fourniture_max": 30,
         "pose_incluse_min": 35,
         "pose_incluse_max": 70,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -183,7 +183,7 @@ REF_PARQUETS = [
         "fourniture_max": 45,
         "pose_incluse_min": 40,
         "pose_incluse_max": 85,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     # Autres types
     {
@@ -195,7 +195,7 @@ REF_PARQUETS = [
         "fourniture_max": 120,
         "pose_incluse_min": 52,
         "pose_incluse_max": 215,
-        "unite": "€/m²"
+        "unite": "m²"
     },
     {
         "id": generate_id(),
@@ -206,7 +206,7 @@ REF_PARQUETS = [
         "fourniture_max": 150,
         "pose_incluse_min": 69,
         "pose_incluse_max": 340,
-        "unite": "€/m²"
+        "unite": "m²"
     },
 ]
 
