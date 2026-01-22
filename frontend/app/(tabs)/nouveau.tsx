@@ -155,16 +155,57 @@ export default function NouveauDevisScreen() {
           const prix_unitaire_min = type.cout_min / 5;
           const prix_unitaire_max = type.cout_max / 5;
           const prix_default = (prix_unitaire_min + prix_unitaire_max) / 2;
+          
+          // Fourniture cuisine
           postes.push({
             categorie: 'cuisine',
             reference_id: type.id,
-            reference_nom: type.nom,
+            reference_nom: `${type.nom} (Fourniture)`,
             quantite: parseFloat(cuisineData.quantite),
             unite: '€/m linéaire',
             prix_min: prix_unitaire_min,
             prix_max: prix_unitaire_max,
             prix_default,
             prix_ajuste: prix_default,
+          });
+          
+          // Pose cuisine si option activée
+          if (cuisineData.avec_pose) {
+            const pose_min = type.pose_min / 5;
+            const pose_max = type.pose_max / 5;
+            const pose_default = (pose_min + pose_max) / 2;
+            postes.push({
+              categorie: 'cuisine',
+              reference_id: type.id + '_pose',
+              reference_nom: `${type.nom} (Pose)`,
+              quantite: parseFloat(cuisineData.quantite),
+              unite: '€/m linéaire',
+              prix_min: pose_min,
+              prix_max: pose_max,
+              prix_default: pose_default,
+              prix_ajuste: pose_default,
+            });
+          }
+          
+          // Ajouter les extras cuisine sélectionnés
+          cuisineData.extras.forEach(extraId => {
+            const extra = extras.find(e => e.id === extraId);
+            if (extra) {
+              const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+              // Pour certains extras au m linéaire, utiliser la quantité
+              const quantite = extra.unite.includes('m linéaire') ? parseFloat(cuisineData.quantite) : 1;
+              postes.push({
+                categorie: 'cuisine',
+                reference_id: extra.id,
+                reference_nom: `Extra: ${extra.nom}`,
+                quantite,
+                unite: extra.unite,
+                prix_min: extra.cout_min,
+                prix_max: extra.cout_max,
+                prix_default: extra_prix_default,
+                prix_ajuste: extra_prix_default,
+              });
+            }
           });
         }
       }
