@@ -216,6 +216,8 @@ export default function NouveauDevisScreen() {
           
           // Ajouter les extras cuisine sélectionnés
           const longueurCuisine = parseFloat(cuisineData.quantite);
+          const nombreAppareils = parseInt(nbAppareils) || 1;
+          
           cuisineData.extras.forEach(extraId => {
             const extra = extras.find(e => e.id === extraId);
             if (extra) {
@@ -226,8 +228,10 @@ export default function NouveauDevisScreen() {
                 quantite = longueurCuisine;
               } else if (extra.unite === 'm²') {
                 quantite = longueurCuisine; // Surface approximative pour crédence
+              } else if (extra.unite === 'appareil') {
+                quantite = nombreAppareils; // Utiliser le nombre d'appareils saisi
               }
-              // sinon prestation, pose, unité, appareil, pièce, point = 1
+              // sinon prestation, pose, unité, pièce, point = 1
               
               postes.push({
                 categorie: 'cuisine',
@@ -242,6 +246,33 @@ export default function NouveauDevisScreen() {
               });
             }
           });
+          
+          // Ajouter le plan de travail si sélectionné
+          if (planTravailData.type && planTravailData.quantite) {
+            const planType = plansTravail.find(p => p.id === planTravailData.type);
+            if (planType) {
+              let prix_min, prix_max;
+              if (planTravailData.pose_et_fourniture) {
+                prix_min = planType.fourniture_pose_min;
+                prix_max = planType.fourniture_pose_max;
+              } else {
+                prix_min = planType.pose_seule_min;
+                prix_max = planType.pose_seule_max;
+              }
+              const prix_default = (prix_min + prix_max) / 2;
+              postes.push({
+                categorie: 'cuisine',
+                reference_id: planType.id,
+                reference_nom: `Plan de travail ${planType.nom} (${planTravailData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'})`,
+                quantite: parseFloat(planTravailData.quantite),
+                unite: planType.unite,
+                prix_min,
+                prix_max,
+                prix_default,
+                prix_ajuste: prix_default,
+              });
+            }
+          }
         }
       }
     }
