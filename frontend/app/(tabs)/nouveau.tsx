@@ -32,15 +32,31 @@ export default function NouveauDevisScreen() {
   const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   
   // Form data for each category
-  const [cuisineData, setCuisineData] = useState({ quantite: '', type: '' });
-  const [cloisonData, setCloisonData] = useState({ quantite: '', type: '' });
+  const [cuisineData, setCuisineData] = useState({ 
+    quantite: '', 
+    type: '',
+    extras: [] as string[], // IDs des extras sélectionnés
+  });
+  const [cloisonData, setCloisonData] = useState({ 
+    quantite: '', 
+    type: '',
+    avec_pose: true, // Fourniture + pose ou fourniture seule
+    extras: [] as string[],
+  });
   const [peintureData, setPeintureData] = useState({ 
     quantite_mur: '', 
     quantite_plafond: '', 
     type_mur: '', 
-    type_plafond: '' 
+    type_plafond: '',
+    extras: [] as string[],
   });
-  const [parquetData, setParquetData] = useState({ quantite: '', type: '' });
+  const [parquetData, setParquetData] = useState({ 
+    quantite: '', 
+    type: '',
+    avec_pose: true, // Fourniture + pose ou fourniture seule
+    sous_couche: false, // Option sous-couche pour stratifié
+    extras: [] as string[],
+  });
   
   // Reference data
   const [cuisineTypes, setCuisineTypes] = useState<any[]>([]);
