@@ -15,6 +15,7 @@ interface DevisFormData {
   client: ClientInfo;
   tvaTaux: number;
   postes: PosteCreate[];
+  editingDevisId?: string | null; // ID du devis en cours de modification
 }
 
 interface DevisStore {
