@@ -749,6 +749,8 @@ export default function NouveauDevisScreen() {
       tvaTaux: parseFloat(tvaTaux),
       postes,
       editingDevisId: editingDevisId, // Passer l'ID du devis si en mode modification
+      posesOffertes: posesOffertes, // Passer les extras offerts
+      planTravailPoseOfferte: planTravailData.pose_offerte, // Pose plan de travail offerte
     });
 
     // Navigate to recapitulatif
