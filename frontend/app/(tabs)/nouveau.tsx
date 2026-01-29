@@ -2033,4 +2033,66 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontStyle: 'italic',
   },
+  // Service styles
+  serviceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+  },
+  serviceTitle: {
+    fontSize: FontSize.md,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  serviceContent: {
+    paddingLeft: Spacing.lg + Spacing.sm,
+    paddingBottom: Spacing.md,
+  },
+  serviceDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  halfInput: {
+    flex: 1,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
+  },
+  sliderLabel: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+    marginTop: Spacing.xs,
+  },
+  calculResultBox: {
+    backgroundColor: Colors.background,
+    padding: Spacing.sm,
+    borderRadius: 8,
+    marginTop: Spacing.sm,
+  },
+  calculResultLabel: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginBottom: Spacing.xs,
+  },
+  debarrasTypeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.xs,
+    marginTop: Spacing.sm,
+  },
+  debarrasTypeLabel: {
+    fontSize: FontSize.sm,
+    color: Colors.text,
+  },
+  debarrasTypeContent: {
+    paddingLeft: Spacing.md + Spacing.sm,
+    paddingTop: Spacing.xs,
+  },
 });
