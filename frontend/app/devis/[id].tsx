@@ -219,21 +219,32 @@ export default function DevisDetailScreen() {
       })}
 
       <Card style={styles.totalsCard}>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total HT</Text>
-          <Text style={styles.totalValue}>{formatPrice(devis.total_ht)}</Text>
-        </View>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>TVA ({devis.tva_taux}%)</Text>
-          <Text style={styles.totalValue}>
-            {formatPrice(devis.total_ttc - devis.total_ht)}
-          </Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabelMain}>Total TTC</Text>
-          <Text style={styles.totalValueMain}>{formatPrice(devis.total_ttc)}</Text>
-        </View>
+        {/* Recalculer les totaux en excluant les postes offerts */}
+        {(() => {
+          const totalHT = devis.postes
+            .filter((p: any) => !p.offert)
+            .reduce((sum: number, p: any) => sum + (p.sous_total || 0), 0);
+          const totalTVA = totalHT * (devis.tva_taux / 100);
+          const totalTTC = totalHT + totalTVA;
+          
+          return (
+            <>
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>Total HT</Text>
+                <Text style={styles.totalValue}>{formatPrice(totalHT)}</Text>
+              </View>
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>TVA ({devis.tva_taux}%)</Text>
+                <Text style={styles.totalValue}>{formatPrice(totalTVA)}</Text>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabelMain}>Total TTC</Text>
+                <Text style={styles.totalValueMain}>{formatPrice(totalTTC)}</Text>
+              </View>
+            </>
+          );
+        })()}
       </Card>
 
       <View style={styles.actions}>
