@@ -234,6 +234,12 @@ export default function DevisDetailScreen() {
 
       <View style={styles.actions}>
         <Button
+          title="Modifier le devis"
+          onPress={handleEdit}
+          variant="outline"
+          style={styles.actionButton}
+        />
+        <Button
           title="Exporter en PDF"
           onPress={handleExportPDF}
           style={styles.actionButton}
