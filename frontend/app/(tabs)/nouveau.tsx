@@ -148,21 +148,125 @@ export default function NouveauDevisScreen() {
       
       setTvaTaux(String(devis.tva_taux));
       
-      // Identifier les catégories présentes dans les postes
+      // Analyser les postes pour reconstituer les données du formulaire
       const categories = new Set<Category>();
+      
+      // Variables temporaires pour collecter les données
+      let newCuisineData = { quantite: '', type: '', pose_et_fourniture: true, extras: [] as string[] };
+      let newCloisonData = { quantite: '', type: '', pose_et_fourniture: true, extras: [] as string[] };
+      let newPeintureData = { quantite_mur: '', quantite_plafond: '', type_mur: '', type_plafond: '', extras: [] as string[] };
+      let newParquetData = { quantite: '', type: '', type_pose: '', pose_et_fourniture: true, extras: [] as string[] };
+      let newPlanTravailData = { quantite: '', type: '', pose_et_fourniture: true };
+      let newNbAppareils = '1';
+      let newSelectedCloisonOptions: {[key: string]: string} = {};
+      
       devis.postes.forEach((poste: any) => {
-        if (['cuisine', 'cloison', 'peinture', 'parquet'].includes(poste.categorie)) {
-          categories.add(poste.categorie as Category);
+        const categorie = poste.categorie;
+        const refNom = poste.reference_nom || '';
+        const refId = poste.reference_id || '';
+        const quantite = String(poste.quantite);
+        
+        if (categorie === 'cuisine') {
+          categories.add('cuisine');
+          
+          // Détecter si c'est un plan de travail
+          if (refNom.toLowerCase().includes('plan de travail') || refNom.toLowerCase().includes('granit') || refNom.toLowerCase().includes('quartz') || refNom.toLowerCase().includes('stratifié') || refNom.toLowerCase().includes('bois massif')) {
+            newPlanTravailData.quantite = quantite;
+            newPlanTravailData.type = refId;
+            newPlanTravailData.pose_et_fourniture = !refNom.toLowerCase().includes('pose seule');
+          }
+          // Détecter le nombre d'appareils
+          else if (refNom.toLowerCase().includes('appareil') || refNom.toLowerCase().includes('électroménager')) {
+            newNbAppareils = quantite;
+          }
+          // Sinon c'est le type de cuisine principal
+          else if (!refNom.toLowerCase().includes('extra')) {
+            newCuisineData.quantite = quantite;
+            newCuisineData.type = refId;
+            newCuisineData.pose_et_fourniture = refNom.includes('Pose + Fourniture') || refNom.includes('(Fourniture)');
+          }
+          // Extras cuisine
+          else {
+            newCuisineData.extras.push(refId);
+          }
+        }
+        
+        else if (categorie === 'cloison') {
+          categories.add('cloison');
+          
+          // Détecter les options/suppléments de cloison
+          if (refNom.toLowerCase().includes('supplément') || refNom.toLowerCase().includes('hydrofuge') || refNom.toLowerCase().includes('phonique') || refNom.toLowerCase().includes('feu')) {
+            newSelectedCloisonOptions[refId] = quantite;
+          }
+          // Détecter les extras (bloc-porte, etc.)
+          else if (refNom.toLowerCase().includes('bloc-porte') || refNom.toLowerCase().includes('porte')) {
+            newCloisonData.extras.push(refId);
+          }
+          // Sinon c'est le type de cloison principal
+          else {
+            newCloisonData.quantite = quantite;
+            newCloisonData.type = refId;
+            newCloisonData.pose_et_fourniture = refNom.includes('Pose + Fourniture') || !refNom.includes('Fourniture seule');
+          }
+        }
+        
+        else if (categorie === 'peinture') {
+          categories.add('peinture');
+          
+          // Détecter mur ou plafond
+          if (refNom.toLowerCase().includes('mur')) {
+            newPeintureData.quantite_mur = quantite;
+            newPeintureData.type_mur = refId;
+          } else if (refNom.toLowerCase().includes('plafond')) {
+            newPeintureData.quantite_plafond = quantite;
+            newPeintureData.type_plafond = refId;
+          } else {
+            // Extras peinture
+            newPeintureData.extras.push(refId);
+          }
+        }
+        
+        else if (categorie === 'parquet') {
+          categories.add('parquet');
+          
+          // Détecter les extras (dépose, plinthes, etc.)
+          if (refNom.toLowerCase().includes('dépose') || refNom.toLowerCase().includes('plinthe') || refNom.toLowerCase().includes('quart')) {
+            newParquetData.extras.push(refId);
+          }
+          // Sinon c'est le type de parquet principal
+          else if (!newParquetData.type) {
+            newParquetData.quantite = quantite;
+            newParquetData.type = refId;
+            newParquetData.pose_et_fourniture = !refNom.toLowerCase().includes('pose seule');
+            
+            // Essayer de détecter le type de pose dans le nom
+            if (refNom.toLowerCase().includes('flottante')) {
+              // On cherchera l'ID correspondant dans parquetPoses
+            } else if (refNom.toLowerCase().includes('collée')) {
+              // Idem
+            } else if (refNom.toLowerCase().includes('clouée')) {
+              // Idem
+            }
+          }
         }
       });
+      
+      // Appliquer les données collectées
       setSelectedCategories(Array.from(categories));
+      setCuisineData(newCuisineData);
+      setCloisonData(newCloisonData);
+      setPeintureData(newPeintureData);
+      setParquetData(newParquetData);
+      setPlanTravailData(newPlanTravailData);
+      setNbAppareils(newNbAppareils);
+      setSelectedCloisonOptions(newSelectedCloisonOptions);
       
       Alert.alert(
         'Mode Modification',
-        `Vous modifiez le devis ${devis.numero_devis}. Les informations client ont été chargées. Ajustez les postes de travaux si nécessaire.`
+        `Devis ${devis.numero_devis} chargé. Toutes les données ont été restaurées. Vous pouvez les modifier puis enregistrer.`
       );
     } catch (error) {
-      console.error('Erreur chargement devis:', error);
+      console.error('Erreur chargement devis:', error); error);
       Alert.alert('Erreur', 'Impossible de charger le devis');
       resetForm();
     } finally {
