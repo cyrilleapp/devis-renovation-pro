@@ -1217,44 +1217,8 @@ export default function NouveauDevisScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Parquet</Text>
             <Card>
-              <Text style={styles.fieldLabel}>Type de parquet</Text>
-              <View style={styles.typesList}>
-                {parquets.map((type) => (
-                  <TouchableOpacity
-                    key={type.id}
-                    style={[
-                      styles.typeButton,
-                      parquetData.type === type.id && styles.typeButtonSelected,
-                    ]}
-                    onPress={() => setParquetData({ ...parquetData, type: type.id })}
-                  >
-                    <Text
-                      style={[
-                        styles.typeButtonText,
-                        parquetData.type === type.id && styles.typeButtonTextSelected,
-                      ]}
-                    >
-                      {type.nom}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              
-              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options</Text>
-              <TouchableOpacity
-                style={styles.switchContainer}
-                onPress={() => setParquetData({ ...parquetData, pose_et_fourniture: !parquetData.pose_et_fourniture })}
-              >
-                <Text style={styles.switchLabel}>
-                  {parquetData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'}
-                </Text>
-                <View style={[styles.switch, parquetData.pose_et_fourniture && styles.switchActive]}>
-                  <View style={[styles.switchThumb, parquetData.pose_et_fourniture && styles.switchThumbActive]} />
-                </View>
-              </TouchableOpacity>
-              
-              {/* Type de pose (obligatoire) */}
-              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Type de pose *</Text>
+              {/* 1. Type de pose (en premier) */}
+              <Text style={styles.fieldLabel}>Type de pose *</Text>
               <View style={styles.typesList}>
                 {parquetPoses.map((pose) => (
                   <TouchableOpacity
@@ -1277,6 +1241,7 @@ export default function NouveauDevisScreen() {
                 ))}
               </View>
               
+              {/* 2. Surface */}
               <Input
                 label="Surface (m²)"
                 value={parquetData.quantite}
@@ -1285,26 +1250,83 @@ export default function NouveauDevisScreen() {
                 placeholder="30"
               />
               
-              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
+              {/* 3. Options de pose (extras liés à la pose) */}
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Options de pose (optionnel)</Text>
               {extras.filter(e => e.categorie === 'parquet').map((extra) => (
-                <TouchableOpacity
-                  key={extra.id}
-                  style={styles.checkboxContainer}
-                  onPress={() => {
-                    const newExtras = parquetData.extras.includes(extra.id)
-                      ? parquetData.extras.filter(id => id !== extra.id)
-                      : [...parquetData.extras, extra.id];
-                    setParquetData({ ...parquetData, extras: newExtras });
-                  }}
-                >
-                  <View style={[styles.checkbox, parquetData.extras.includes(extra.id) && styles.checkboxChecked]}>
-                    {parquetData.extras.includes(extra.id) && (
-                      <Ionicons name="checkmark" size={16} color={Colors.surface} />
-                    )}
-                  </View>
-                  <Text style={styles.checkboxLabel}>{extra.nom}</Text>
-                </TouchableOpacity>
+                <View key={extra.id} style={styles.extraRow}>
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => {
+                      const newExtras = parquetData.extras.includes(extra.id)
+                        ? parquetData.extras.filter(id => id !== extra.id)
+                        : [...parquetData.extras, extra.id];
+                      setParquetData({ ...parquetData, extras: newExtras });
+                    }}
+                  >
+                    <View style={[styles.checkbox, parquetData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                      {parquetData.extras.includes(extra.id) && (
+                        <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                      )}
+                    </View>
+                    <Text style={styles.checkboxLabel}>{extra.nom}</Text>
+                  </TouchableOpacity>
+                  {parquetData.extras.includes(extra.id) && (
+                    <TouchableOpacity
+                      style={styles.poseOfferteContainer}
+                      onPress={() => setPosesOffertes({ ...posesOffertes, [`parquet_${extra.id}`]: !posesOffertes[`parquet_${extra.id}`] })}
+                    >
+                      <View style={[styles.checkboxSmall, posesOffertes[`parquet_${extra.id}`] && styles.checkboxChecked]}>
+                        {posesOffertes[`parquet_${extra.id}`] && (
+                          <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                        )}
+                      </View>
+                      <Text style={styles.poseOfferteLabel}>Offert</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               ))}
+              
+              {/* 4. Fourniture parquet (switch) */}
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Fourniture</Text>
+              <TouchableOpacity
+                style={styles.switchContainer}
+                onPress={() => setParquetData({ ...parquetData, pose_et_fourniture: !parquetData.pose_et_fourniture })}
+              >
+                <Text style={styles.switchLabel}>
+                  {parquetData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'}
+                </Text>
+                <View style={[styles.switch, parquetData.pose_et_fourniture && styles.switchActive]}>
+                  <View style={[styles.switchThumb, parquetData.pose_et_fourniture && styles.switchThumbActive]} />
+                </View>
+              </TouchableOpacity>
+              
+              {/* 5. Type de parquet (seulement si Pose + Fourniture) */}
+              {parquetData.pose_et_fourniture && (
+                <>
+                  <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Type de parquet *</Text>
+                  <View style={styles.typesList}>
+                    {parquets.map((type) => (
+                      <TouchableOpacity
+                        key={type.id}
+                        style={[
+                          styles.typeButton,
+                          parquetData.type === type.id && styles.typeButtonSelected,
+                        ]}
+                        onPress={() => setParquetData({ ...parquetData, type: type.id })}
+                      >
+                        <Text
+                          style={[
+                            styles.typeButtonText,
+                            parquetData.type === type.id && styles.typeButtonTextSelected,
+                          ]}
+                        >
+                          {type.nom}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              )}
             </Card>
           </View>
         )}
