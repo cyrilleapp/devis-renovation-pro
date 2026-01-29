@@ -994,23 +994,37 @@ export default function NouveauDevisScreen() {
               
               <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
               {extras.filter(e => e.categorie === 'cuisine').map((extra) => (
-                <TouchableOpacity
-                  key={extra.id}
-                  style={styles.checkboxContainer}
-                  onPress={() => {
-                    const newExtras = cuisineData.extras.includes(extra.id)
-                      ? cuisineData.extras.filter(id => id !== extra.id)
-                      : [...cuisineData.extras, extra.id];
-                    setCuisineData({ ...cuisineData, extras: newExtras });
-                  }}
-                >
-                  <View style={[styles.checkbox, cuisineData.extras.includes(extra.id) && styles.checkboxChecked]}>
-                    {cuisineData.extras.includes(extra.id) && (
-                      <Ionicons name="checkmark" size={16} color={Colors.surface} />
-                    )}
-                  </View>
-                  <Text style={styles.checkboxLabel}>{extra.nom}</Text>
-                </TouchableOpacity>
+                <View key={extra.id} style={styles.extraRow}>
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => {
+                      const newExtras = cuisineData.extras.includes(extra.id)
+                        ? cuisineData.extras.filter(id => id !== extra.id)
+                        : [...cuisineData.extras, extra.id];
+                      setCuisineData({ ...cuisineData, extras: newExtras });
+                    }}
+                  >
+                    <View style={[styles.checkbox, cuisineData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                      {cuisineData.extras.includes(extra.id) && (
+                        <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                      )}
+                    </View>
+                    <Text style={styles.checkboxLabel}>{extra.nom}</Text>
+                  </TouchableOpacity>
+                  {cuisineData.extras.includes(extra.id) && (
+                    <TouchableOpacity
+                      style={styles.poseOfferteContainer}
+                      onPress={() => setPosesOffertes({ ...posesOffertes, [`cuisine_${extra.id}`]: !posesOffertes[`cuisine_${extra.id}`] })}
+                    >
+                      <View style={[styles.checkboxSmall, posesOffertes[`cuisine_${extra.id}`] && styles.checkboxChecked]}>
+                        {posesOffertes[`cuisine_${extra.id}`] && (
+                          <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                        )}
+                      </View>
+                      <Text style={styles.poseOfferteLabel}>Offert</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               ))}
             </Card>
           </View>
