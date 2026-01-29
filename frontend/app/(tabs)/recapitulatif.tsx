@@ -221,7 +221,7 @@ export default function RecapitulatifScreen() {
 
       <View style={styles.actions}>
         <Button
-          title="Créer le devis"
+          title={formData.editingDevisId ? "Enregistrer les modifications" : "Créer le devis"}
           onPress={handleCreate}
           loading={loading}
         />
