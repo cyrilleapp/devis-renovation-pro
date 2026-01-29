@@ -821,6 +821,7 @@ export default function NouveauDevisScreen() {
           prix_max: forfait * 1.1,
           prix_default: forfait,
           prix_ajuste: forfait,
+          offert: servicesData.debarras.depot.offert,
         });
       }
       
@@ -838,6 +839,7 @@ export default function NouveauDevisScreen() {
           prix_max: forfait * 1.1,
           prix_default: forfait,
           prix_ajuste: forfait,
+          offert: servicesData.debarras.gravats.offert,
         });
       }
       
@@ -855,6 +857,7 @@ export default function NouveauDevisScreen() {
           prix_max: forfait * 1.1,
           prix_default: forfait,
           prix_ajuste: forfait,
+          offert: servicesData.debarras.encombrants.offert,
         });
       }
     }
