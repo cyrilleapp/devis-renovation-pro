@@ -32,19 +32,17 @@ REF_CUISINE_TYPES = [
     }
 ]
 
-# Plan de travail cuisine (tarifs mis à jour selon travaux.com)
-# Pose seule : 50-150€/h ou 150-400€ forfait, varie selon matériau
-# Fourniture + pose : prix tout compris par m²
+# Plan de travail cuisine (tarifs travaux.com - tous en €/m²)
 REF_PLANS_TRAVAIL = [
-    {"id": generate_id(), "nom": "Stratifié", "pose_seule_min": 100, "pose_seule_max": 200, "fourniture_pose_min": 70, "fourniture_pose_max": 150, "unite": "m²"},
-    {"id": generate_id(), "nom": "Bois massif", "pose_seule_min": 150, "pose_seule_max": 300, "fourniture_pose_min": 120, "fourniture_pose_max": 300, "unite": "m²"},
-    {"id": generate_id(), "nom": "Granite", "pose_seule_min": 200, "pose_seule_max": 400, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
-    {"id": generate_id(), "nom": "Quartz", "pose_seule_min": 200, "pose_seule_max": 400, "fourniture_pose_min": 400, "fourniture_pose_max": 650, "unite": "m²"},
-    {"id": generate_id(), "nom": "Marbre", "pose_seule_min": 250, "pose_seule_max": 500, "fourniture_pose_min": 500, "fourniture_pose_max": 800, "unite": "m²"},
-    {"id": generate_id(), "nom": "Céramique / Dekton", "pose_seule_min": 300, "pose_seule_max": 600, "fourniture_pose_min": 600, "fourniture_pose_max": 1000, "unite": "m²"},
-    {"id": generate_id(), "nom": "Résine", "pose_seule_min": 200, "pose_seule_max": 400, "fourniture_pose_min": 400, "fourniture_pose_max": 700, "unite": "m²"},
-    {"id": generate_id(), "nom": "Carrelage", "pose_seule_min": 100, "pose_seule_max": 200, "fourniture_pose_min": 80, "fourniture_pose_max": 250, "unite": "m²"},
-    {"id": generate_id(), "nom": "Béton", "pose_seule_min": 200, "pose_seule_max": 400, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
+    {"id": generate_id(), "nom": "Stratifié / mélaminé", "pose_seule_min": 30, "pose_seule_max": 90, "fourniture_pose_min": 70, "fourniture_pose_max": 150, "unite": "m²"},
+    {"id": generate_id(), "nom": "Bois massif", "pose_seule_min": 50, "pose_seule_max": 100, "fourniture_pose_min": 120, "fourniture_pose_max": 300, "unite": "m²"},
+    {"id": generate_id(), "nom": "Granite", "pose_seule_min": 100, "pose_seule_max": 300, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
+    {"id": generate_id(), "nom": "Quartz", "pose_seule_min": 30, "pose_seule_max": 100, "fourniture_pose_min": 400, "fourniture_pose_max": 650, "unite": "m²"},
+    {"id": generate_id(), "nom": "Marbre", "pose_seule_min": 150, "pose_seule_max": 300, "fourniture_pose_min": 500, "fourniture_pose_max": 800, "unite": "m²"},
+    {"id": generate_id(), "nom": "Céramique / grès cérame", "pose_seule_min": 150, "pose_seule_max": 300, "fourniture_pose_min": 600, "fourniture_pose_max": 1000, "unite": "m²"},
+    {"id": generate_id(), "nom": "Résine (Corian, etc.)", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 400, "fourniture_pose_max": 700, "unite": "m²"},
+    {"id": generate_id(), "nom": "Carrelage", "pose_seule_min": 50, "pose_seule_max": 100, "fourniture_pose_min": 80, "fourniture_pose_max": 250, "unite": "m²"},
+    {"id": generate_id(), "nom": "Béton ciré", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
 ]
 
 # ==================== CLOISON ====================
