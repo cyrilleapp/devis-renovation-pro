@@ -199,38 +199,54 @@ export default function NouveauDevisScreen() {
       let newCloisonData = { quantite: '', type: '', pose_et_fourniture: true, extras: [] as string[] };
       let newPeintureData = { quantite_mur: '', quantite_plafond: '', type_mur: '', type_plafond: '', extras: [] as string[] };
       let newParquetData = { quantite: '', type: '', type_pose: '', pose_et_fourniture: true, extras: [] as string[] };
-      let newPlanTravailData = { quantite: '', type: '', pose_et_fourniture: true };
+      let newPlanTravailData = { quantite: '', type: '', pose_et_fourniture: true, pose_offerte: false };
       let newNbAppareils = '1';
       let newSelectedCloisonOptions: {[key: string]: string} = {};
+      let newPosesOffertes: {[key: string]: boolean} = {};
+      let newServicesData = {
+        livraison: { enabled: false, km: '', tarifKm: 0.55, forfaitCustom: '', nbLivraisons: '1', offert: false },
+        deplacement: { enabled: false, km: '', tarifKm: 0.55, forfaitCustom: '', nbDeplacements: '1', afficherQuantite: false, offert: false },
+        debarras: {
+          enabled: false,
+          depot: { enabled: false, volume: '', tarifM3: 30, offert: false },
+          gravats: { enabled: false, volume: '', tarifM3: 75, offert: false },
+          encombrants: { enabled: false, volume: '', tarifM3: 60, offert: false },
+        },
+      };
       
       devis.postes.forEach((poste: any) => {
         const categorie = poste.categorie;
         const refNom = poste.reference_nom || '';
         const refId = poste.reference_id || '';
         const quantite = String(poste.quantite);
+        const isOffert = poste.offert || false;
         
         if (categorie === 'cuisine') {
           categories.add('cuisine');
           
           // Détecter si c'est un plan de travail
-          if (refNom.toLowerCase().includes('plan de travail') || refNom.toLowerCase().includes('granit') || refNom.toLowerCase().includes('quartz') || refNom.toLowerCase().includes('stratifié') || refNom.toLowerCase().includes('bois massif')) {
+          if (refNom.toLowerCase().includes('plan de travail') || (refId && plansTravail.some(p => p.id === refId))) {
             newPlanTravailData.quantite = quantite;
             newPlanTravailData.type = refId;
             newPlanTravailData.pose_et_fourniture = !refNom.toLowerCase().includes('pose seule');
+            newPlanTravailData.pose_offerte = isOffert;
           }
-          // Détecter le nombre d'appareils
-          else if (refNom.toLowerCase().includes('appareil') || refNom.toLowerCase().includes('électroménager')) {
+          // Détecter le nombre d'appareils (extra branchement électroménager)
+          else if (refNom.toLowerCase().includes('branchement') && refNom.toLowerCase().includes('électroménager')) {
             newNbAppareils = quantite;
+            newCuisineData.extras.push(refId);
+            if (isOffert) newPosesOffertes[`cuisine_${refId}`] = true;
+          }
+          // Détecter les extras cuisine
+          else if (extras.some(e => e.id === refId && e.categorie === 'cuisine')) {
+            newCuisineData.extras.push(refId);
+            if (isOffert) newPosesOffertes[`cuisine_${refId}`] = true;
           }
           // Sinon c'est le type de cuisine principal
-          else if (!refNom.toLowerCase().includes('extra')) {
+          else if (!newCuisineData.type) {
             newCuisineData.quantite = quantite;
             newCuisineData.type = refId;
             newCuisineData.pose_et_fourniture = refNom.includes('Pose + Fourniture') || refNom.includes('(Fourniture)');
-          }
-          // Extras cuisine
-          else {
-            newCuisineData.extras.push(refId);
           }
         }
         
@@ -238,18 +254,19 @@ export default function NouveauDevisScreen() {
           categories.add('cloison');
           
           // Détecter les options/suppléments de cloison
-          if (refNom.toLowerCase().includes('supplément') || refNom.toLowerCase().includes('hydrofuge') || refNom.toLowerCase().includes('phonique') || refNom.toLowerCase().includes('feu')) {
+          if (cloisonOptions.some(o => o.id === refId)) {
             newSelectedCloisonOptions[refId] = quantite;
           }
-          // Détecter les extras (bloc-porte, etc.)
-          else if (refNom.toLowerCase().includes('bloc-porte') || refNom.toLowerCase().includes('porte')) {
+          // Détecter les extras cloison
+          else if (extras.some(e => e.id === refId && e.categorie === 'cloison')) {
             newCloisonData.extras.push(refId);
+            if (isOffert) newPosesOffertes[`cloison_${refId}`] = true;
           }
           // Sinon c'est le type de cloison principal
-          else {
+          else if (!newCloisonData.type) {
             newCloisonData.quantite = quantite;
             newCloisonData.type = refId;
-            newCloisonData.pose_et_fourniture = refNom.includes('Pose + Fourniture') || !refNom.includes('Fourniture seule');
+            newCloisonData.pose_et_fourniture = refNom.includes('Pose + Fourniture') || !refNom.includes('Pose seule');
           }
         }
         
@@ -263,33 +280,84 @@ export default function NouveauDevisScreen() {
           } else if (refNom.toLowerCase().includes('plafond')) {
             newPeintureData.quantite_plafond = quantite;
             newPeintureData.type_plafond = refId;
-          } else {
-            // Extras peinture
+          }
+          // Extras peinture
+          else if (extras.some(e => e.id === refId && e.categorie === 'peinture')) {
             newPeintureData.extras.push(refId);
+            if (isOffert) newPosesOffertes[`peinture_${refId}`] = true;
           }
         }
         
         else if (categorie === 'parquet') {
           categories.add('parquet');
           
-          // Détecter les extras (dépose, plinthes, etc.)
-          if (refNom.toLowerCase().includes('dépose') || refNom.toLowerCase().includes('plinthe') || refNom.toLowerCase().includes('quart')) {
+          // Détecter les extras parquet
+          if (extras.some(e => e.id === refId && e.categorie === 'parquet')) {
             newParquetData.extras.push(refId);
+            if (isOffert) newPosesOffertes[`parquet_${refId}`] = true;
           }
-          // Sinon c'est le type de parquet principal
-          else if (!newParquetData.type) {
+          // Détecter le type de pose (pose seule)
+          else if (parquetPoses.some(p => p.id === refId)) {
+            newParquetData.type_pose = refId;
+            newParquetData.quantite = quantite;
+            newParquetData.pose_et_fourniture = !refNom.toLowerCase().includes('pose seule');
+          }
+          // Sinon c'est le type de parquet principal (pose + fourniture)
+          else if (!newParquetData.type || parquets.some(p => p.id === refId)) {
             newParquetData.quantite = quantite;
             newParquetData.type = refId;
             newParquetData.pose_et_fourniture = !refNom.toLowerCase().includes('pose seule');
             
-            // Essayer de détecter le type de pose dans le nom
-            if (refNom.toLowerCase().includes('flottante')) {
-              // On cherchera l'ID correspondant dans parquetPoses
-            } else if (refNom.toLowerCase().includes('collée')) {
-              // Idem
-            } else if (refNom.toLowerCase().includes('clouée')) {
-              // Idem
+            // Détecter le type de pose depuis le nom
+            const lowerNom = refNom.toLowerCase();
+            if (lowerNom.includes('flottante')) {
+              const pose = parquetPoses.find(p => p.nom.toLowerCase().includes('flottante'));
+              if (pose) newParquetData.type_pose = pose.id;
+            } else if (lowerNom.includes('collée')) {
+              const pose = parquetPoses.find(p => p.nom.toLowerCase().includes('collée'));
+              if (pose) newParquetData.type_pose = pose.id;
+            } else if (lowerNom.includes('clouée')) {
+              const pose = parquetPoses.find(p => p.nom.toLowerCase().includes('clouée'));
+              if (pose) newParquetData.type_pose = pose.id;
             }
+          }
+        }
+        
+        // Services
+        else if (categorie === 'service') {
+          if (refId === 'livraison') {
+            newServicesData.livraison.enabled = true;
+            newServicesData.livraison.offert = isOffert;
+            // Extraire km depuis le nom (ex: "Livraison (50 km × 2)")
+            const match = refNom.match(/\((\d+)\s*km/);
+            if (match) newServicesData.livraison.km = match[1];
+            const matchNb = refNom.match(/×\s*(\d+)/);
+            if (matchNb) newServicesData.livraison.nbLivraisons = matchNb[1];
+          } else if (refId === 'deplacement') {
+            newServicesData.deplacement.enabled = true;
+            newServicesData.deplacement.offert = isOffert;
+            const match = refNom.match(/\((\d+)\s*km/);
+            if (match) newServicesData.deplacement.km = match[1];
+            const matchNb = refNom.match(/×\s*(\d+)/);
+            if (matchNb) newServicesData.deplacement.nbDeplacements = matchNb[1];
+          } else if (refId === 'debarras_depot') {
+            newServicesData.debarras.enabled = true;
+            newServicesData.debarras.depot.enabled = true;
+            newServicesData.debarras.depot.offert = isOffert;
+            const match = refNom.match(/\((\d+(?:\.\d+)?)\s*m³/);
+            if (match) newServicesData.debarras.depot.volume = match[1];
+          } else if (refId === 'debarras_gravats') {
+            newServicesData.debarras.enabled = true;
+            newServicesData.debarras.gravats.enabled = true;
+            newServicesData.debarras.gravats.offert = isOffert;
+            const match = refNom.match(/\((\d+(?:\.\d+)?)\s*m³/);
+            if (match) newServicesData.debarras.gravats.volume = match[1];
+          } else if (refId === 'debarras_encombrants') {
+            newServicesData.debarras.enabled = true;
+            newServicesData.debarras.encombrants.enabled = true;
+            newServicesData.debarras.encombrants.offert = isOffert;
+            const match = refNom.match(/\((\d+(?:\.\d+)?)\s*m³/);
+            if (match) newServicesData.debarras.encombrants.volume = match[1];
           }
         }
       });
@@ -303,6 +371,8 @@ export default function NouveauDevisScreen() {
       setPlanTravailData(newPlanTravailData);
       setNbAppareils(newNbAppareils);
       setSelectedCloisonOptions(newSelectedCloisonOptions);
+      setPosesOffertes(newPosesOffertes);
+      setServicesData(newServicesData);
       
       Alert.alert(
         'Mode Modification',
