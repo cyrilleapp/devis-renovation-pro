@@ -44,6 +44,7 @@ interface EntrepriseInfo {
   conditions_paiement: ConditionsPaiement;
   mentions_legales: string;
   garantie: string;
+  afficher_garantie: boolean;
 }
 
 const DEFAULT_ENTREPRISE: EntrepriseInfo = {
@@ -64,6 +65,7 @@ const DEFAULT_ENTREPRISE: EntrepriseInfo = {
 Le présent devis est valable 30 jours à compter de sa date d'émission.
 Tout retard de paiement entraînera l'application de pénalités de retard au taux légal en vigueur.`,
   garantie: 'Garantie décennale et responsabilité civile professionnelle.',
+  afficher_garantie: true,
 };
 
 export default function ProfilScreen() {
