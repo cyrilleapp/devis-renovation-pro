@@ -208,16 +208,6 @@ export default function RecapitulatifScreen() {
               />
             </View>
 
-            <TouchableOpacity 
-              style={styles.offertCheckbox}
-              onPress={() => togglePosteOffert(index)}
-            >
-              <View style={[styles.checkbox, isOffert && styles.checkboxChecked]}>
-                {isOffert && <Ionicons name="checkmark" size={16} color={Colors.surface} />}
-              </View>
-              <Text style={styles.offertCheckboxLabel}>Offert (affiché mais non comptabilisé)</Text>
-            </TouchableOpacity>
-
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Sous-total</Text>
               <Text style={[styles.totalValue, isOffert && styles.textOffert]}>
