@@ -565,6 +565,7 @@ export default function NouveauDevisScreen() {
                 prix_max = planType.pose_seule_max;
               }
               const prix_default = (prix_min + prix_max) / 2;
+              const isPlanTravailOffert = !planTravailData.pose_et_fourniture && planTravailData.pose_offerte;
               postes.push({
                 categorie: 'cuisine',
                 reference_id: planType.id,
@@ -575,6 +576,7 @@ export default function NouveauDevisScreen() {
                 prix_max,
                 prix_default,
                 prix_ajuste: prix_default,
+                offert: isPlanTravailOffert,
               });
             }
           }
