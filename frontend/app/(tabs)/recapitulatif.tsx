@@ -236,6 +236,19 @@ const styles = StyleSheet.create({
     fontSize: FontSize.md,
     color: Colors.text,
     marginBottom: Spacing.xs,
+    fontWeight: '600',
+  },
+  infoDetail: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+    marginBottom: 2,
+  },
+  clientHeader: {
+    fontSize: FontSize.sm,
+    fontWeight: '700',
+    color: Colors.primary,
+    marginBottom: Spacing.xs,
+    textTransform: 'uppercase',
   },
   sectionTitle: {
     fontSize: FontSize.lg,
