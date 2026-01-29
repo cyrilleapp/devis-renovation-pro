@@ -84,6 +84,33 @@ export default function NouveauDevisScreen() {
   // Poses offertes pour les extras (par catégorie et par extra ID)
   const [posesOffertes, setPosesOffertes] = useState<{[key: string]: boolean}>({});
   
+  // Services
+  const [servicesData, setServicesData] = useState({
+    livraison: {
+      enabled: false,
+      km: '',
+      tarifKm: 0.55,
+      forfaitCustom: '',
+      nbLivraisons: '1',
+      offert: false,
+    },
+    deplacement: {
+      enabled: false,
+      km: '',
+      tarifKm: 0.55,
+      forfaitCustom: '',
+      nbDeplacements: '1',
+      afficherQuantite: false, // false = quantité 1 (forfait), true = quantité = nb déplacements
+      offert: false,
+    },
+    debarras: {
+      enabled: false,
+      depot: { enabled: false, volume: '', tarifM3: 30 }, // 10-50 €/m³
+      gravats: { enabled: false, volume: '', tarifM3: 75 }, // 50-100 €/m³
+      encombrants: { enabled: false, volume: '', tarifM3: 60 }, // 45-75 €/m³
+    },
+  });
+  
   // Reference data
   const [cuisineTypes, setCuisineTypes] = useState<any[]>([]);
   const [plansTravail, setPlansTravail] = useState<any[]>([]);
