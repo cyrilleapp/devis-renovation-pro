@@ -465,6 +465,7 @@ export default function NouveauDevisScreen() {
                 quantite = nombreAppareils; // Utiliser le nombre d'appareils saisi
               }
               // sinon prestation, pose, unité, pièce, point = 1
+              const isOffert = posesOffertes[`cuisine_${extraId}`] || false;
               
               postes.push({
                 categorie: 'cuisine',
@@ -476,6 +477,7 @@ export default function NouveauDevisScreen() {
                 prix_max: extra.cout_max,
                 prix_default: extra_prix_default,
                 prix_ajuste: extra_prix_default,
+                offert: isOffert,
               });
             }
           });
