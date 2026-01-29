@@ -579,6 +579,7 @@ export default function NouveauDevisScreen() {
               const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
               // Les extras cloison sont généralement par pièce ou par point
               const quantite = (extra.unite === 'm²') ? surfaceCloison : 1;
+              const isOffert = posesOffertes[`cloison_${extraId}`] || false;
               postes.push({
                 categorie: 'cloison',
                 reference_id: extra.id,
@@ -589,6 +590,7 @@ export default function NouveauDevisScreen() {
                 prix_max: extra.cout_max,
                 prix_default: extra_prix_default,
                 prix_ajuste: extra_prix_default,
+                offert: isOffert,
               });
             }
           });
