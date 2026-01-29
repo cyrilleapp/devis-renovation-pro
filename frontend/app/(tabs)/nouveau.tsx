@@ -2246,6 +2246,13 @@ const styles = StyleSheet.create({
   extraItem: {
     marginBottom: Spacing.xs,
   },
+  extraItemContainer: {
+    marginBottom: Spacing.sm,
+  },
+  extraOfferteContent: {
+    paddingLeft: Spacing.xl,
+    paddingTop: Spacing.xs,
+  },
   poseOfferteContainer: {
     flexDirection: 'row',
     alignItems: 'center',
