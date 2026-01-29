@@ -428,6 +428,16 @@ export default function ProfilScreen() {
             onChangeText={(text) => setEntreprise({ ...entreprise, garantie: text })}
             placeholder="Ex: Garantie décennale..."
           />
+          
+          <View style={styles.switchRow}>
+            <Text style={styles.switchLabel}>Afficher la garantie sur les devis</Text>
+            <Switch
+              value={entreprise.afficher_garantie}
+              onValueChange={(value) => setEntreprise({ ...entreprise, afficher_garantie: value })}
+              trackColor={{ false: Colors.border, true: Colors.primary }}
+              thumbColor={entreprise.afficher_garantie ? Colors.surface : Colors.surface}
+            />
+          </View>
         </Card>
 
         <Button
