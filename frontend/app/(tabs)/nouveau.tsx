@@ -781,25 +781,46 @@ export default function NouveauDevisScreen() {
                 <>
                   <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Suppléments matériau</Text>
                   {cloisonOptions.map((option) => (
-                    <TouchableOpacity
-                      key={option.id}
-                      style={styles.checkboxContainer}
-                      onPress={() => {
-                        const newOptions = selectedCloisonOptions.includes(option.id)
-                          ? selectedCloisonOptions.filter(id => id !== option.id)
-                          : [...selectedCloisonOptions, option.id];
-                        setSelectedCloisonOptions(newOptions);
-                      }}
-                    >
-                      <View style={[styles.checkbox, selectedCloisonOptions.includes(option.id) && styles.checkboxChecked]}>
-                        {selectedCloisonOptions.includes(option.id) && (
-                          <Ionicons name="checkmark" size={16} color={Colors.surface} />
-                        )}
-                      </View>
-                      <Text style={styles.checkboxLabel}>
-                        {option.nom} {option.supplement_max > 0 ? `(+${option.supplement_min}-${option.supplement_max}€/m²)` : ''}
-                      </Text>
-                    </TouchableOpacity>
+                    <View key={option.id}>
+                      <TouchableOpacity
+                        style={styles.checkboxContainer}
+                        onPress={() => {
+                          const newOptions = { ...selectedCloisonOptions };
+                          if (newOptions[option.id]) {
+                            delete newOptions[option.id];
+                          } else {
+                            newOptions[option.id] = cloisonData.quantite || ''; // Pré-remplir avec la surface cloison
+                          }
+                          setSelectedCloisonOptions(newOptions);
+                        }}
+                      >
+                        <View style={[styles.checkbox, selectedCloisonOptions[option.id] !== undefined && styles.checkboxChecked]}>
+                          {selectedCloisonOptions[option.id] !== undefined && (
+                            <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                          )}
+                        </View>
+                        <Text style={styles.checkboxLabel}>
+                          {option.nom} (+{option.supplement_min}-{option.supplement_max}€/m²)
+                        </Text>
+                      </TouchableOpacity>
+                      {/* Champ de superficie si l'option est cochée */}
+                      {selectedCloisonOptions[option.id] !== undefined && (
+                        <View style={{ marginLeft: 32, marginBottom: 8 }}>
+                          <Input
+                            label={`Surface ${option.nom} (m²)`}
+                            value={selectedCloisonOptions[option.id]}
+                            onChangeText={(value) => {
+                              setSelectedCloisonOptions({
+                                ...selectedCloisonOptions,
+                                [option.id]: value
+                              });
+                            }}
+                            keyboardType="numeric"
+                            placeholder={cloisonData.quantite || "Surface"}
+                          />
+                        </View>
+                      )}
+                    </View>
                   ))}
                 </>
               )}
