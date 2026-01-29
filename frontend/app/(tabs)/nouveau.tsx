@@ -75,10 +75,14 @@ export default function NouveauDevisScreen() {
     quantite: '',
     type: '',
     pose_et_fourniture: true,
+    pose_offerte: false, // Pose offerte pour le plan de travail
   });
   
   // Cuisine - Nombre d'appareils électroménagers
   const [nbAppareils, setNbAppareils] = useState('1');
+  
+  // Poses offertes pour les extras (par catégorie et par extra ID)
+  const [posesOffertes, setPosesOffertes] = useState<{[key: string]: boolean}>({});
   
   // Reference data
   const [cuisineTypes, setCuisineTypes] = useState<any[]>([]);
