@@ -1361,30 +1361,6 @@ export default function NouveauDevisScreen() {
             </Card>
           </View>
         )}
-                      <TouchableOpacity
-                        key={type.id}
-                        style={[
-                          styles.typeButton,
-                          parquetData.type === type.id && styles.typeButtonSelected,
-                        ]}
-                        onPress={() => setParquetData({ ...parquetData, type: type.id })}
-                      >
-                        <Text
-                          style={[
-                            styles.typeButtonText,
-                            parquetData.type === type.id && styles.typeButtonTextSelected,
-                          ]}
-                        >
-                          {type.nom}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </>
-              )}
-            </Card>
-          </View>
-        )}
 
         <View style={styles.section}>
           <TouchableOpacity
