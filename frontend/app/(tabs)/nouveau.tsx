@@ -1535,4 +1535,35 @@ const styles = StyleSheet.create({
   clientTwoThird: {
     flex: 2,
   },
+  extraRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  poseOfferteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  poseOfferteContainerFull: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  checkboxSmall: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    marginRight: Spacing.xs,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  poseOfferteLabel: {
+    fontSize: FontSize.xs,
+    color: Colors.primary,
+    fontStyle: 'italic',
+  },
 });
