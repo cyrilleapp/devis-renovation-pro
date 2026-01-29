@@ -178,6 +178,7 @@ export default function NouveauDevisScreen() {
     }
 
     const postes: PosteCreate[] = [];
+    const errors: string[] = [];
 
     // Build postes based on selected categories
     if (selectedCategories.includes('cuisine')) {
