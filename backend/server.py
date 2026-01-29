@@ -368,17 +368,24 @@ async def list_devis(
     
     devis_list = await db.devis.find(query).sort("date_creation", -1).to_list(100)
     
-    return [
-        DevisListItem(
+    result = []
+    for d in devis_list:
+        # Handle both old format (client_nom) and new format (client object)
+        if isinstance(d.get("client"), dict):
+            client_nom = d["client"].get("nom", "Client inconnu")
+        else:
+            client_nom = d.get("client_nom", "Client inconnu")
+        
+        result.append(DevisListItem(
             id=d["id"],
             numero_devis=d["numero_devis"],
-            client_nom=d["client_nom"],
+            client_nom=client_nom,
             date_creation=d["date_creation"],
             total_ttc=d["total_ttc"],
             statut=d["statut"]
-        )
-        for d in devis_list
-    ]
+        ))
+    
+    return result
 
 
 @api_router.get("/devis/{devis_id}", response_model=Devis)
