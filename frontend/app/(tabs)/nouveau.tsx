@@ -266,7 +266,7 @@ export default function NouveauDevisScreen() {
         `Devis ${devis.numero_devis} chargé. Toutes les données ont été restaurées. Vous pouvez les modifier puis enregistrer.`
       );
     } catch (error) {
-      console.error('Erreur chargement devis:', error); error);
+      console.error('Erreur chargement devis:', error);
       Alert.alert('Erreur', 'Impossible de charger le devis');
       resetForm();
     } finally {
