@@ -93,6 +93,11 @@ export default function DevisDetailScreen() {
     }
   };
 
+  const handleEdit = () => {
+    // Navigate to edit screen with devis ID
+    router.push(`/(tabs)/nouveau?devisId=${id}`);
+  };
+
   const handleDelete = () => {
     Alert.alert(
       'Supprimer le devis',
