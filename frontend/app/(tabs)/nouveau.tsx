@@ -1283,4 +1283,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.surface,
   },
+  clientRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  clientHalf: {
+    flex: 1,
+  },
+  clientThird: {
+    flex: 1,
+  },
+  clientTwoThird: {
+    flex: 2,
+  },
 });
