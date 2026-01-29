@@ -411,4 +411,49 @@ const styles = StyleSheet.create({
   backButton: {
     marginTop: Spacing.md,
   },
+  cardOffert: {
+    opacity: 0.8,
+    borderWidth: 2,
+    borderColor: Colors.success,
+    borderStyle: 'dashed',
+  },
+  offertBadge: {
+    backgroundColor: Colors.success,
+    color: Colors.surface,
+    fontSize: FontSize.xs,
+    fontWeight: 'bold',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  textOffert: {
+    textDecorationLine: 'line-through',
+    color: Colors.textLight,
+  },
+  offertCheckbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: Colors.border,
+    marginRight: Spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: Colors.success,
+    borderColor: Colors.success,
+  },
+  offertCheckboxLabel: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+    fontStyle: 'italic',
+  },
 });
