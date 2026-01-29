@@ -1340,26 +1340,28 @@ export default function NouveauDevisScreen() {
               
               <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
               {extras.filter(e => e.categorie === 'cloison').map((extra) => (
-                <View key={extra.id} style={styles.extraRow}>
-                  <TouchableOpacity
-                    style={styles.checkboxContainer}
-                    onPress={() => {
-                      const newExtras = cloisonData.extras.includes(extra.id)
-                        ? cloisonData.extras.filter(id => id !== extra.id)
-                        : [...cloisonData.extras, extra.id];
-                      setCloisonData({ ...cloisonData, extras: newExtras });
-                    }}
-                  >
-                    <View style={[styles.checkbox, cloisonData.extras.includes(extra.id) && styles.checkboxChecked]}>
-                      {cloisonData.extras.includes(extra.id) && (
-                        <Ionicons name="checkmark" size={16} color={Colors.surface} />
-                      )}
-                    </View>
-                    <Text style={styles.checkboxLabel}>{extra.nom}</Text>
-                  </TouchableOpacity>
+                <View key={extra.id} style={styles.extraItem}>
+                  <View style={styles.extraRow}>
+                    <TouchableOpacity
+                      style={styles.checkboxContainer}
+                      onPress={() => {
+                        const newExtras = cloisonData.extras.includes(extra.id)
+                          ? cloisonData.extras.filter(id => id !== extra.id)
+                          : [...cloisonData.extras, extra.id];
+                        setCloisonData({ ...cloisonData, extras: newExtras });
+                      }}
+                    >
+                      <View style={[styles.checkbox, cloisonData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                        {cloisonData.extras.includes(extra.id) && (
+                          <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                        )}
+                      </View>
+                      <Text style={styles.checkboxLabel}>{extra.nom}</Text>
+                    </TouchableOpacity>
+                  </View>
                   {cloisonData.extras.includes(extra.id) && (
                     <TouchableOpacity
-                      style={styles.poseOfferteContainer}
+                      style={styles.poseOfferteContainerFull}
                       onPress={() => setPosesOffertes({ ...posesOffertes, [`cloison_${extra.id}`]: !posesOffertes[`cloison_${extra.id}`] })}
                     >
                       <View style={[styles.checkboxSmall, posesOffertes[`cloison_${extra.id}`] && styles.checkboxChecked]}>
