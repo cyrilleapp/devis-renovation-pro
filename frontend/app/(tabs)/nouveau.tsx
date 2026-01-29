@@ -95,6 +95,81 @@ export default function NouveauDevisScreen() {
     loadReferenceData();
   }, []);
 
+  // Reset form or load existing devis data
+  useFocusEffect(
+    useCallback(() => {
+      if (devisId) {
+        // Mode édition : charger le devis existant
+        loadExistingDevis(devisId);
+      } else {
+        // Mode création : reset du formulaire
+        resetForm();
+      }
+    }, [devisId])
+  );
+
+  const resetForm = () => {
+    setEditingDevisId(null);
+    setClientNom('');
+    setClientPrenom('');
+    setClientAdresse('');
+    setClientCodePostal('');
+    setClientVille('');
+    setClientTelephone('');
+    setClientEmail('');
+    setTvaTaux('20');
+    setSelectedCategories([]);
+    setCuisineData({ quantite: '', type: '', pose_et_fourniture: true, extras: [] });
+    setCloisonData({ quantite: '', type: '', pose_et_fourniture: true, extras: [] });
+    setPeintureData({ quantite_mur: '', quantite_plafond: '', type_mur: '', type_plafond: '', extras: [] });
+    setParquetData({ quantite: '', type: '', type_pose: '', pose_et_fourniture: true, extras: [] });
+    setPlanTravailData({ quantite: '', type: '', pose_et_fourniture: true });
+    setNbAppareils('1');
+    setSelectedCloisonOptions({});
+    clearFormData();
+  };
+
+  const loadExistingDevis = async (id: string) => {
+    try {
+      setLoading(true);
+      const devis = await devisService.get(id);
+      setEditingDevisId(id);
+      
+      // Charger les infos client
+      if (devis.client) {
+        setClientNom(devis.client.nom || '');
+        setClientPrenom(devis.client.prenom || '');
+        setClientAdresse(devis.client.adresse || '');
+        setClientCodePostal(devis.client.code_postal || '');
+        setClientVille(devis.client.ville || '');
+        setClientTelephone(devis.client.telephone || '');
+        setClientEmail(devis.client.email || '');
+      }
+      
+      setTvaTaux(String(devis.tva_taux));
+      
+      // Identifier les catégories présentes dans les postes
+      const categories = new Set<Category>();
+      devis.postes.forEach((poste: any) => {
+        if (['cuisine', 'cloison', 'peinture', 'parquet'].includes(poste.categorie)) {
+          categories.add(poste.categorie as Category);
+        }
+      });
+      setSelectedCategories(Array.from(categories));
+      
+      Alert.alert(
+        'Mode Modification',
+        `Vous modifiez le devis ${devis.numero_devis}. Les informations client ont été chargées. Ajustez les postes de travaux si nécessaire.`
+      );
+    } catch (error) {
+      console.error('Erreur chargement devis:', error);
+      Alert.alert('Erreur', 'Impossible de charger le devis');
+      resetForm();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadReferenceData = async () => {
     try {
       const [
