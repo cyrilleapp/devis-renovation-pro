@@ -15,7 +15,8 @@ from models import (
     RefCuisineType, RefCuisineElement, RefCuisineMateriau,
     RefCloison, RefPeinture, RefParquet, RefExtra,
     DevisCreate, Devis, DevisListItem, DevisUpdate, PosteDevis,
-    CategoriePoste, StatutDevis
+    CategoriePoste, StatutDevis, EntrepriseInfo, EntrepriseUpdate,
+    ClientInfo, DevisConditionsPaiement, Acompte
 )
 from auth import (
     verify_password, get_password_hash, create_access_token,
