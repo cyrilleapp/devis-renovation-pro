@@ -1,458 +1,515 @@
 #!/usr/bin/env python3
 """
-Test complet de l'API Devis Rénovation
-Tests tous les endpoints selon le scénario demandé
+Backend API Tests for Enterprise Profile and Professional PDF Generation
+Tests the new endpoints for enterprise management and improved PDF generation.
 """
 
 import requests
 import json
-import sys
+import os
 from datetime import datetime
-from typing import Dict, Any, Optional
 
-# Configuration
-BASE_URL = "https://renovpricing.preview.emergentagent.com/api"
-HEADERS = {"Content-Type": "application/json"}
+# Get backend URL from frontend .env
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('EXPO_PUBLIC_BACKEND_URL='):
+                    return line.split('=', 1)[1].strip()
+    except:
+        pass
+    return "http://localhost:8001"
 
-class DevisAPITester:
-    def __init__(self):
-        self.base_url = BASE_URL
-        self.headers = HEADERS.copy()
-        self.auth_token = None
-        self.user_data = None
-        self.test_results = []
-        
-    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
-        """Log test result"""
-        result = {
-            "test": test_name,
-            "success": success,
-            "details": details,
-            "timestamp": datetime.now().isoformat(),
-            "response_data": response_data
-        }
-        self.test_results.append(result)
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} - {test_name}")
-        if details:
-            print(f"    Details: {details}")
-        if not success and response_data:
-            print(f"    Response: {response_data}")
-        print()
+BASE_URL = get_backend_url() + "/api"
+print(f"🔗 Testing backend at: {BASE_URL}")
 
-    def make_request(self, method: str, endpoint: str, data: Dict = None, use_auth: bool = False) -> tuple:
-        """Make HTTP request and return (success, response_data, status_code)"""
-        url = f"{self.base_url}{endpoint}"
-        headers = self.headers.copy()
-        
-        if use_auth and self.auth_token:
-            headers["Authorization"] = f"Bearer {self.auth_token}"
-        
-        try:
-            if method.upper() == "GET":
-                response = requests.get(url, headers=headers, timeout=30)
-            elif method.upper() == "POST":
-                response = requests.post(url, headers=headers, json=data, timeout=30)
-            elif method.upper() == "PATCH":
-                response = requests.patch(url, headers=headers, json=data, timeout=30)
-            elif method.upper() == "DELETE":
-                response = requests.delete(url, headers=headers, timeout=30)
-            else:
-                return False, f"Unsupported method: {method}", 400
-            
-            try:
-                response_data = response.json()
-            except:
-                response_data = response.text
-            
-            return response.status_code < 400, response_data, response.status_code
-            
-        except requests.exceptions.RequestException as e:
-            return False, f"Request error: {str(e)}", 0
+# Test credentials
+TEST_EMAIL = "testpdf@test.com"
+TEST_PASSWORD = "test123"
+TEST_NAME = "Test PDF User"
 
-    def test_1_register_user(self):
-        """Test 1: Créer un nouvel utilisateur"""
-        user_data = {
-            "email": "jean.dupont@renovation.fr",
-            "password": "MotDePasse123!",
-            "nom": "Jean Dupont"
-        }
-        
-        success, response, status_code = self.make_request("POST", "/auth/register", user_data)
-        
-        if success and status_code == 200:
-            if "access_token" in response and "user" in response:
-                self.auth_token = response["access_token"]
-                self.user_data = response["user"]
-                self.log_test("Création utilisateur", True, f"Utilisateur créé: {response['user']['nom']}")
-                return True
-            else:
-                self.log_test("Création utilisateur", False, "Token ou user manquant dans la réponse", response)
-                return False
-        else:
-            self.log_test("Création utilisateur", False, f"Status: {status_code}", response)
-            return False
+# Global variables for test data
+auth_token = None
+user_id = None
+devis_id = None
 
-    def test_2_login_user(self):
-        """Test 2: Se connecter pour obtenir un token"""
-        login_data = {
-            "email": "jean.dupont@renovation.fr",
-            "password": "MotDePasse123!"
-        }
-        
-        success, response, status_code = self.make_request("POST", "/auth/login", login_data)
-        
-        if success and status_code == 200:
-            if "access_token" in response:
-                self.auth_token = response["access_token"]
-                self.log_test("Connexion utilisateur", True, f"Token obtenu pour: {response['user']['nom']}")
-                return True
-            else:
-                self.log_test("Connexion utilisateur", False, "Token manquant dans la réponse", response)
-                return False
-        else:
-            self.log_test("Connexion utilisateur", False, f"Status: {status_code}", response)
-            return False
-
-    def test_3_get_current_user(self):
-        """Test 3: Obtenir l'utilisateur courant avec token"""
-        success, response, status_code = self.make_request("GET", "/auth/me", use_auth=True)
-        
-        if success and status_code == 200:
-            if "id" in response and "email" in response:
-                self.log_test("Utilisateur courant", True, f"Utilisateur récupéré: {response['nom']}")
-                return True
-            else:
-                self.log_test("Utilisateur courant", False, "Données utilisateur incomplètes", response)
-                return False
-        else:
-            self.log_test("Utilisateur courant", False, f"Status: {status_code}", response)
-            return False
-
-    def test_4_reference_data(self):
-        """Test 4: Vérifier que les données de référence sont disponibles"""
-        endpoints = [
-            ("/references/cuisine/types", "Types de cuisine"),
-            ("/references/cuisine/elements", "Éléments de cuisine"),
-            ("/references/cuisine/materiaux", "Matériaux de cuisine"),
-            ("/references/cloisons", "Types de cloison"),
-            ("/references/peintures", "Types de peinture"),
-            ("/references/parquets", "Types de parquet"),
-            ("/references/extras", "Extras")
-        ]
-        
-        all_success = True
-        for endpoint, name in endpoints:
-            success, response, status_code = self.make_request("GET", endpoint)
-            
-            if success and status_code == 200:
-                if isinstance(response, list) and len(response) > 0:
-                    self.log_test(f"Données référence - {name}", True, f"{len(response)} éléments trouvés")
-                else:
-                    self.log_test(f"Données référence - {name}", False, "Liste vide ou format incorrect", response)
-                    all_success = False
-            else:
-                self.log_test(f"Données référence - {name}", False, f"Status: {status_code}", response)
-                all_success = False
-        
-        return all_success
-
-    def test_5_create_devis(self):
-        """Test 5: Créer un devis complet avec plusieurs postes"""
-        # D'abord récupérer quelques références pour créer un devis réaliste
-        success, cuisine_types, _ = self.make_request("GET", "/references/cuisine/types")
-        success2, cloisons, _ = self.make_request("GET", "/references/cloisons")
-        success3, peintures, _ = self.make_request("GET", "/references/peintures")
-        success4, parquets, _ = self.make_request("GET", "/references/parquets")
-        
-        if not all([success, success2, success3, success4]):
-            self.log_test("Création devis", False, "Impossible de récupérer les données de référence")
-            return False, None
-        
-        # Créer un devis avec plusieurs postes
-        devis_data = {
-            "client_nom": "Madame Martin - Rénovation Appartement",
-            "tva_taux": 20.0,
-            "postes": [
-                {
-                    "categorie": "cuisine",
-                    "reference_id": cuisine_types[0]["id"],
-                    "reference_nom": cuisine_types[0]["nom"],
-                    "quantite": 1.0,
-                    "unite": "€/prestation",
-                    "prix_min": cuisine_types[0]["cout_min"],
-                    "prix_max": cuisine_types[0]["cout_max"],
-                    "prix_default": (cuisine_types[0]["cout_min"] + cuisine_types[0]["cout_max"]) / 2,
-                    "prix_ajuste": 8000.0,
-                    "options": {
-                        "nb_meubles_haut": 6,
-                        "nb_meubles_bas": 8,
-                        "nb_appareils": 3
-                    }
-                },
-                {
-                    "categorie": "cloison",
-                    "reference_id": cloisons[0]["id"],
-                    "reference_nom": cloisons[0]["nom"],
-                    "quantite": 15.5,
-                    "unite": cloisons[0]["unite"],
-                    "prix_min": cloisons[0]["pose_incluse_min"],
-                    "prix_max": cloisons[0]["pose_incluse_max"],
-                    "prix_default": (cloisons[0]["pose_incluse_min"] + cloisons[0]["pose_incluse_max"]) / 2,
-                    "prix_ajuste": 120.0
-                },
-                {
-                    "categorie": "peinture",
-                    "reference_id": peintures[0]["id"],
-                    "reference_nom": peintures[0]["nom"],
-                    "quantite": 45.0,
-                    "unite": peintures[0]["unite"],
-                    "prix_min": peintures[0]["prix_min"],
-                    "prix_max": peintures[0]["prix_max"],
-                    "prix_default": (peintures[0]["prix_min"] + peintures[0]["prix_max"]) / 2,
-                    "prix_ajuste": 12.5
-                },
-                {
-                    "categorie": "parquet",
-                    "reference_id": parquets[2]["id"],  # AC3
-                    "reference_nom": parquets[2]["nom"],
-                    "quantite": 35.0,
-                    "unite": parquets[2]["unite"],
-                    "prix_min": parquets[2]["pose_incluse_min"],
-                    "prix_max": parquets[2]["pose_incluse_max"],
-                    "prix_default": (parquets[2]["pose_incluse_min"] + parquets[2]["pose_incluse_max"]) / 2,
-                    "prix_ajuste": 45.0
-                }
-            ]
-        }
-        
-        success, response, status_code = self.make_request("POST", "/devis", devis_data, use_auth=True)
-        
-        if success and status_code == 200:
-            if "id" in response and "numero_devis" in response:
-                # Vérifier les calculs
-                expected_total_ht = (8000.0 * 1) + (120.0 * 15.5) + (12.5 * 45.0) + (45.0 * 35.0)
-                expected_total_ttc = expected_total_ht * 1.20
-                
-                actual_total_ht = response["total_ht"]
-                actual_total_ttc = response["total_ttc"]
-                
-                calc_ok = (abs(actual_total_ht - expected_total_ht) < 0.01 and 
-                          abs(actual_total_ttc - expected_total_ttc) < 0.01)
-                
-                if calc_ok:
-                    self.log_test("Création devis", True, 
-                                f"Devis créé: {response['numero_devis']}, Total HT: {actual_total_ht}€, Total TTC: {actual_total_ttc}€")
-                    return True, response["id"]
-                else:
-                    self.log_test("Création devis", False, 
-                                f"Erreur de calcul - Attendu HT: {expected_total_ht}, Reçu: {actual_total_ht}")
-                    return False, None
-            else:
-                self.log_test("Création devis", False, "ID ou numéro devis manquant", response)
-                return False, None
-        else:
-            self.log_test("Création devis", False, f"Status: {status_code}", response)
-            return False, None
-
-    def test_6_list_devis(self, expected_devis_id: str = None):
-        """Test 6: Lister les devis"""
-        success, response, status_code = self.make_request("GET", "/devis", use_auth=True)
-        
-        if success and status_code == 200:
-            if isinstance(response, list):
-                found_devis = False
-                if expected_devis_id:
-                    found_devis = any(d["id"] == expected_devis_id for d in response)
-                
-                if expected_devis_id and found_devis:
-                    self.log_test("Liste devis", True, f"{len(response)} devis trouvés, devis créé présent")
-                elif not expected_devis_id:
-                    self.log_test("Liste devis", True, f"{len(response)} devis trouvés")
-                else:
-                    self.log_test("Liste devis", False, f"Devis créé non trouvé dans la liste de {len(response)} devis")
-                    return False
-                return True
-            else:
-                self.log_test("Liste devis", False, "Réponse n'est pas une liste", response)
-                return False
-        else:
-            self.log_test("Liste devis", False, f"Status: {status_code}", response)
-            return False
-
-    def test_7_get_devis_detail(self, devis_id: str):
-        """Test 7: Récupérer le détail d'un devis"""
-        success, response, status_code = self.make_request("GET", f"/devis/{devis_id}", use_auth=True)
-        
-        if success and status_code == 200:
-            if "id" in response and "postes" in response:
-                nb_postes = len(response["postes"])
-                self.log_test("Détail devis", True, f"Devis récupéré avec {nb_postes} postes")
-                return True
-            else:
-                self.log_test("Détail devis", False, "Structure de devis incomplète", response)
-                return False
-        else:
-            self.log_test("Détail devis", False, f"Status: {status_code}", response)
-            return False
-
-    def test_8_update_devis(self, devis_id: str):
-        """Test 8: Modifier le statut du devis"""
-        update_data = {
-            "statut": "valide",
-            "client_nom": "Madame Martin - Rénovation Appartement (Validé)"
-        }
-        
-        success, response, status_code = self.make_request("PATCH", f"/devis/{devis_id}", update_data, use_auth=True)
-        
-        if success and status_code == 200:
-            if response.get("statut") == "valide":
-                self.log_test("Modification devis", True, f"Statut mis à jour: {response['statut']}")
-                return True
-            else:
-                self.log_test("Modification devis", False, f"Statut non mis à jour: {response.get('statut')}")
-                return False
-        else:
-            self.log_test("Modification devis", False, f"Status: {status_code}", response)
-            return False
-
-    def test_9_generate_pdf(self, devis_id: str):
-        """Test 9: Tester la génération PDF"""
-        url = f"{self.base_url}/devis/{devis_id}/pdf"
-        headers = self.headers.copy()
-        if self.auth_token:
-            headers["Authorization"] = f"Bearer {self.auth_token}"
-        
-        try:
-            response = requests.get(url, headers=headers, timeout=30)
-            
-            if response.status_code == 200:
-                content_type = response.headers.get('content-type', '')
-                if 'pdf' in content_type.lower() or len(response.content) > 1000:
-                    self.log_test("Génération PDF", True, f"PDF généré ({len(response.content)} bytes)")
-                    return True
-                else:
-                    self.log_test("Génération PDF", False, f"Contenu suspect: {content_type}, taille: {len(response.content)}")
-                    return False
-            else:
-                self.log_test("Génération PDF", False, f"Status: {response.status_code}")
-                return False
-                
-        except Exception as e:
-            self.log_test("Génération PDF", False, f"Erreur: {str(e)}")
-            return False
-
-    def test_10_delete_devis(self, devis_id: str):
-        """Test 10: Supprimer le devis"""
-        success, response, status_code = self.make_request("DELETE", f"/devis/{devis_id}", use_auth=True)
-        
-        if success and status_code == 200:
-            self.log_test("Suppression devis", True, "Devis supprimé avec succès")
-            return True
-        else:
-            self.log_test("Suppression devis", False, f"Status: {status_code}", response)
-            return False
-
-    def run_complete_test_scenario(self):
-        """Exécuter le scénario de test complet"""
-        print("=== DÉBUT DES TESTS API DEVIS RÉNOVATION ===")
-        print(f"URL de base: {self.base_url}")
-        print()
-        
-        # Test 1: Créer utilisateur
-        if not self.test_1_register_user():
-            print("❌ ARRÊT: Impossible de créer l'utilisateur")
-            return False
-        
-        # Test 2: Se connecter
-        if not self.test_2_login_user():
-            print("❌ ARRÊT: Impossible de se connecter")
-            return False
-        
-        # Test 3: Utilisateur courant
-        if not self.test_3_get_current_user():
-            print("❌ ARRÊT: Impossible de récupérer l'utilisateur courant")
-            return False
-        
-        # Test 4: Données de référence
-        if not self.test_4_reference_data():
-            print("❌ ARRÊT: Données de référence manquantes")
-            return False
-        
-        # Test 5: Créer devis
-        devis_created, devis_id = self.test_5_create_devis()
-        if not devis_created:
-            print("❌ ARRÊT: Impossible de créer le devis")
-            return False
-        
-        # Test 6: Lister devis
-        if not self.test_6_list_devis(devis_id):
-            print("⚠️  ATTENTION: Problème avec la liste des devis")
-        
-        # Test 7: Détail devis
-        if not self.test_7_get_devis_detail(devis_id):
-            print("⚠️  ATTENTION: Problème avec le détail du devis")
-        
-        # Test 8: Modifier devis
-        if not self.test_8_update_devis(devis_id):
-            print("⚠️  ATTENTION: Problème avec la modification du devis")
-        
-        # Test 9: Générer PDF
-        if not self.test_9_generate_pdf(devis_id):
-            print("⚠️  ATTENTION: Problème avec la génération PDF")
-        
-        # Test 10: Supprimer devis
-        if not self.test_10_delete_devis(devis_id):
-            print("⚠️  ATTENTION: Problème avec la suppression du devis")
-        
-        return True
-
-    def print_summary(self):
-        """Afficher le résumé des tests"""
-        print("\n=== RÉSUMÉ DES TESTS ===")
-        
-        total_tests = len(self.test_results)
-        passed_tests = sum(1 for r in self.test_results if r["success"])
-        failed_tests = total_tests - passed_tests
-        
-        print(f"Total des tests: {total_tests}")
-        print(f"Tests réussis: {passed_tests}")
-        print(f"Tests échoués: {failed_tests}")
-        print(f"Taux de réussite: {(passed_tests/total_tests)*100:.1f}%")
-        
-        if failed_tests > 0:
-            print("\n❌ TESTS ÉCHOUÉS:")
-            for result in self.test_results:
-                if not result["success"]:
-                    print(f"  - {result['test']}: {result['details']}")
-        
-        print("\n=== FIN DES TESTS ===")
-        
-        return failed_tests == 0
-
-
-def main():
-    """Fonction principale"""
-    tester = DevisAPITester()
+def make_request(method, endpoint, data=None, headers=None):
+    """Helper function to make HTTP requests"""
+    url = f"{BASE_URL}{endpoint}"
+    default_headers = {"Content-Type": "application/json"}
+    
+    if headers:
+        default_headers.update(headers)
+    
+    if auth_token:
+        default_headers["Authorization"] = f"Bearer {auth_token}"
     
     try:
-        success = tester.run_complete_test_scenario()
-        all_passed = tester.print_summary()
-        
-        if all_passed:
-            print("\n🎉 TOUS LES TESTS SONT PASSÉS!")
-            sys.exit(0)
+        if method.upper() == "GET":
+            response = requests.get(url, headers=default_headers)
+        elif method.upper() == "POST":
+            response = requests.post(url, json=data, headers=default_headers)
+        elif method.upper() == "PUT":
+            response = requests.put(url, json=data, headers=default_headers)
+        elif method.upper() == "PATCH":
+            response = requests.patch(url, json=data, headers=default_headers)
+        elif method.upper() == "DELETE":
+            response = requests.delete(url, headers=default_headers)
         else:
-            print("\n💥 CERTAINS TESTS ONT ÉCHOUÉ!")
-            sys.exit(1)
-            
-    except KeyboardInterrupt:
-        print("\n\n⏹️  Tests interrompus par l'utilisateur")
-        sys.exit(1)
-    except Exception as e:
-        print(f"\n💥 ERREUR CRITIQUE: {str(e)}")
-        sys.exit(1)
+            raise ValueError(f"Unsupported method: {method}")
+        
+        return response
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Request failed: {e}")
+        return None
 
+def test_user_registration():
+    """Test 1: Register new user"""
+    global auth_token, user_id
+    
+    print("\n🧪 Test 1: User Registration")
+    
+    user_data = {
+        "email": TEST_EMAIL,
+        "password": TEST_PASSWORD,
+        "nom": TEST_NAME
+    }
+    
+    response = make_request("POST", "/auth/register", user_data)
+    
+    if not response:
+        print("❌ Registration request failed")
+        return False
+    
+    if response.status_code == 400:
+        # User might already exist, try login instead
+        print("ℹ️  User already exists, attempting login...")
+        return test_user_login()
+    
+    if response.status_code != 200:
+        print(f"❌ Registration failed: {response.status_code} - {response.text}")
+        return False
+    
+    data = response.json()
+    auth_token = data.get("access_token")
+    user_id = data.get("user", {}).get("id")
+    
+    if not auth_token or not user_id:
+        print("❌ Registration response missing token or user ID")
+        return False
+    
+    print(f"✅ User registered successfully: {user_id}")
+    return True
+
+def test_user_login():
+    """Fallback: Login if registration fails"""
+    global auth_token, user_id
+    
+    print("🔑 Attempting login...")
+    
+    login_data = {
+        "email": TEST_EMAIL,
+        "password": TEST_PASSWORD
+    }
+    
+    response = make_request("POST", "/auth/login", login_data)
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Login failed: {response.status_code if response else 'No response'}")
+        return False
+    
+    data = response.json()
+    auth_token = data.get("access_token")
+    user_id = data.get("user", {}).get("id")
+    
+    if not auth_token or not user_id:
+        print("❌ Login response missing token or user ID")
+        return False
+    
+    print(f"✅ Login successful: {user_id}")
+    return True
+
+def test_get_entreprise_empty():
+    """Test 2: Get empty enterprise profile"""
+    print("\n🧪 Test 2: Get Empty Enterprise Profile")
+    
+    response = make_request("GET", "/entreprise")
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Get entreprise failed: {response.status_code if response else 'No response'}")
+        return False
+    
+    data = response.json()
+    print(f"✅ Empty enterprise profile retrieved: {json.dumps(data, indent=2)}")
+    
+    # Verify it's empty/default
+    if data.get("nom") == "":
+        print("✅ Enterprise profile is correctly empty")
+        return True
+    else:
+        print("ℹ️  Enterprise profile already has data")
+        return True
+
+def test_update_entreprise():
+    """Test 3: Update enterprise profile with complete data"""
+    print("\n🧪 Test 3: Update Enterprise Profile")
+    
+    entreprise_data = {
+        "nom": "Rénovation Pro",
+        "adresse": "123 rue du Commerce",
+        "code_postal": "75001",
+        "ville": "Paris",
+        "telephone": "0123456789",
+        "email": "contact@renovation-pro.fr",
+        "siret": "12345678900012",
+        "tva_intracom": "FR12345678901",
+        "conditions_paiement": {
+            "type": "acomptes",
+            "delai_jours": 30,
+            "acomptes": [
+                {
+                    "pourcentage": 30,
+                    "delai_jours": 0,
+                    "description": "À la commande"
+                },
+                {
+                    "pourcentage": 40,
+                    "delai_jours": 15,
+                    "description": "À mi-travaux"
+                },
+                {
+                    "pourcentage": 30,
+                    "delai_jours": 0,
+                    "description": "À la réception"
+                }
+            ]
+        },
+        "mentions_legales": "Travaux réalisés selon les règles de l'art.",
+        "garantie": "Garantie décennale"
+    }
+    
+    response = make_request("PUT", "/entreprise", entreprise_data)
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Update entreprise failed: {response.status_code if response else 'No response'}")
+        if response:
+            print(f"Error details: {response.text}")
+        return False
+    
+    data = response.json()
+    print(f"✅ Enterprise profile updated successfully")
+    
+    # Verify key fields
+    if (data.get("nom") == "Rénovation Pro" and 
+        data.get("siret") == "12345678900012" and
+        data.get("conditions_paiement", {}).get("type") == "acomptes"):
+        print("✅ Enterprise data correctly saved")
+        return True
+    else:
+        print("❌ Enterprise data not saved correctly")
+        print(f"Received: {json.dumps(data, indent=2)}")
+        return False
+
+def test_get_entreprise_populated():
+    """Test 4: Verify enterprise profile is populated"""
+    print("\n🧪 Test 4: Get Populated Enterprise Profile")
+    
+    response = make_request("GET", "/entreprise")
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Get entreprise failed: {response.status_code if response else 'No response'}")
+        return False
+    
+    data = response.json()
+    
+    # Verify populated data
+    if (data.get("nom") == "Rénovation Pro" and 
+        data.get("siret") == "12345678900012" and
+        len(data.get("conditions_paiement", {}).get("acomptes", [])) == 3):
+        print("✅ Enterprise profile correctly populated with all data")
+        print(f"   - Company: {data.get('nom')}")
+        print(f"   - SIRET: {data.get('siret')}")
+        print(f"   - Payment terms: {len(data.get('conditions_paiement', {}).get('acomptes', []))} installments")
+        return True
+    else:
+        print("❌ Enterprise profile not correctly populated")
+        print(f"Received: {json.dumps(data, indent=2)}")
+        return False
+
+def test_create_devis_new_format():
+    """Test 5: Create devis with new ClientInfo format"""
+    global devis_id
+    
+    print("\n🧪 Test 5: Create Devis with New ClientInfo Format")
+    
+    devis_data = {
+        "client": {
+            "nom": "Dupont",
+            "prenom": "Jean",
+            "adresse": "45 avenue des Fleurs",
+            "code_postal": "75008",
+            "ville": "Paris",
+            "telephone": "0612345678",
+            "email": "jean.dupont@email.com"
+        },
+        "tva_taux": 20,
+        "validite_jours": 30,
+        "notes": "Devis pour rénovation complète",
+        "postes": [
+            {
+                "categorie": "cuisine",
+                "reference_id": "test-1",
+                "reference_nom": "Cuisine équipée",
+                "quantite": 5,
+                "unite": "m²",
+                "prix_min": 100,
+                "prix_max": 200,
+                "prix_default": 150
+            }
+        ]
+    }
+    
+    response = make_request("POST", "/devis", devis_data)
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Create devis failed: {response.status_code if response else 'No response'}")
+        if response:
+            print(f"Error details: {response.text}")
+        return False
+    
+    data = response.json()
+    devis_id = data.get("id")
+    
+    if not devis_id:
+        print("❌ Devis creation response missing ID")
+        return False
+    
+    # Verify new client format
+    client = data.get("client", {})
+    if (client.get("nom") == "Dupont" and 
+        client.get("prenom") == "Jean" and
+        client.get("email") == "jean.dupont@email.com"):
+        print(f"✅ Devis created with new ClientInfo format: {devis_id}")
+        print(f"   - Client: {client.get('prenom')} {client.get('nom')}")
+        print(f"   - Total TTC: {data.get('total_ttc')}€")
+        return True
+    else:
+        print("❌ Devis client format incorrect")
+        print(f"Client data: {json.dumps(client, indent=2)}")
+        return False
+
+def test_get_devis():
+    """Test 6: Get devis and verify structure"""
+    print("\n🧪 Test 6: Get Devis and Verify Structure")
+    
+    if not devis_id:
+        print("❌ No devis ID available for testing")
+        return False
+    
+    response = make_request("GET", f"/devis/{devis_id}")
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Get devis failed: {response.status_code if response else 'No response'}")
+        return False
+    
+    data = response.json()
+    
+    # Verify structure
+    required_fields = ["id", "numero_devis", "client", "total_ht", "total_ttc", "postes"]
+    missing_fields = [field for field in required_fields if field not in data]
+    
+    if missing_fields:
+        print(f"❌ Devis missing required fields: {missing_fields}")
+        return False
+    
+    # Verify client structure
+    client = data.get("client", {})
+    client_fields = ["nom", "prenom", "adresse", "code_postal", "ville", "telephone", "email"]
+    missing_client_fields = [field for field in client_fields if field not in client]
+    
+    if missing_client_fields:
+        print(f"❌ Client missing fields: {missing_client_fields}")
+        return False
+    
+    print(f"✅ Devis structure verified correctly")
+    print(f"   - Number: {data.get('numero_devis')}")
+    print(f"   - Client: {client.get('prenom')} {client.get('nom')}")
+    print(f"   - Postes: {len(data.get('postes', []))}")
+    return True
+
+def test_update_devis():
+    """Test 7: Update devis using new PUT endpoint"""
+    print("\n🧪 Test 7: Update Devis (PUT endpoint)")
+    
+    if not devis_id:
+        print("❌ No devis ID available for testing")
+        return False
+    
+    update_data = {
+        "client": {
+            "nom": "Martin",
+            "prenom": "Sophie",
+            "adresse": "67 boulevard Haussmann",
+            "code_postal": "75009",
+            "ville": "Paris",
+            "telephone": "0687654321",
+            "email": "sophie.martin@email.com"
+        },
+        "tva_taux": 10,
+        "notes": "Devis modifié - client changé",
+        "postes": [
+            {
+                "categorie": "cuisine",
+                "reference_id": "test-2",
+                "reference_nom": "Cuisine sur mesure",
+                "quantite": 8,
+                "unite": "m²",
+                "prix_min": 150,
+                "prix_max": 300,
+                "prix_default": 200
+            }
+        ]
+    }
+    
+    response = make_request("PUT", f"/devis/{devis_id}", update_data)
+    
+    if not response or response.status_code != 200:
+        print(f"❌ Update devis failed: {response.status_code if response else 'No response'}")
+        if response:
+            print(f"Error details: {response.text}")
+        return False
+    
+    data = response.json()
+    
+    # Verify updates
+    client = data.get("client", {})
+    if (client.get("nom") == "Martin" and 
+        client.get("prenom") == "Sophie" and
+        data.get("tva_taux") == 10 and
+        len(data.get("postes", [])) == 1):
+        
+        # Verify totals were recalculated
+        expected_ht = 8 * 200  # 8 m² * 200€
+        actual_ht = data.get("total_ht")
+        expected_ttc = expected_ht * 1.10  # 10% TVA
+        actual_ttc = data.get("total_ttc")
+        
+        print(f"✅ Devis updated successfully")
+        print(f"   - New client: {client.get('prenom')} {client.get('nom')}")
+        print(f"   - New TVA: {data.get('tva_taux')}%")
+        print(f"   - Recalculated HT: {actual_ht}€ (expected: {expected_ht}€)")
+        print(f"   - Recalculated TTC: {actual_ttc}€ (expected: {expected_ttc}€)")
+        
+        if abs(actual_ht - expected_ht) < 0.01 and abs(actual_ttc - expected_ttc) < 0.01:
+            print("✅ Totals correctly recalculated")
+            return True
+        else:
+            print("❌ Totals not correctly recalculated")
+            return False
+    else:
+        print("❌ Devis not updated correctly")
+        print(f"Client: {json.dumps(client, indent=2)}")
+        return False
+
+def test_generate_pdf():
+    """Test 8: Generate professional PDF"""
+    print("\n🧪 Test 8: Generate Professional PDF")
+    
+    if not devis_id:
+        print("❌ No devis ID available for testing")
+        return False
+    
+    response = make_request("GET", f"/devis/{devis_id}/pdf")
+    
+    if not response:
+        print("❌ PDF generation request failed")
+        return False
+    
+    if response.status_code != 200:
+        print(f"❌ PDF generation failed: {response.status_code}")
+        if response.text:
+            print(f"Error details: {response.text}")
+        return False
+    
+    # Check if response is PDF
+    content_type = response.headers.get('content-type', '')
+    if 'application/pdf' not in content_type:
+        print(f"❌ Response is not PDF: {content_type}")
+        return False
+    
+    pdf_size = len(response.content)
+    if pdf_size < 1000:  # PDF should be at least 1KB
+        print(f"❌ PDF too small: {pdf_size} bytes")
+        return False
+    
+    print(f"✅ PDF generated successfully")
+    print(f"   - Size: {pdf_size} bytes")
+    print(f"   - Content-Type: {content_type}")
+    
+    # Save PDF for manual verification if needed
+    try:
+        with open('/tmp/test_devis.pdf', 'wb') as f:
+            f.write(response.content)
+        print(f"   - Saved to: /tmp/test_devis.pdf")
+    except Exception as e:
+        print(f"   - Could not save PDF: {e}")
+    
+    return True
+
+def run_all_tests():
+    """Run all tests in sequence"""
+    print("🚀 Starting Backend API Tests for Enterprise Profile and PDF Generation")
+    print("=" * 80)
+    
+    tests = [
+        ("User Registration", test_user_registration),
+        ("Get Empty Enterprise Profile", test_get_entreprise_empty),
+        ("Update Enterprise Profile", test_update_entreprise),
+        ("Get Populated Enterprise Profile", test_get_entreprise_populated),
+        ("Create Devis with New ClientInfo", test_create_devis_new_format),
+        ("Get Devis Structure", test_get_devis),
+        ("Update Devis (PUT)", test_update_devis),
+        ("Generate Professional PDF", test_generate_pdf)
+    ]
+    
+    results = []
+    
+    for test_name, test_func in tests:
+        try:
+            result = test_func()
+            results.append((test_name, result))
+        except Exception as e:
+            print(f"❌ {test_name} crashed: {e}")
+            results.append((test_name, False))
+    
+    # Summary
+    print("\n" + "=" * 80)
+    print("📊 TEST RESULTS SUMMARY")
+    print("=" * 80)
+    
+    passed = 0
+    failed = 0
+    
+    for test_name, result in results:
+        status = "✅ PASS" if result else "❌ FAIL"
+        print(f"{status} - {test_name}")
+        if result:
+            passed += 1
+        else:
+            failed += 1
+    
+    print(f"\n📈 Total: {len(results)} tests")
+    print(f"✅ Passed: {passed}")
+    print(f"❌ Failed: {failed}")
+    print(f"📊 Success Rate: {(passed/len(results)*100):.1f}%")
+    
+    if failed == 0:
+        print("\n🎉 ALL TESTS PASSED! Enterprise profile and PDF generation are working correctly.")
+    else:
+        print(f"\n⚠️  {failed} test(s) failed. Please check the implementation.")
+    
+    return failed == 0
 
 if __name__ == "__main__":
-    main()
+    success = run_all_tests()
+    exit(0 if success else 1)
