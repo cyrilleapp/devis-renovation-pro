@@ -1,8 +1,18 @@
 import { create } from 'zustand';
 import { PosteCreate } from '../services/devisService';
 
+export interface ClientInfo {
+  nom: string;
+  prenom: string;
+  adresse: string;
+  code_postal: string;
+  ville: string;
+  telephone: string;
+  email: string;
+}
+
 interface DevisFormData {
-  clientNom: string;
+  client: ClientInfo;
   tvaTaux: number;
   postes: PosteCreate[];
 }
