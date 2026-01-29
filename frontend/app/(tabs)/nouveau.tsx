@@ -957,6 +957,22 @@ export default function NouveauDevisScreen() {
                       <View style={[styles.switchThumb, planTravailData.pose_et_fourniture && styles.switchThumbActive]} />
                     </View>
                   </TouchableOpacity>
+                  
+                  {/* Option pose offerte pour le plan de travail en pose seule */}
+                  {!planTravailData.pose_et_fourniture && (
+                    <TouchableOpacity
+                      style={styles.poseOfferteContainerFull}
+                      onPress={() => setPlanTravailData({ ...planTravailData, pose_offerte: !planTravailData.pose_offerte })}
+                    >
+                      <View style={[styles.checkboxSmall, planTravailData.pose_offerte && styles.checkboxChecked]}>
+                        {planTravailData.pose_offerte && (
+                          <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                        )}
+                      </View>
+                      <Text style={styles.poseOfferteLabel}>Pose offerte (affichée mais non comptabilisée)</Text>
+                    </TouchableOpacity>
+                  )}
+                  
                   <Input
                     label="Surface plan de travail (m²)"
                     value={planTravailData.quantite}
