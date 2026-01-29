@@ -393,4 +393,24 @@ const styles = StyleSheet.create({
   actionButton: {
     marginBottom: Spacing.md,
   },
+  cardOffert: {
+    opacity: 0.8,
+    borderWidth: 2,
+    borderColor: Colors.success,
+    borderStyle: 'dashed',
+  },
+  offertBadge: {
+    backgroundColor: Colors.success,
+    color: Colors.surface,
+    fontSize: FontSize.xs,
+    fontWeight: 'bold',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  textOffert: {
+    textDecorationLine: 'line-through',
+    color: Colors.textLight,
+  },
 });
