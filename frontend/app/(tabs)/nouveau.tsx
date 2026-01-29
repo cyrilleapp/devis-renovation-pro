@@ -25,7 +25,16 @@ export default function NouveauDevisScreen() {
   const router = useRouter();
   const { setFormData } = useDevisStore();
   const [loading, setLoading] = useState(false);
+  
+  // Client data
   const [clientNom, setClientNom] = useState('');
+  const [clientPrenom, setClientPrenom] = useState('');
+  const [clientAdresse, setClientAdresse] = useState('');
+  const [clientCodePostal, setClientCodePostal] = useState('');
+  const [clientVille, setClientVille] = useState('');
+  const [clientTelephone, setClientTelephone] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  
   const [tvaTaux, setTvaTaux] = useState('20');
   
   // Selected categories
