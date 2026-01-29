@@ -52,7 +52,7 @@ export default function DevisDetailScreen() {
         return;
       }
       
-      const API_URL = 'https://renovpricing.preview.emergentagent.com';
+      const API_URL = 'https://quotemaster-35.preview.emergentagent.com';
       const pdfUrl = `${API_URL}/api/devis/${id}/pdf`;
       
       // Create filename
