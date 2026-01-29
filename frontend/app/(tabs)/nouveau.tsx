@@ -1427,13 +1427,413 @@ export default function NouveauDevisScreen() {
           </View>
         )}
 
+        {/* Section Services */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Services additionnels</Text>
+          <Card>
+            {/* LIVRAISON */}
+            <TouchableOpacity
+              style={styles.serviceHeader}
+              onPress={() => setServicesData({
+                ...servicesData,
+                livraison: { ...servicesData.livraison, enabled: !servicesData.livraison.enabled }
+              })}
+            >
+              <View style={[styles.checkbox, servicesData.livraison.enabled && styles.checkboxChecked]}>
+                {servicesData.livraison.enabled && (
+                  <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                )}
+              </View>
+              <Text style={styles.serviceTitle}>Livraison</Text>
+            </TouchableOpacity>
+            
+            {servicesData.livraison.enabled && (
+              <View style={styles.serviceContent}>
+                <View style={styles.row}>
+                  <View style={styles.halfInput}>
+                    <Input
+                      label="Distance (km)"
+                      value={servicesData.livraison.km}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        livraison: { ...servicesData.livraison, km: v }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="50"
+                    />
+                  </View>
+                  <View style={styles.halfInput}>
+                    <Input
+                      label="Nb de livraisons"
+                      value={servicesData.livraison.nbLivraisons}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        livraison: { ...servicesData.livraison, nbLivraisons: v }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="1"
+                    />
+                  </View>
+                </View>
+                
+                <Text style={styles.sliderLabel}>
+                  Tarif/km: {servicesData.livraison.tarifKm.toFixed(2)} €
+                </Text>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={0.5}
+                  maximumValue={0.6}
+                  value={servicesData.livraison.tarifKm}
+                  onValueChange={(v) => setServicesData({
+                    ...servicesData,
+                    livraison: { ...servicesData.livraison, tarifKm: v }
+                  })}
+                  minimumTrackTintColor={Colors.primary}
+                  maximumTrackTintColor={Colors.border}
+                  step={0.01}
+                />
+                
+                <View style={styles.calculResultBox}>
+                  <Text style={styles.calculResultLabel}>
+                    Forfait calculé: {(parseFloat(servicesData.livraison.km || '0') * servicesData.livraison.tarifKm * parseFloat(servicesData.livraison.nbLivraisons || '1')).toFixed(2)} €
+                  </Text>
+                  <Input
+                    label="Forfait personnalisé (€)"
+                    value={servicesData.livraison.forfaitCustom}
+                    onChangeText={(v) => setServicesData({
+                      ...servicesData,
+                      livraison: { ...servicesData.livraison, forfaitCustom: v }
+                    })}
+                    keyboardType="numeric"
+                    placeholder="Laisser vide pour utiliser le calcul"
+                  />
+                </View>
+                
+                <TouchableOpacity
+                  style={styles.poseOfferteContainerFull}
+                  onPress={() => setServicesData({
+                    ...servicesData,
+                    livraison: { ...servicesData.livraison, offert: !servicesData.livraison.offert }
+                  })}
+                >
+                  <View style={[styles.checkboxSmall, servicesData.livraison.offert && styles.checkboxChecked]}>
+                    {servicesData.livraison.offert && (
+                      <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.poseOfferteLabel}>Offert</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            
+            <View style={styles.serviceDivider} />
+            
+            {/* DÉPLACEMENT */}
+            <TouchableOpacity
+              style={styles.serviceHeader}
+              onPress={() => setServicesData({
+                ...servicesData,
+                deplacement: { ...servicesData.deplacement, enabled: !servicesData.deplacement.enabled }
+              })}
+            >
+              <View style={[styles.checkbox, servicesData.deplacement.enabled && styles.checkboxChecked]}>
+                {servicesData.deplacement.enabled && (
+                  <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                )}
+              </View>
+              <Text style={styles.serviceTitle}>Déplacement</Text>
+            </TouchableOpacity>
+            
+            {servicesData.deplacement.enabled && (
+              <View style={styles.serviceContent}>
+                <View style={styles.row}>
+                  <View style={styles.halfInput}>
+                    <Input
+                      label="Distance (km)"
+                      value={servicesData.deplacement.km}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        deplacement: { ...servicesData.deplacement, km: v }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="30"
+                    />
+                  </View>
+                  <View style={styles.halfInput}>
+                    <Input
+                      label="Nb de déplacements"
+                      value={servicesData.deplacement.nbDeplacements}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        deplacement: { ...servicesData.deplacement, nbDeplacements: v }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="1"
+                    />
+                  </View>
+                </View>
+                
+                <Text style={styles.sliderLabel}>
+                  Tarif/km: {servicesData.deplacement.tarifKm.toFixed(2)} €
+                </Text>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={0.5}
+                  maximumValue={0.6}
+                  value={servicesData.deplacement.tarifKm}
+                  onValueChange={(v) => setServicesData({
+                    ...servicesData,
+                    deplacement: { ...servicesData.deplacement, tarifKm: v }
+                  })}
+                  minimumTrackTintColor={Colors.primary}
+                  maximumTrackTintColor={Colors.border}
+                  step={0.01}
+                />
+                
+                <View style={styles.calculResultBox}>
+                  <Text style={styles.calculResultLabel}>
+                    Forfait calculé: {(parseFloat(servicesData.deplacement.km || '0') * servicesData.deplacement.tarifKm * parseFloat(servicesData.deplacement.nbDeplacements || '1')).toFixed(2)} €
+                  </Text>
+                  <Input
+                    label="Forfait personnalisé (€)"
+                    value={servicesData.deplacement.forfaitCustom}
+                    onChangeText={(v) => setServicesData({
+                      ...servicesData,
+                      deplacement: { ...servicesData.deplacement, forfaitCustom: v }
+                    })}
+                    keyboardType="numeric"
+                    placeholder="Laisser vide pour utiliser le calcul"
+                  />
+                </View>
+                
+                <TouchableOpacity
+                  style={styles.switchContainer}
+                  onPress={() => setServicesData({
+                    ...servicesData,
+                    deplacement: { ...servicesData.deplacement, afficherQuantite: !servicesData.deplacement.afficherQuantite }
+                  })}
+                >
+                  <Text style={styles.switchLabel}>
+                    {servicesData.deplacement.afficherQuantite 
+                      ? `Afficher quantité: ${servicesData.deplacement.nbDeplacements}` 
+                      : 'Afficher quantité: 1 (forfait)'}
+                  </Text>
+                  <View style={[styles.switch, servicesData.deplacement.afficherQuantite && styles.switchActive]}>
+                    <View style={[styles.switchThumb, servicesData.deplacement.afficherQuantite && styles.switchThumbActive]} />
+                  </View>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={styles.poseOfferteContainerFull}
+                  onPress={() => setServicesData({
+                    ...servicesData,
+                    deplacement: { ...servicesData.deplacement, offert: !servicesData.deplacement.offert }
+                  })}
+                >
+                  <View style={[styles.checkboxSmall, servicesData.deplacement.offert && styles.checkboxChecked]}>
+                    {servicesData.deplacement.offert && (
+                      <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.poseOfferteLabel}>Offert</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            
+            <View style={styles.serviceDivider} />
+            
+            {/* DÉBARRAS */}
+            <TouchableOpacity
+              style={styles.serviceHeader}
+              onPress={() => setServicesData({
+                ...servicesData,
+                debarras: { ...servicesData.debarras, enabled: !servicesData.debarras.enabled }
+              })}
+            >
+              <View style={[styles.checkbox, servicesData.debarras.enabled && styles.checkboxChecked]}>
+                {servicesData.debarras.enabled && (
+                  <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                )}
+              </View>
+              <Text style={styles.serviceTitle}>Débarras en déchèterie</Text>
+            </TouchableOpacity>
+            
+            {servicesData.debarras.enabled && (
+              <View style={styles.serviceContent}>
+                {/* Dépôt en déchèterie */}
+                <TouchableOpacity
+                  style={styles.debarrasTypeHeader}
+                  onPress={() => setServicesData({
+                    ...servicesData,
+                    debarras: {
+                      ...servicesData.debarras,
+                      depot: { ...servicesData.debarras.depot, enabled: !servicesData.debarras.depot.enabled }
+                    }
+                  })}
+                >
+                  <View style={[styles.checkboxSmall, servicesData.debarras.depot.enabled && styles.checkboxChecked]}>
+                    {servicesData.debarras.depot.enabled && (
+                      <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.debarrasTypeLabel}>Dépôt en déchèterie (10-50 €/m³)</Text>
+                </TouchableOpacity>
+                
+                {servicesData.debarras.depot.enabled && (
+                  <View style={styles.debarrasTypeContent}>
+                    <Input
+                      label="Volume estimé (m³)"
+                      value={servicesData.debarras.depot.volume}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          depot: { ...servicesData.debarras.depot, volume: v }
+                        }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="2"
+                    />
+                    <Text style={styles.sliderLabel}>
+                      Tarif: {servicesData.debarras.depot.tarifM3} €/m³ → Forfait: {(parseFloat(servicesData.debarras.depot.volume || '0') * servicesData.debarras.depot.tarifM3).toFixed(2)} €
+                    </Text>
+                    <Slider
+                      style={styles.slider}
+                      minimumValue={10}
+                      maximumValue={50}
+                      value={servicesData.debarras.depot.tarifM3}
+                      onValueChange={(v) => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          depot: { ...servicesData.debarras.depot, tarifM3: Math.round(v) }
+                        }
+                      })}
+                      minimumTrackTintColor={Colors.primary}
+                      maximumTrackTintColor={Colors.border}
+                      step={1}
+                    />
+                  </View>
+                )}
+                
+                {/* Gravats lourds */}
+                <TouchableOpacity
+                  style={styles.debarrasTypeHeader}
+                  onPress={() => setServicesData({
+                    ...servicesData,
+                    debarras: {
+                      ...servicesData.debarras,
+                      gravats: { ...servicesData.debarras.gravats, enabled: !servicesData.debarras.gravats.enabled }
+                    }
+                  })}
+                >
+                  <View style={[styles.checkboxSmall, servicesData.debarras.gravats.enabled && styles.checkboxChecked]}>
+                    {servicesData.debarras.gravats.enabled && (
+                      <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.debarrasTypeLabel}>Gravats lourds (50-100 €/m³)</Text>
+                </TouchableOpacity>
+                
+                {servicesData.debarras.gravats.enabled && (
+                  <View style={styles.debarrasTypeContent}>
+                    <Input
+                      label="Volume estimé (m³)"
+                      value={servicesData.debarras.gravats.volume}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          gravats: { ...servicesData.debarras.gravats, volume: v }
+                        }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="1"
+                    />
+                    <Text style={styles.sliderLabel}>
+                      Tarif: {servicesData.debarras.gravats.tarifM3} €/m³ → Forfait: {(parseFloat(servicesData.debarras.gravats.volume || '0') * servicesData.debarras.gravats.tarifM3).toFixed(2)} €
+                    </Text>
+                    <Slider
+                      style={styles.slider}
+                      minimumValue={50}
+                      maximumValue={100}
+                      value={servicesData.debarras.gravats.tarifM3}
+                      onValueChange={(v) => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          gravats: { ...servicesData.debarras.gravats, tarifM3: Math.round(v) }
+                        }
+                      })}
+                      minimumTrackTintColor={Colors.primary}
+                      maximumTrackTintColor={Colors.border}
+                      step={1}
+                    />
+                  </View>
+                )}
+                
+                {/* Encombrants */}
+                <TouchableOpacity
+                  style={styles.debarrasTypeHeader}
+                  onPress={() => setServicesData({
+                    ...servicesData,
+                    debarras: {
+                      ...servicesData.debarras,
+                      encombrants: { ...servicesData.debarras.encombrants, enabled: !servicesData.debarras.encombrants.enabled }
+                    }
+                  })}
+                >
+                  <View style={[styles.checkboxSmall, servicesData.debarras.encombrants.enabled && styles.checkboxChecked]}>
+                    {servicesData.debarras.encombrants.enabled && (
+                      <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                    )}
+                  </View>
+                  <Text style={styles.debarrasTypeLabel}>Encombrants (45-75 €/m³)</Text>
+                </TouchableOpacity>
+                
+                {servicesData.debarras.encombrants.enabled && (
+                  <View style={styles.debarrasTypeContent}>
+                    <Input
+                      label="Volume estimé (m³)"
+                      value={servicesData.debarras.encombrants.volume}
+                      onChangeText={(v) => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          encombrants: { ...servicesData.debarras.encombrants, volume: v }
+                        }
+                      })}
+                      keyboardType="numeric"
+                      placeholder="3"
+                    />
+                    <Text style={styles.sliderLabel}>
+                      Tarif: {servicesData.debarras.encombrants.tarifM3} €/m³ → Forfait: {(parseFloat(servicesData.debarras.encombrants.volume || '0') * servicesData.debarras.encombrants.tarifM3).toFixed(2)} €
+                    </Text>
+                    <Slider
+                      style={styles.slider}
+                      minimumValue={45}
+                      maximumValue={75}
+                      value={servicesData.debarras.encombrants.tarifM3}
+                      onValueChange={(v) => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          encombrants: { ...servicesData.debarras.encombrants, tarifM3: Math.round(v) }
+                        }
+                      })}
+                      minimumTrackTintColor={Colors.primary}
+                      maximumTrackTintColor={Colors.border}
+                      step={1}
+                    />
+                  </View>
+                )}
+              </View>
+            )}
+          </Card>
+        </View>
+
         <View style={styles.section}>
           <TouchableOpacity
-            style={styles.submitButton}
-            onPress={() => {
-              console.log('BOUTON CLIQUÉ !');
-              handleSubmit();
-            }}
             activeOpacity={0.7}
             pointerEvents="auto"
           >
