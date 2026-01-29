@@ -545,10 +545,21 @@ export default function NouveauDevisScreen() {
       return;
     }
 
+    // Build client object
+    const clientData = {
+      nom: clientNom,
+      prenom: clientPrenom,
+      adresse: clientAdresse,
+      code_postal: clientCodePostal,
+      ville: clientVille,
+      telephone: clientTelephone,
+      email: clientEmail,
+    };
+
     // Store data in zustand store
     console.log('Stockage des donnees dans le store...');
     setFormData({
-      clientNom,
+      client: clientData,
       tvaTaux: parseFloat(tvaTaux),
       postes,
     });
@@ -565,14 +576,71 @@ export default function NouveauDevisScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informations générales</Text>
+          <Text style={styles.sectionTitle}>Informations client</Text>
           <Card>
+            <View style={styles.clientRow}>
+              <View style={styles.clientHalf}>
+                <Input
+                  label="Nom *"
+                  value={clientNom}
+                  onChangeText={setClientNom}
+                  placeholder="Dupont"
+                />
+              </View>
+              <View style={styles.clientHalf}>
+                <Input
+                  label="Prénom"
+                  value={clientPrenom}
+                  onChangeText={setClientPrenom}
+                  placeholder="Jean"
+                />
+              </View>
+            </View>
+            
             <Input
-              label="Nom du client"
-              value={clientNom}
-              onChangeText={setClientNom}
-              placeholder="Jean Dupont"
+              label="Adresse"
+              value={clientAdresse}
+              onChangeText={setClientAdresse}
+              placeholder="123 rue de la Paix"
             />
+            
+            <View style={styles.clientRow}>
+              <View style={styles.clientThird}>
+                <Input
+                  label="Code postal"
+                  value={clientCodePostal}
+                  onChangeText={setClientCodePostal}
+                  placeholder="75001"
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={styles.clientTwoThird}>
+                <Input
+                  label="Ville"
+                  value={clientVille}
+                  onChangeText={setClientVille}
+                  placeholder="Paris"
+                />
+              </View>
+            </View>
+            
+            <Input
+              label="Téléphone"
+              value={clientTelephone}
+              onChangeText={setClientTelephone}
+              placeholder="06 12 34 56 78"
+              keyboardType="phone-pad"
+            />
+            
+            <Input
+              label="Email"
+              value={clientEmail}
+              onChangeText={setClientEmail}
+              placeholder="client@email.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            
             <Input
               label="Taux de TVA (%)"
               value={tvaTaux}
