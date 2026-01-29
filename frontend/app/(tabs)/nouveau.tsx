@@ -9,7 +9,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -23,8 +23,10 @@ type Category = 'cuisine' | 'cloison' | 'peinture' | 'parquet';
 
 export default function NouveauDevisScreen() {
   const router = useRouter();
-  const { setFormData } = useDevisStore();
+  const { devisId } = useLocalSearchParams<{ devisId?: string }>();
+  const { setFormData, clearFormData } = useDevisStore();
   const [loading, setLoading] = useState(false);
+  const [editingDevisId, setEditingDevisId] = useState<string | null>(null);
   
   // Client data
   const [clientNom, setClientNom] = useState('');
