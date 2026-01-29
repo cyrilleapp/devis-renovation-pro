@@ -16,6 +16,8 @@ interface DevisFormData {
   tvaTaux: number;
   postes: PosteCreate[];
   editingDevisId?: string | null; // ID du devis en cours de modification
+  posesOffertes?: {[key: string]: boolean}; // IDs des extras offerts
+  planTravailPoseOfferte?: boolean; // Pose plan de travail offerte
 }
 
 interface DevisStore {
