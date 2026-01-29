@@ -747,4 +747,19 @@ const styles = StyleSheet.create({
   saveButton: {
     marginTop: Spacing.md,
   },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  switchLabel: {
+    fontSize: FontSize.sm,
+    fontWeight: '500',
+    color: Colors.text,
+    flex: 1,
+  },
 });
