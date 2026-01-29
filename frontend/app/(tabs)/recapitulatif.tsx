@@ -170,19 +170,23 @@ export default function RecapitulatifScreen() {
 
       {postes.map((poste, index) => {
         const currentPrice = poste.prix_ajuste || poste.prix_default;
+        const isOffert = poste.offert;
         return (
-          <Card key={index}>
+          <Card key={index} style={isOffert ? styles.cardOffert : undefined}>
             <View style={styles.posteHeader}>
               <Text style={styles.posteCategorie}>{poste.categorie.toUpperCase()}</Text>
+              {isOffert && <Text style={styles.offertBadge}>OFFERT</Text>}
             </View>
-            <Text style={styles.posteNom}>{poste.reference_nom}</Text>
+            <Text style={[styles.posteNom, isOffert && styles.textOffert]}>{poste.reference_nom}</Text>
             <Text style={styles.posteQuantite}>
               {poste.quantite} {poste.unite}
             </Text>
 
             <View style={styles.priceSection}>
               <Text style={styles.priceLabel}>Prix unitaire ajustable</Text>
-              <Text style={styles.priceValue}>{formatPrice(currentPrice)}</Text>
+              <Text style={[styles.priceValue, isOffert && styles.textOffert]}>
+                {formatPrice(currentPrice)}
+              </Text>
               
               <View style={styles.sliderContainer}>
                 <Text style={styles.sliderLabel}>Min: {formatPrice(poste.prix_min)}</Text>
@@ -195,17 +199,27 @@ export default function RecapitulatifScreen() {
                 maximumValue={poste.prix_max}
                 value={currentPrice}
                 onValueChange={(value) => updatePostePrice(index, value)}
-                minimumTrackTintColor={Colors.primary}
+                minimumTrackTintColor={isOffert ? Colors.textLight : Colors.primary}
                 maximumTrackTintColor={Colors.border}
-                thumbTintColor={Colors.primary}
+                thumbTintColor={isOffert ? Colors.textLight : Colors.primary}
                 step={1}
               />
             </View>
 
+            <TouchableOpacity 
+              style={styles.offertCheckbox}
+              onPress={() => togglePosteOffert(index)}
+            >
+              <View style={[styles.checkbox, isOffert && styles.checkboxChecked]}>
+                {isOffert && <Ionicons name="checkmark" size={16} color={Colors.surface} />}
+              </View>
+              <Text style={styles.offertCheckboxLabel}>Offert (affiché mais non comptabilisé)</Text>
+            </TouchableOpacity>
+
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Sous-total</Text>
-              <Text style={styles.totalValue}>
-                {formatPrice(poste.quantite * currentPrice)}
+              <Text style={[styles.totalValue, isOffert && styles.textOffert]}>
+                {isOffert ? 'Offert' : formatPrice(poste.quantite * currentPrice)}
               </Text>
             </View>
           </Card>
