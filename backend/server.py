@@ -770,12 +770,15 @@ Le présent devis est valable 30 jours à compter de sa date d'émission.
 Tout retard de paiement entraînera l'application de pénalités de retard au taux légal en vigueur.""")
     
     garantie = entreprise.get("garantie", "Garantie décennale et responsabilité civile professionnelle.")
+    afficher_garantie = entreprise.get("afficher_garantie", True)
     
     elements.append(Spacer(1, 0.5*cm))
     elements.append(Paragraph("MENTIONS LÉGALES", section_title_style))
     elements.append(Paragraph(mentions.replace("\n", "<br/>"), small_style))
-    elements.append(Spacer(1, 0.3*cm))
-    elements.append(Paragraph(f"<b>Garantie:</b> {garantie}", small_style))
+    
+    if afficher_garantie and garantie:
+        elements.append(Spacer(1, 0.3*cm))
+        elements.append(Paragraph(f"<b>Garantie:</b> {garantie}", small_style))
     
     # ==== SIGNATURE ====
     elements.append(Spacer(1, 1*cm))
