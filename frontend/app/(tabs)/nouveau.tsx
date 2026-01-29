@@ -1960,6 +1960,23 @@ export default function NouveauDevisScreen() {
                       maximumTrackTintColor={Colors.border}
                       step={1}
                     />
+                    <TouchableOpacity
+                      style={styles.poseOfferteContainerFull}
+                      onPress={() => setServicesData({
+                        ...servicesData,
+                        debarras: {
+                          ...servicesData.debarras,
+                          encombrants: { ...servicesData.debarras.encombrants, offert: !servicesData.debarras.encombrants.offert }
+                        }
+                      })}
+                    >
+                      <View style={[styles.checkboxSmall, servicesData.debarras.encombrants.offert && styles.checkboxChecked]}>
+                        {servicesData.debarras.encombrants.offert && (
+                          <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                        )}
+                      </View>
+                      <Text style={styles.poseOfferteLabel}>Offert</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               </View>
