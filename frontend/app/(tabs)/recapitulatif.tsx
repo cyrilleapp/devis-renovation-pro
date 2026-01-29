@@ -103,7 +103,6 @@ export default function RecapitulatifScreen() {
           },
         ]);
       }
-      ]);
     } catch (error: any) {
       console.error('Error creating devis:', error);
       Alert.alert('Erreur', error.response?.data?.detail || 'Erreur lors de la création du devis');
