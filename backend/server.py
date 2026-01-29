@@ -646,8 +646,7 @@ async def generate_pdf(
     # Devis info (right side)
     devis_info_text = f"""<b>DEVIS N° {devis_doc['numero_devis']}</b><br/>
 Date: {devis_doc['date_creation'].strftime('%d/%m/%Y')}<br/>
-Validité: {date_validite.strftime('%d/%m/%Y')}<br/>
-Statut: {devis_doc['statut'].capitalize()}"""
+Validité: {date_validite.strftime('%d/%m/%Y')}"""
     
     header_table_data = [[
         Paragraph(entreprise_text, header_style),
