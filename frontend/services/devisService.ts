@@ -22,6 +22,7 @@ export interface PosteCreate {
   prix_default: number;
   prix_ajuste?: number;
   options?: PosteOptions;
+  offert?: boolean; // Si true, le poste est affiché mais pas comptabilisé dans le total
 }
 
 export interface ClientInfo {
