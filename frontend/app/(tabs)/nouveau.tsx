@@ -127,9 +127,10 @@ export default function NouveauDevisScreen() {
     setCloisonData({ quantite: '', type: '', pose_et_fourniture: true, extras: [] });
     setPeintureData({ quantite_mur: '', quantite_plafond: '', type_mur: '', type_plafond: '', extras: [] });
     setParquetData({ quantite: '', type: '', type_pose: '', pose_et_fourniture: true, extras: [] });
-    setPlanTravailData({ quantite: '', type: '', pose_et_fourniture: true });
+    setPlanTravailData({ quantite: '', type: '', pose_et_fourniture: true, pose_offerte: false });
     setNbAppareils('1');
     setSelectedCloisonOptions({});
+    setPosesOffertes({});
     clearFormData();
   };
 
