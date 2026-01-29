@@ -1570,37 +1570,38 @@ export default function NouveauDevisScreen() {
               {/* 5. Extras (en bas) */}
               <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Extras (optionnel)</Text>
               {extras.filter(e => e.categorie === 'parquet').map((extra) => (
-                <View key={extra.id} style={styles.extraItem}>
-                  <View style={styles.extraRow}>
-                    <TouchableOpacity
-                      style={styles.checkboxContainer}
-                      onPress={() => {
-                        const newExtras = parquetData.extras.includes(extra.id)
-                          ? parquetData.extras.filter(id => id !== extra.id)
-                          : [...parquetData.extras, extra.id];
-                        setParquetData({ ...parquetData, extras: newExtras });
-                      }}
-                    >
-                      <View style={[styles.checkbox, parquetData.extras.includes(extra.id) && styles.checkboxChecked]}>
-                        {parquetData.extras.includes(extra.id) && (
-                          <Ionicons name="checkmark" size={16} color={Colors.surface} />
-                        )}
-                      </View>
-                      <Text style={styles.checkboxLabel}>{extra.nom}</Text>
-                    </TouchableOpacity>
-                  </View>
+                <View key={extra.id} style={styles.extraItemContainer}>
+                  <TouchableOpacity
+                    style={styles.serviceHeader}
+                    onPress={() => {
+                      const newExtras = parquetData.extras.includes(extra.id)
+                        ? parquetData.extras.filter(id => id !== extra.id)
+                        : [...parquetData.extras, extra.id];
+                      setParquetData({ ...parquetData, extras: newExtras });
+                    }}
+                  >
+                    <View style={[styles.checkbox, parquetData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                      {parquetData.extras.includes(extra.id) && (
+                        <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                      )}
+                    </View>
+                    <Text style={styles.serviceTitle}>{extra.nom}</Text>
+                  </TouchableOpacity>
+                  
                   {parquetData.extras.includes(extra.id) && (
-                    <TouchableOpacity
-                      style={styles.poseOfferteContainerFull}
-                      onPress={() => setPosesOffertes({ ...posesOffertes, [`parquet_${extra.id}`]: !posesOffertes[`parquet_${extra.id}`] })}
-                    >
-                      <View style={[styles.checkboxSmall, posesOffertes[`parquet_${extra.id}`] && styles.checkboxChecked]}>
-                        {posesOffertes[`parquet_${extra.id}`] && (
-                          <Ionicons name="checkmark" size={12} color={Colors.surface} />
-                        )}
-                      </View>
-                      <Text style={styles.poseOfferteLabel}>Offert</Text>
-                    </TouchableOpacity>
+                    <View style={styles.extraOfferteContent}>
+                      <TouchableOpacity
+                        style={styles.poseOfferteContainerFull}
+                        onPress={() => setPosesOffertes({ ...posesOffertes, [`parquet_${extra.id}`]: !posesOffertes[`parquet_${extra.id}`] })}
+                      >
+                        <View style={[styles.checkboxSmall, posesOffertes[`parquet_${extra.id}`] && styles.checkboxChecked]}>
+                          {posesOffertes[`parquet_${extra.id}`] && (
+                            <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                          )}
+                        </View>
+                        <Text style={styles.poseOfferteLabel}>Offert</Text>
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </View>
               ))}
