@@ -106,7 +106,7 @@ REF_CLOISONS = [
 
 # Options cloison (visibles uniquement si Pose + Fourniture)
 REF_CLOISON_OPTIONS = [
-    {"id": generate_id(), "nom": "Supplément hydrofuge", "supplement_min": 0, "supplement_max": 0, "description": "Placo hydrofuge pour pièces humides", "unite": "m²"},
+    {"id": generate_id(), "nom": "Supplément hydrofuge", "supplement_min": 5, "supplement_max": 5, "description": "Placo hydrofuge pour pièces humides", "unite": "m²"},
     {"id": generate_id(), "nom": "Supplément phonique", "supplement_min": 5, "supplement_max": 5, "description": "Placo acoustique pour réduction des bruits", "unite": "m²"},
     {"id": generate_id(), "nom": "Supplément coupe-feu", "supplement_min": 10, "supplement_max": 15, "description": "Placo ignifugé retardant la propagation du feu", "unite": "m²"},
     {"id": generate_id(), "nom": "Supplément isolation", "supplement_min": 15, "supplement_max": 20, "description": "Isolation intérieure (matériau + main d'œuvre)", "unite": "m²"},
