@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Slider from '@react-native-community/slider';
@@ -14,6 +15,7 @@ import { Colors, Spacing, FontSize } from '../../constants/theme';
 import { devisService, PosteCreate } from '../../services/devisService';
 import { useDevisStore, ClientInfo } from '../../store/devisStore';
 import { useAuthStore } from '../../store/authStore';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RecapitulatifScreen() {
   const router = useRouter();
