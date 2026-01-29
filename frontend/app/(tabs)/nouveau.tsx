@@ -303,16 +303,16 @@ export default function NouveauDevisScreen() {
             });
             
             // Ajouter les options/suppléments cloison sélectionnés (uniquement si Pose + Fourniture)
-            const surfaceCloison = parseFloat(cloisonData.quantite);
-            selectedCloisonOptions.forEach(optionId => {
+            Object.entries(selectedCloisonOptions).forEach(([optionId, superficie]) => {
               const option = cloisonOptions.find(o => o.id === optionId);
               if (option && (option.supplement_min > 0 || option.supplement_max > 0)) {
+                const surfaceOption = parseFloat(superficie) || parseFloat(cloisonData.quantite);
                 const supp_prix_default = (option.supplement_min + option.supplement_max) / 2;
                 postes.push({
                   categorie: 'cloison',
                   reference_id: option.id,
                   reference_nom: option.nom,
-                  quantite: surfaceCloison,
+                  quantite: surfaceOption,
                   unite: option.unite,
                   prix_min: option.supplement_min,
                   prix_max: option.supplement_max,
