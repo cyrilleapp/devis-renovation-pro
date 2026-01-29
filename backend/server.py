@@ -397,21 +397,92 @@ async def get_devis(
     if not devis_doc:
         raise HTTPException(status_code=404, detail="Devis non trouvé")
     
+    # Handle backward compatibility - convert old format to new
+    if "client" not in devis_doc or not isinstance(devis_doc["client"], dict):
+        client_nom = devis_doc.get("client_nom", "Client")
+        devis_doc["client"] = {
+            "nom": client_nom,
+            "prenom": "",
+            "adresse": "",
+            "code_postal": "",
+            "ville": "",
+            "telephone": "",
+            "email": ""
+        }
+    
+    # Ensure all required fields exist
+    if "date_validite" not in devis_doc:
+        from datetime import timedelta
+        devis_doc["date_validite"] = devis_doc["date_creation"] + timedelta(days=30)
+    
+    if "total_tva" not in devis_doc:
+        devis_doc["total_tva"] = devis_doc["total_ttc"] - devis_doc["total_ht"]
+    
+    if "conditions_paiement" not in devis_doc:
+        devis_doc["conditions_paiement"] = {"type": "jours", "delai_jours": 30, "acomptes": []}
+    
+    if "notes" not in devis_doc:
+        devis_doc["notes"] = ""
+    
     return Devis(**devis_doc)
 
 
-@api_router.patch("/devis/{devis_id}", response_model=Devis)
-async def update_devis(
+@api_router.put("/devis/{devis_id}", response_model=Devis)
+async def update_devis_full(
     devis_id: str,
     update_data: DevisUpdate,
     user_id: str = Depends(get_current_user_id)
 ):
+    """Full update of a quote - allows modification of all fields including postes"""
     devis_doc = await db.devis.find_one({"id": devis_id, "user_id": user_id})
     if not devis_doc:
         raise HTTPException(status_code=404, detail="Devis non trouvé")
     
-    # Update fields
-    update_dict = update_data.dict(exclude_unset=True)
+    update_dict = {}
+    
+    # Update client info
+    if update_data.client is not None:
+        update_dict["client"] = update_data.client.dict()
+    
+    # Update TVA
+    if update_data.tva_taux is not None:
+        update_dict["tva_taux"] = update_data.tva_taux
+    
+    # Update validity
+    if update_data.validite_jours is not None:
+        from datetime import timedelta
+        update_dict["validite_jours"] = update_data.validite_jours
+        update_dict["date_validite"] = devis_doc["date_creation"] + timedelta(days=update_data.validite_jours)
+    
+    # Update payment conditions
+    if update_data.conditions_paiement is not None:
+        update_dict["conditions_paiement"] = update_data.conditions_paiement.dict()
+    
+    # Update notes
+    if update_data.notes is not None:
+        update_dict["notes"] = update_data.notes
+    
+    # Update status
+    if update_data.statut is not None:
+        update_dict["statut"] = update_data.statut.value
+    
+    # Update postes if provided
+    if update_data.postes is not None:
+        tva_taux = update_data.tva_taux if update_data.tva_taux is not None else devis_doc["tva_taux"]
+        postes, total_ht, total_tva, total_ttc = calculate_devis_totals(update_data.postes, tva_taux)
+        
+        # Update devis_id in postes
+        postes_dicts = []
+        for poste in postes:
+            poste.devis_id = devis_id
+            postes_dicts.append(poste.dict())
+        
+        update_dict["postes"] = postes_dicts
+        update_dict["total_ht"] = total_ht
+        update_dict["total_tva"] = total_tva
+        update_dict["total_ttc"] = total_ttc
+    
+    # Update the document
     if update_dict:
         await db.devis.update_one(
             {"id": devis_id},
@@ -419,7 +490,38 @@ async def update_devis(
         )
         devis_doc.update(update_dict)
     
+    # Handle backward compatibility
+    if "client" not in devis_doc or not isinstance(devis_doc["client"], dict):
+        client_nom = devis_doc.get("client_nom", "Client")
+        devis_doc["client"] = {
+            "nom": client_nom, "prenom": "", "adresse": "", 
+            "code_postal": "", "ville": "", "telephone": "", "email": ""
+        }
+    
+    if "date_validite" not in devis_doc:
+        from datetime import timedelta
+        devis_doc["date_validite"] = devis_doc["date_creation"] + timedelta(days=30)
+    
+    if "total_tva" not in devis_doc:
+        devis_doc["total_tva"] = devis_doc["total_ttc"] - devis_doc["total_ht"]
+    
+    if "conditions_paiement" not in devis_doc:
+        devis_doc["conditions_paiement"] = {"type": "jours", "delai_jours": 30, "acomptes": []}
+    
+    if "notes" not in devis_doc:
+        devis_doc["notes"] = ""
+    
     return Devis(**devis_doc)
+
+
+@api_router.patch("/devis/{devis_id}", response_model=Devis)
+async def update_devis_partial(
+    devis_id: str,
+    update_data: DevisUpdate,
+    user_id: str = Depends(get_current_user_id)
+):
+    """Partial update - mainly for status changes"""
+    return await update_devis_full(devis_id, update_data, user_id)
 
 
 @api_router.delete("/devis/{devis_id}")
