@@ -150,12 +150,59 @@ async def get_current_user(user_id: str = Depends(get_current_user_id)):
     if not user_doc:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
     
+    entreprise = user_doc.get("entreprise")
+    if entreprise:
+        entreprise = EntrepriseInfo(**entreprise)
+    
     return User(
         id=user_doc["id"],
         email=user_doc["email"],
         nom=user_doc["nom"],
-        created_at=user_doc["created_at"]
+        created_at=user_doc["created_at"],
+        entreprise=entreprise
     )
+
+
+# ==================== ENTREPRISE (PROFIL) ROUTES ====================
+@api_router.get("/entreprise")
+async def get_entreprise(user_id: str = Depends(get_current_user_id)):
+    user_doc = await db.users.find_one({"id": user_id})
+    if not user_doc:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    entreprise = user_doc.get("entreprise", {})
+    return EntrepriseInfo(**entreprise) if entreprise else EntrepriseInfo()
+
+
+@api_router.put("/entreprise")
+async def update_entreprise(
+    entreprise_data: EntrepriseUpdate,
+    user_id: str = Depends(get_current_user_id)
+):
+    user_doc = await db.users.find_one({"id": user_id})
+    if not user_doc:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    # Get current entreprise or create new one
+    current_entreprise = user_doc.get("entreprise", {})
+    
+    # Update only provided fields
+    update_dict = entreprise_data.dict(exclude_unset=True)
+    for key, value in update_dict.items():
+        if value is not None:
+            if isinstance(value, dict):
+                # For nested objects like conditions_paiement
+                current_entreprise[key] = value
+            else:
+                current_entreprise[key] = value
+    
+    # Save to database
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"entreprise": current_entreprise}}
+    )
+    
+    return EntrepriseInfo(**current_entreprise)
 
 
 # ==================== REFERENCE DATA ROUTES ====================
