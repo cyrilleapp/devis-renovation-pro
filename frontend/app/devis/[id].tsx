@@ -314,6 +314,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   posteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: Spacing.sm,
   },
   posteCategorie: {
