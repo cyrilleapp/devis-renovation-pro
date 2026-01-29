@@ -2239,6 +2239,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  extraItem: {
+    marginBottom: Spacing.xs,
+  },
   poseOfferteContainer: {
     flexDirection: 'row',
     alignItems: 'center',
