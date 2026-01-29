@@ -165,6 +165,54 @@ backend:
           agent: "testing"
           comment: "✅ Calculs financiers validés - Totaux HT/TTC corrects, validation des prix ajustés dans les fourchettes min/max, TVA à 20% appliquée correctement."
 
+  - task: "Gestion profil entreprise (GET/PUT /api/entreprise)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Endpoints profil entreprise entièrement fonctionnels - GET /api/entreprise retourne profil vide par défaut, PUT /api/entreprise met à jour correctement toutes les données (nom, adresse, SIRET, TVA, conditions de paiement avec acomptes). Données persistées et récupérées avec succès."
+
+  - task: "Nouveau format ClientInfo pour devis"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Nouveau format ClientInfo parfaitement implémenté - POST /api/devis accepte maintenant un objet client complet (nom, prénom, adresse, code postal, ville, téléphone, email). Structure vérifiée et données correctement sauvegardées."
+
+  - task: "Modification devis (PUT /api/devis/{id})"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Endpoint PUT /api/devis/{id} entièrement fonctionnel - Permet modification complète du devis (client, TVA, postes, conditions paiement). Recalcul automatique des totaux HT/TTC vérifié (1600€ HT → 1760€ TTC avec TVA 10%). Toutes les données mises à jour correctement."
+
+  - task: "Génération PDF professionnelle avec infos entreprise"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Génération PDF professionnelle entièrement fonctionnelle - PDF de 3812 bytes généré avec succès, inclut maintenant les informations entreprise configurées, nouveau format client complet, conditions de paiement avec acomptes, mentions légales personnalisées. Format professionnel vérifié."
+
 frontend:
   - task: "Interface utilisateur"
     implemented: true
