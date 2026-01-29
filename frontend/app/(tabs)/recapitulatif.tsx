@@ -40,12 +40,6 @@ export default function RecapitulatifScreen() {
     setPostes(newPostes);
   };
 
-  const togglePosteOffert = (index: number) => {
-    const newPostes = [...postes];
-    newPostes[index].offert = !newPostes[index].offert;
-    setPostes(newPostes);
-  };
-
   const calculateTotal = () => {
     let totalHT = 0;
     postes.forEach(poste => {
