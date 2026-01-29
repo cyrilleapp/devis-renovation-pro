@@ -262,20 +262,12 @@ def generate_numero_devis():
     return f"DEV-{timestamp}"
 
 
-@api_router.post("/devis", response_model=Devis)
-async def create_devis(
-    devis_data: DevisCreate,
-    user_id: str = Depends(get_current_user_id)
-):
-    # Create devis
-    devis_id = str(uuid.uuid4())
-    numero_devis = generate_numero_devis()
-    
-    # Create postes
+def calculate_devis_totals(postes_data: list, tva_taux: float):
+    """Helper function to calculate devis totals"""
     postes = []
     total_ht = 0
     
-    for poste_data in devis_data.postes:
+    for poste_data in postes_data:
         poste_id = str(uuid.uuid4())
         prix_ajuste = poste_data.prix_ajuste or poste_data.prix_default
         
@@ -288,7 +280,7 @@ async def create_devis(
         
         poste = PosteDevis(
             id=poste_id,
-            devis_id=devis_id,
+            devis_id="",  # Will be set later
             categorie=poste_data.categorie,
             reference_id=poste_data.reference_id,
             reference_nom=poste_data.reference_nom,
@@ -303,19 +295,58 @@ async def create_devis(
         )
         postes.append(poste)
     
-    # Calculate totals
-    total_ttc = total_ht * (1 + devis_data.tva_taux / 100)
+    total_tva = total_ht * (tva_taux / 100)
+    total_ttc = total_ht + total_tva
+    
+    return postes, round(total_ht, 2), round(total_tva, 2), round(total_ttc, 2)
+
+
+@api_router.post("/devis", response_model=Devis)
+async def create_devis(
+    devis_data: DevisCreate,
+    user_id: str = Depends(get_current_user_id)
+):
+    # Create devis
+    devis_id = str(uuid.uuid4())
+    numero_devis = generate_numero_devis()
+    
+    # Get user's default conditions if not provided
+    if not devis_data.conditions_paiement:
+        user_doc = await db.users.find_one({"id": user_id})
+        if user_doc and user_doc.get("entreprise"):
+            entreprise = user_doc["entreprise"]
+            if "conditions_paiement" in entreprise:
+                devis_data.conditions_paiement = DevisConditionsPaiement(**entreprise["conditions_paiement"])
+    
+    if not devis_data.conditions_paiement:
+        devis_data.conditions_paiement = DevisConditionsPaiement()
+    
+    # Calculate postes and totals
+    postes, total_ht, total_tva, total_ttc = calculate_devis_totals(devis_data.postes, devis_data.tva_taux)
+    
+    # Update devis_id in postes
+    for poste in postes:
+        poste.devis_id = devis_id
+    
+    # Calculate validity date
+    from datetime import timedelta
+    date_creation = datetime.utcnow()
+    date_validite = date_creation + timedelta(days=devis_data.validite_jours)
     
     devis = Devis(
         id=devis_id,
         numero_devis=numero_devis,
         user_id=user_id,
-        client_nom=devis_data.client_nom,
-        date_creation=datetime.utcnow(),
+        client=devis_data.client,
+        date_creation=date_creation,
+        date_validite=date_validite,
         tva_taux=devis_data.tva_taux,
-        total_ht=round(total_ht, 2),
-        total_ttc=round(total_ttc, 2),
+        total_ht=total_ht,
+        total_tva=total_tva,
+        total_ttc=total_ttc,
         statut=StatutDevis.BROUILLON,
+        conditions_paiement=devis_data.conditions_paiement,
+        notes=devis_data.notes or "",
         postes=postes
     )
     
