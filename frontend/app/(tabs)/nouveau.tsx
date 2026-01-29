@@ -106,9 +106,9 @@ export default function NouveauDevisScreen() {
     },
     debarras: {
       enabled: false,
-      depot: { enabled: false, volume: '', tarifM3: 30 }, // 10-50 €/m³
-      gravats: { enabled: false, volume: '', tarifM3: 75 }, // 50-100 €/m³
-      encombrants: { enabled: false, volume: '', tarifM3: 60 }, // 45-75 €/m³
+      depot: { enabled: false, volume: '', tarifM3: 30, offert: false }, // 10-50 €/m³
+      gravats: { enabled: false, volume: '', tarifM3: 75, offert: false }, // 50-100 €/m³
+      encombrants: { enabled: false, volume: '', tarifM3: 60, offert: false }, // 45-75 €/m³
     },
   });
   
