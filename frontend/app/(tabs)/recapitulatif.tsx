@@ -65,20 +65,44 @@ export default function RecapitulatifScreen() {
     
     setLoading(true);
     try {
-      const devis = await devisService.create({
-        client: formData.client,
-        tva_taux: formData.tvaTaux,
-        postes,
-      });
-      clearFormData();
-      Alert.alert('Succès', 'Devis créé avec succès!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            router.replace('/(tabs)');
-            setTimeout(() => router.push(`/devis/${devis.id}`), 100);
+      let devis;
+      const isEditing = !!formData.editingDevisId;
+      
+      if (isEditing) {
+        // Mode modification : utiliser PUT
+        devis = await devisService.update(formData.editingDevisId!, {
+          client: formData.client,
+          tva_taux: formData.tvaTaux,
+          postes,
+        });
+        clearFormData();
+        Alert.alert('Succès', 'Devis modifié avec succès!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.replace('/(tabs)');
+              setTimeout(() => router.push(`/devis/${devis.id}`), 100);
+            },
           },
-        },
+        ]);
+      } else {
+        // Mode création : utiliser POST
+        devis = await devisService.create({
+          client: formData.client,
+          tva_taux: formData.tvaTaux,
+          postes,
+        });
+        clearFormData();
+        Alert.alert('Succès', 'Devis créé avec succès!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.replace('/(tabs)');
+              setTimeout(() => router.push(`/devis/${devis.id}`), 100);
+            },
+          },
+        ]);
+      }
       ]);
     } catch (error: any) {
       console.error('Error creating devis:', error);
