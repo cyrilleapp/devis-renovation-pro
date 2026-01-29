@@ -541,100 +541,264 @@ async def generate_pdf(
     devis_id: str,
     user_id: str = Depends(get_current_user_id)
 ):
-    """Generate PDF for a quote"""
+    """Generate professional PDF for a quote"""
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
-    from reportlab.lib.units import cm
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.units import cm, mm
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+    from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
     import io
+    import base64
     
     # Get devis
     devis_doc = await db.devis.find_one({"id": devis_id, "user_id": user_id})
     if not devis_doc:
         raise HTTPException(status_code=404, detail="Devis non trouvé")
     
-    devis = Devis(**devis_doc)
+    # Get user's entreprise info
+    user_doc = await db.users.find_one({"id": user_id})
+    entreprise = user_doc.get("entreprise", {}) if user_doc else {}
+    
+    # Handle backward compatibility for client
+    if isinstance(devis_doc.get("client"), dict):
+        client = devis_doc["client"]
+    else:
+        client = {"nom": devis_doc.get("client_nom", "Client"), "prenom": "", "adresse": "", "code_postal": "", "ville": "", "telephone": "", "email": ""}
+    
+    # Get date validité
+    from datetime import timedelta
+    date_validite = devis_doc.get("date_validite", devis_doc["date_creation"] + timedelta(days=30))
+    
+    # Calculate TVA
+    total_ht = devis_doc["total_ht"]
+    total_ttc = devis_doc["total_ttc"]
+    total_tva = devis_doc.get("total_tva", total_ttc - total_ht)
+    tva_taux = devis_doc["tva_taux"]
     
     # Create PDF
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    doc = SimpleDocTemplate(
+        buffer, 
+        pagesize=A4,
+        leftMargin=1.5*cm,
+        rightMargin=1.5*cm,
+        topMargin=1.5*cm,
+        bottomMargin=2*cm
+    )
+    
     styles = getSampleStyleSheet()
     
     # Custom styles
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Heading1'],
-        fontSize=24,
-        textColor=colors.HexColor('#2c3e50'),
+        fontSize=20,
+        textColor=colors.HexColor('#1a5276'),
         alignment=TA_CENTER,
-        spaceAfter=30
+        spaceAfter=10
+    )
+    
+    header_style = ParagraphStyle(
+        'Header',
+        fontSize=10,
+        textColor=colors.HexColor('#2c3e50'),
+        leading=14
+    )
+    
+    small_style = ParagraphStyle(
+        'Small',
+        fontSize=8,
+        textColor=colors.HexColor('#7f8c8d'),
+        leading=10
+    )
+    
+    section_title_style = ParagraphStyle(
+        'SectionTitle',
+        fontSize=11,
+        fontName='Helvetica-Bold',
+        textColor=colors.HexColor('#1a5276'),
+        spaceBefore=10,
+        spaceAfter=5
     )
     
     elements = []
     
-    # Title
-    elements.append(Paragraph(f"DEVIS N° {devis.numero_devis}", title_style))
-    elements.append(Spacer(1, 0.5*cm))
+    # ==== HEADER: Entreprise + Devis Info ====
+    entreprise_nom = entreprise.get("nom", "Votre Entreprise")
+    entreprise_adresse = entreprise.get("adresse", "")
+    entreprise_cp = entreprise.get("code_postal", "")
+    entreprise_ville = entreprise.get("ville", "")
+    entreprise_tel = entreprise.get("telephone", "")
+    entreprise_email = entreprise.get("email", "")
+    entreprise_siret = entreprise.get("siret", "")
+    entreprise_tva = entreprise.get("tva_intracom", "")
     
-    # Client info
-    client_data = [
-        ["Client:", devis.client_nom],
-        ["Date:", devis.date_creation.strftime("%d/%m/%Y")],
-        ["Statut:", devis.statut.value.capitalize()]
-    ]
-    client_table = Table(client_data, colWidths=[4*cm, 12*cm])
-    client_table.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+    # Entreprise info (left side)
+    entreprise_text = f"""<b>{entreprise_nom}</b><br/>
+{entreprise_adresse}<br/>
+{entreprise_cp} {entreprise_ville}<br/>
+{f'Tél: {entreprise_tel}' if entreprise_tel else ''}<br/>
+{f'Email: {entreprise_email}' if entreprise_email else ''}<br/>
+{f'SIRET: {entreprise_siret}' if entreprise_siret else ''}<br/>
+{f'TVA: {entreprise_tva}' if entreprise_tva else ''}"""
+    
+    # Devis info (right side)
+    devis_info_text = f"""<b>DEVIS N° {devis_doc['numero_devis']}</b><br/>
+Date: {devis_doc['date_creation'].strftime('%d/%m/%Y')}<br/>
+Validité: {date_validite.strftime('%d/%m/%Y')}<br/>
+Statut: {devis_doc['statut'].capitalize()}"""
+    
+    header_table_data = [[
+        Paragraph(entreprise_text, header_style),
+        Paragraph(devis_info_text, header_style)
+    ]]
+    header_table = Table(header_table_data, colWidths=[10*cm, 7*cm])
+    header_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
     ]))
-    elements.append(client_table)
+    elements.append(header_table)
     elements.append(Spacer(1, 1*cm))
     
-    # Postes table
-    table_data = [["Description", "Quantité", "Unité", "Prix Unit.", "Total"]]
+    # ==== CLIENT INFO ====
+    elements.append(Paragraph("CLIENT", section_title_style))
     
-    for poste in devis.postes:
-        description = f"{poste.categorie.value.capitalize()} - {poste.reference_nom}"
+    client_nom_complet = f"{client.get('prenom', '')} {client.get('nom', '')}".strip()
+    client_adresse = client.get('adresse', '')
+    client_cp = client.get('code_postal', '')
+    client_ville = client.get('ville', '')
+    client_tel = client.get('telephone', '')
+    client_email = client.get('email', '')
+    
+    client_text = f"""<b>{client_nom_complet}</b><br/>
+{client_adresse}<br/>
+{client_cp} {client_ville}<br/>
+{f'Tél: {client_tel}' if client_tel else ''}<br/>
+{f'Email: {client_email}' if client_email else ''}"""
+    
+    client_box = Table([[Paragraph(client_text, header_style)]], colWidths=[9*cm])
+    client_box.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+        ('PADDING', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(client_box)
+    elements.append(Spacer(1, 0.8*cm))
+    
+    # ==== POSTES TABLE ====
+    elements.append(Paragraph("DÉTAIL DES PRESTATIONS", section_title_style))
+    
+    table_data = [["Description", "Qté", "Unité", "P.U. HT", "Total HT"]]
+    
+    for poste in devis_doc["postes"]:
+        categorie = poste.get("categorie", "").capitalize() if isinstance(poste.get("categorie"), str) else str(poste.get("categorie", ""))
+        description = f"{categorie} - {poste['reference_nom']}"
         table_data.append([
             description,
-            f"{poste.quantite:.2f}",
-            poste.unite,
-            f"{poste.prix_ajuste:.2f} €",
-            f"{poste.sous_total:.2f} €"
+            f"{poste['quantite']:.2f}",
+            poste['unite'],
+            f"{poste['prix_ajuste']:.2f} €",
+            f"{poste['sous_total']:.2f} €"
         ])
     
-    postes_table = Table(table_data, colWidths=[8*cm, 2*cm, 3*cm, 2.5*cm, 2.5*cm])
+    postes_table = Table(table_data, colWidths=[8*cm, 2*cm, 2.5*cm, 2.5*cm, 2.5*cm])
     postes_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a5276')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (3, 1), (-1, -1), 'RIGHT'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, -1), 9),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#ecf0f1')])
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8f9fa')])
     ]))
     elements.append(postes_table)
-    elements.append(Spacer(1, 1*cm))
+    elements.append(Spacer(1, 0.5*cm))
     
-    # Totals
+    # ==== TOTALS ====
     totals_data = [
-        ["Total HT:", f"{devis.total_ht:.2f} €"],
-        [f"TVA ({devis.tva_taux}%):", f"{(devis.total_ttc - devis.total_ht):.2f} €"],
-        ["Total TTC:", f"{devis.total_ttc:.2f} €"]
+        ["", "Total HT:", f"{total_ht:.2f} €"],
+        ["", f"TVA ({tva_taux}%):", f"{total_tva:.2f} €"],
+        ["", "TOTAL TTC:", f"{total_ttc:.2f} €"]
     ]
-    totals_table = Table(totals_data, colWidths=[14*cm, 4*cm])
+    totals_table = Table(totals_data, colWidths=[11*cm, 3.5*cm, 3*cm])
     totals_table.setStyle(TableStyle([
         ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 11),
-        ('LINEABOVE', (0, -1), (-1, -1), 2, colors.black),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+        ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTSIZE', (1, -1), (-1, -1), 12),
+        ('TEXTCOLOR', (1, -1), (-1, -1), colors.HexColor('#1a5276')),
+        ('LINEABOVE', (1, -1), (-1, -1), 1.5, colors.HexColor('#1a5276')),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
     ]))
     elements.append(totals_table)
+    elements.append(Spacer(1, 0.8*cm))
+    
+    # ==== CONDITIONS DE PAIEMENT ====
+    conditions = devis_doc.get("conditions_paiement", {})
+    if conditions:
+        elements.append(Paragraph("CONDITIONS DE PAIEMENT", section_title_style))
+        
+        if conditions.get("type") == "acomptes" and conditions.get("acomptes"):
+            acomptes_text = "Règlement en plusieurs versements :<br/>"
+            for i, acompte in enumerate(conditions["acomptes"]):
+                desc = acompte.get("description", f"Versement {i+1}")
+                pourcentage = acompte.get("pourcentage", 0)
+                montant = total_ttc * (pourcentage / 100)
+                acomptes_text += f"• {desc}: {pourcentage}% soit {montant:.2f} € TTC<br/>"
+            elements.append(Paragraph(acomptes_text, header_style))
+        else:
+            delai = conditions.get("delai_jours", 30)
+            elements.append(Paragraph(f"Paiement à {delai} jours à réception de facture.", header_style))
+        
+        elements.append(Spacer(1, 0.5*cm))
+    
+    # ==== NOTES ====
+    notes = devis_doc.get("notes", "")
+    if notes:
+        elements.append(Paragraph("REMARQUES", section_title_style))
+        elements.append(Paragraph(notes, header_style))
+        elements.append(Spacer(1, 0.5*cm))
+    
+    # ==== MENTIONS LÉGALES ====
+    mentions = entreprise.get("mentions_legales", """Les travaux seront réalisés selon les règles de l'art et conformément aux normes en vigueur.
+Le présent devis est valable 30 jours à compter de sa date d'émission.
+Tout retard de paiement entraînera l'application de pénalités de retard au taux légal en vigueur.""")
+    
+    garantie = entreprise.get("garantie", "Garantie décennale et responsabilité civile professionnelle.")
+    
+    elements.append(Spacer(1, 0.5*cm))
+    elements.append(Paragraph("MENTIONS LÉGALES", section_title_style))
+    elements.append(Paragraph(mentions.replace("\n", "<br/>"), small_style))
+    elements.append(Spacer(1, 0.3*cm))
+    elements.append(Paragraph(f"<b>Garantie:</b> {garantie}", small_style))
+    
+    # ==== SIGNATURE ====
+    elements.append(Spacer(1, 1*cm))
+    
+    signature_data = [
+        [
+            Paragraph("<b>Bon pour accord</b><br/>Date et signature du client:", header_style),
+            Paragraph(f"<b>{entreprise_nom}</b><br/>Signature:", header_style)
+        ],
+        [
+            "",
+            ""
+        ]
+    ]
+    signature_table = Table(signature_data, colWidths=[8.5*cm, 8.5*cm], rowHeights=[1*cm, 2.5*cm])
+    signature_table.setStyle(TableStyle([
+        ('BOX', (0, 0), (0, -1), 0.5, colors.HexColor('#bdc3c7')),
+        ('BOX', (1, 0), (1, -1), 0.5, colors.HexColor('#bdc3c7')),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(signature_table)
     
     # Build PDF
     doc.build(elements)
@@ -648,7 +812,7 @@ async def generate_pdf(
     return FileResponse(
         temp_path,
         media_type="application/pdf",
-        filename=f"Devis_{devis.numero_devis}.pdf"
+        filename=f"Devis_{devis_doc['numero_devis']}.pdf"
     )
 
 
