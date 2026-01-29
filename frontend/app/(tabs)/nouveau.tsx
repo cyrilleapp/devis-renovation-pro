@@ -1282,8 +1282,49 @@ export default function NouveauDevisScreen() {
                 placeholder="30"
               />
               
-              {/* 3. Options de pose (extras liés à la pose) */}
-              <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Options de pose (optionnel)</Text>
+              {/* 3. Pose seule / Pose + Fourniture (switch) */}
+              <TouchableOpacity
+                style={[styles.switchContainer, { marginTop: Spacing.md }]}
+                onPress={() => setParquetData({ ...parquetData, pose_et_fourniture: !parquetData.pose_et_fourniture })}
+              >
+                <Text style={styles.switchLabel}>
+                  {parquetData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'}
+                </Text>
+                <View style={[styles.switch, parquetData.pose_et_fourniture && styles.switchActive]}>
+                  <View style={[styles.switchThumb, parquetData.pose_et_fourniture && styles.switchThumbActive]} />
+                </View>
+              </TouchableOpacity>
+              
+              {/* 4. Type de parquet (seulement si Pose + Fourniture) */}
+              {parquetData.pose_et_fourniture && (
+                <>
+                  <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Type de parquet *</Text>
+                  <View style={styles.typesList}>
+                    {parquets.map((type) => (
+                      <TouchableOpacity
+                        key={type.id}
+                        style={[
+                          styles.typeButton,
+                          parquetData.type === type.id && styles.typeButtonSelected,
+                        ]}
+                        onPress={() => setParquetData({ ...parquetData, type: type.id })}
+                      >
+                        <Text
+                          style={[
+                            styles.typeButtonText,
+                            parquetData.type === type.id && styles.typeButtonTextSelected,
+                          ]}
+                        >
+                          {type.nom}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              )}
+              
+              {/* 5. Options/Extras (en bas) */}
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options (optionnel)</Text>
               {extras.filter(e => e.categorie === 'parquet').map((extra) => (
                 <View key={extra.id} style={styles.extraRow}>
                   <TouchableOpacity
@@ -1317,27 +1358,9 @@ export default function NouveauDevisScreen() {
                   )}
                 </View>
               ))}
-              
-              {/* 4. Fourniture parquet (switch) */}
-              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Fourniture</Text>
-              <TouchableOpacity
-                style={styles.switchContainer}
-                onPress={() => setParquetData({ ...parquetData, pose_et_fourniture: !parquetData.pose_et_fourniture })}
-              >
-                <Text style={styles.switchLabel}>
-                  {parquetData.pose_et_fourniture ? 'Pose + Fourniture' : 'Pose seule'}
-                </Text>
-                <View style={[styles.switch, parquetData.pose_et_fourniture && styles.switchActive]}>
-                  <View style={[styles.switchThumb, parquetData.pose_et_fourniture && styles.switchThumbActive]} />
-                </View>
-              </TouchableOpacity>
-              
-              {/* 5. Type de parquet (seulement si Pose + Fourniture) */}
-              {parquetData.pose_et_fourniture && (
-                <>
-                  <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Type de parquet *</Text>
-                  <View style={styles.typesList}>
-                    {parquets.map((type) => (
+            </Card>
+          </View>
+        )}
                       <TouchableOpacity
                         key={type.id}
                         style={[
