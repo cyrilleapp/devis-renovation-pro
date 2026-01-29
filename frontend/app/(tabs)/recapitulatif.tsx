@@ -38,11 +38,20 @@ export default function RecapitulatifScreen() {
     setPostes(newPostes);
   };
 
+  const togglePosteOffert = (index: number) => {
+    const newPostes = [...postes];
+    newPostes[index].offert = !newPostes[index].offert;
+    setPostes(newPostes);
+  };
+
   const calculateTotal = () => {
     let totalHT = 0;
     postes.forEach(poste => {
-      const prix = poste.prix_ajuste || poste.prix_default;
-      totalHT += poste.quantite * prix;
+      // Ne pas comptabiliser les postes offerts
+      if (!poste.offert) {
+        const prix = poste.prix_ajuste || poste.prix_default;
+        totalHT += poste.quantite * prix;
+      }
     });
     const totalTTC = totalHT * (1 + (formData?.tvaTaux || 20) / 100);
     return { totalHT, totalTTC };
