@@ -158,6 +158,16 @@ export default function NouveauDevisScreen() {
     setNbAppareils('1');
     setSelectedCloisonOptions({});
     setPosesOffertes({});
+    setServicesData({
+      livraison: { enabled: false, km: '', tarifKm: 0.55, forfaitCustom: '', nbLivraisons: '1', offert: false },
+      deplacement: { enabled: false, km: '', tarifKm: 0.55, forfaitCustom: '', nbDeplacements: '1', afficherQuantite: false, offert: false },
+      debarras: {
+        enabled: false,
+        depot: { enabled: false, volume: '', tarifM3: 30 },
+        gravats: { enabled: false, volume: '', tarifM3: 75 },
+        encombrants: { enabled: false, volume: '', tarifM3: 60 },
+      },
+    });
     clearFormData();
   };
 
