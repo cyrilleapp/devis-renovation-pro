@@ -1935,8 +1935,12 @@ export default function NouveauDevisScreen() {
 
         <View style={styles.section}>
           <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => {
+              console.log('BOUTON CLIQUÉ !');
+              handleSubmit();
+            }}
             activeOpacity={0.7}
-            pointerEvents="auto"
           >
             <Text style={styles.submitButtonText}>
               Continuer vers le récapitulatif
