@@ -671,53 +671,80 @@ export default function NouveauDevisScreen() {
 
     if (selectedCategories.includes('parquet')) {
       console.log('Parquet data:', parquetData);
-      if (!parquetData.quantite || !parquetData.type) {
-        errors.push('Parquet: Veuillez remplir le type et la surface');
-      } else if (!parquetData.pose_et_fourniture && !parquetData.type_pose) {
-        errors.push('Parquet: Veuillez sélectionner un type de pose');
+      
+      // Vérifier la surface et le type de pose (obligatoires)
+      if (!parquetData.quantite || !parquetData.type_pose) {
+        errors.push('Parquet: Veuillez remplir la surface et le type de pose');
       } else {
-        const type = parquets.find((t) => t.id === parquetData.type);
         const typePose = parquetPoses.find((p) => p.id === parquetData.type_pose);
         
-        if (type) {
+        if (!typePose) {
+          errors.push('Parquet: Type de pose invalide');
+        } else {
           if (parquetData.pose_et_fourniture) {
-            // Pose + Fourniture = fourniture + type de pose choisi
-            if (!typePose) {
-              errors.push('Parquet: Veuillez sélectionner un type de pose');
+            // Pose + Fourniture = fourniture obligatoire + type de pose
+            if (!parquetData.type) {
+              errors.push('Parquet: Veuillez sélectionner un type de parquet');
             } else {
-              const prix_min = type.fourniture_min + typePose.prix_min;
-              const prix_max = type.fourniture_max + typePose.prix_max;
-              const prix_default = (prix_min + prix_max) / 2;
-              postes.push({
-                categorie: 'parquet',
-                reference_id: type.id,
-                reference_nom: `${type.nom} - ${typePose.nom} (Pose + Fourniture)`,
-                quantite: parseFloat(parquetData.quantite),
-                unite: type.unite,
-                prix_min,
-                prix_max,
-                prix_default,
-                prix_ajuste: prix_default,
-              });
+              const type = parquets.find((t) => t.id === parquetData.type);
+              if (type) {
+                const prix_min = type.fourniture_min + typePose.prix_min;
+                const prix_max = type.fourniture_max + typePose.prix_max;
+                const prix_default = (prix_min + prix_max) / 2;
+                postes.push({
+                  categorie: 'parquet',
+                  reference_id: type.id,
+                  reference_nom: `${type.nom} - ${typePose.nom} (Pose + Fourniture)`,
+                  quantite: parseFloat(parquetData.quantite),
+                  unite: type.unite,
+                  prix_min,
+                  prix_max,
+                  prix_default,
+                  prix_ajuste: prix_default,
+                });
+              }
             }
           } else {
-            // Pose seule = uniquement le prix du type de pose
-            if (!typePose) {
-              errors.push('Parquet: Veuillez sélectionner un type de pose');
-            } else {
-              const prix_min = typePose.prix_min;
-              const prix_max = typePose.prix_max;
-              const prix_default = (prix_min + prix_max) / 2;
-              postes.push({
-                categorie: 'parquet',
-                reference_id: type.id,
-                reference_nom: `${type.nom} - ${typePose.nom} (Pose seule)`,
-                quantite: parseFloat(parquetData.quantite),
-                unite: type.unite,
-                prix_min,
-                prix_max,
-                prix_default,
-                prix_ajuste: prix_default,
+            // Pose seule = uniquement le prix du type de pose (pas besoin du type de parquet)
+            const prix_min = typePose.prix_min;
+            const prix_max = typePose.prix_max;
+            const prix_default = (prix_min + prix_max) / 2;
+            postes.push({
+              categorie: 'parquet',
+              reference_id: typePose.id,
+              reference_nom: `${typePose.nom} (Pose seule)`,
+              quantite: parseFloat(parquetData.quantite),
+              unite: 'm²',
+              prix_min,
+              prix_max,
+              prix_default,
+              prix_ajuste: prix_default,
+            });
+          }
+        }
+        
+        // Extras parquet
+        for (const extraId of parquetData.extras) {
+          const extra = extras.find(e => e.id === extraId);
+          if (extra) {
+            const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
+            const isOffert = posesOffertes[`parquet_${extraId}`] || false;
+            postes.push({
+              categorie: 'parquet',
+              reference_id: extra.id,
+              reference_nom: extra.nom,
+              quantite: parseFloat(parquetData.quantite),
+              unite: extra.unite,
+              prix_min: extra.cout_min,
+              prix_max: extra.cout_max,
+              prix_default: extra_prix_default,
+              prix_ajuste: extra_prix_default,
+              offert: isOffert,
+            });
+          }
+        }
+      }
+    }
               });
             }
           }
