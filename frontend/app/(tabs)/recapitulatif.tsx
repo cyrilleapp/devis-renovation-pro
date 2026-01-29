@@ -12,7 +12,7 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Colors, Spacing, FontSize } from '../../constants/theme';
 import { devisService, PosteCreate } from '../../services/devisService';
-import { useDevisStore } from '../../store/devisStore';
+import { useDevisStore, ClientInfo } from '../../store/devisStore';
 import { useAuthStore } from '../../store/authStore';
 
 export default function RecapitulatifScreen() {
@@ -44,7 +44,7 @@ export default function RecapitulatifScreen() {
       const prix = poste.prix_ajuste || poste.prix_default;
       totalHT += poste.quantite * prix;
     });
-    const totalTTC = totalHT * (1 + formData.tvaTaux / 100);
+    const totalTTC = totalHT * (1 + (formData?.tvaTaux || 20) / 100);
     return { totalHT, totalTTC };
   };
 
@@ -66,7 +66,7 @@ export default function RecapitulatifScreen() {
     setLoading(true);
     try {
       const devis = await devisService.create({
-        client_nom: formData.clientNom,
+        client: formData.client,
         tva_taux: formData.tvaTaux,
         postes,
       });
@@ -95,6 +95,12 @@ export default function RecapitulatifScreen() {
     }).format(price);
   };
 
+  const getClientDisplayName = () => {
+    if (!formData?.client) return 'Client';
+    const { prenom, nom } = formData.client;
+    return prenom ? `${prenom} ${nom}` : nom;
+  };
+
   if (!formData) {
     return null;
   }
@@ -109,8 +115,23 @@ export default function RecapitulatifScreen() {
       </View>
 
       <Card>
-        <Text style={styles.infoLabel}>Client: {formData.clientNom}</Text>
-        <Text style={styles.infoLabel}>TVA: {formData.tvaTaux}%</Text>
+        <Text style={styles.clientHeader}>Client</Text>
+        <Text style={styles.infoLabel}>{getClientDisplayName()}</Text>
+        {formData.client.adresse && (
+          <Text style={styles.infoDetail}>{formData.client.adresse}</Text>
+        )}
+        {(formData.client.code_postal || formData.client.ville) && (
+          <Text style={styles.infoDetail}>
+            {formData.client.code_postal} {formData.client.ville}
+          </Text>
+        )}
+        {formData.client.telephone && (
+          <Text style={styles.infoDetail}>Tél: {formData.client.telephone}</Text>
+        )}
+        {formData.client.email && (
+          <Text style={styles.infoDetail}>Email: {formData.client.email}</Text>
+        )}
+        <Text style={[styles.infoLabel, { marginTop: Spacing.sm }]}>TVA: {formData.tvaTaux}%</Text>
       </Card>
 
       <Text style={styles.sectionTitle}>Postes de travaux</Text>
