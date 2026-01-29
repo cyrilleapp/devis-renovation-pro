@@ -191,28 +191,32 @@ export default function DevisDetailScreen() {
       </Card>
 
       <Text style={styles.sectionTitle}>Postes de travaux</Text>
-      {devis.postes.map((poste, index) => (
-        <Card key={poste.id}>
-          <View style={styles.posteHeader}>
-            <Text style={styles.posteCategorie}>{poste.categorie.toUpperCase()}</Text>
-          </View>
-          <Text style={styles.posteNom}>{poste.reference_nom}</Text>
-          <View style={styles.posteDetails}>
-            <Text style={styles.posteDetail}>
-              Quantité: {poste.quantite} {poste.unite}
-            </Text>
-            <Text style={styles.posteDetail}>
-              Prix unitaire: {formatPrice(poste.prix_ajuste)}
-            </Text>
-          </View>
-          <View style={styles.posteSousTotal}>
-            <Text style={styles.posteSousTotalLabel}>Sous-total</Text>
-            <Text style={styles.posteSousTotalValue}>
-              {formatPrice(poste.sous_total)}
-            </Text>
-          </View>
-        </Card>
-      ))}
+      {devis.postes.map((poste, index) => {
+        const isOffert = poste.offert === true;
+        return (
+          <Card key={poste.id} style={isOffert ? styles.cardOffert : undefined}>
+            <View style={styles.posteHeader}>
+              <Text style={styles.posteCategorie}>{poste.categorie.toUpperCase()}</Text>
+              {isOffert && <Text style={styles.offertBadge}>OFFERT</Text>}
+            </View>
+            <Text style={[styles.posteNom, isOffert && styles.textOffert]}>{poste.reference_nom}</Text>
+            <View style={styles.posteDetails}>
+              <Text style={styles.posteDetail}>
+                Quantité: {poste.quantite} {poste.unite}
+              </Text>
+              <Text style={[styles.posteDetail, isOffert && styles.textOffert]}>
+                Prix unitaire: {formatPrice(poste.prix_ajuste)}
+              </Text>
+            </View>
+            <View style={styles.posteSousTotal}>
+              <Text style={styles.posteSousTotalLabel}>Sous-total</Text>
+              <Text style={[styles.posteSousTotalValue, isOffert && styles.textOffert]}>
+                {isOffert ? 'Offert' : formatPrice(poste.sous_total)}
+              </Text>
+            </View>
+          </Card>
+        );
+      })}
 
       <Card style={styles.totalsCard}>
         <View style={styles.totalRow}>
