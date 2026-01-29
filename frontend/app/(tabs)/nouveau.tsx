@@ -1489,8 +1489,8 @@ export default function NouveauDevisScreen() {
                 </>
               )}
               
-              {/* 5. Options/Extras (en bas) */}
-              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Options (optionnel)</Text>
+              {/* 5. Extras (en bas) */}
+              <Text style={[styles.fieldLabel, { marginTop: Spacing.lg }]}>Extras (optionnel)</Text>
               {extras.filter(e => e.categorie === 'parquet').map((extra) => (
                 <View key={extra.id} style={styles.extraRow}>
                   <TouchableOpacity
