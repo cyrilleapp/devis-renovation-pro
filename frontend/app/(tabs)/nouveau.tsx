@@ -759,6 +759,106 @@ export default function NouveauDevisScreen() {
     console.log('Erreurs:', errors);
     console.log('Postes crees:', postes);
 
+    // Ajouter les services
+    if (servicesData.livraison.enabled) {
+      const km = parseFloat(servicesData.livraison.km || '0');
+      const nbLivraisons = parseFloat(servicesData.livraison.nbLivraisons || '1');
+      const forfaitCalcule = km * servicesData.livraison.tarifKm * nbLivraisons;
+      const forfait = servicesData.livraison.forfaitCustom 
+        ? parseFloat(servicesData.livraison.forfaitCustom) 
+        : forfaitCalcule;
+      
+      postes.push({
+        categorie: 'service',
+        reference_id: 'livraison',
+        reference_nom: `Livraison (${km} km × ${nbLivraisons})`,
+        quantite: 1,
+        unite: 'forfait',
+        prix_min: forfait * 0.9,
+        prix_max: forfait * 1.1,
+        prix_default: forfait,
+        prix_ajuste: forfait,
+        offert: servicesData.livraison.offert,
+      });
+    }
+    
+    if (servicesData.deplacement.enabled) {
+      const km = parseFloat(servicesData.deplacement.km || '0');
+      const nbDeplacements = parseFloat(servicesData.deplacement.nbDeplacements || '1');
+      const forfaitCalcule = km * servicesData.deplacement.tarifKm * nbDeplacements;
+      const forfait = servicesData.deplacement.forfaitCustom 
+        ? parseFloat(servicesData.deplacement.forfaitCustom) 
+        : forfaitCalcule;
+      const quantite = servicesData.deplacement.afficherQuantite ? nbDeplacements : 1;
+      const prixUnitaire = servicesData.deplacement.afficherQuantite ? (forfait / nbDeplacements) : forfait;
+      
+      postes.push({
+        categorie: 'service',
+        reference_id: 'deplacement',
+        reference_nom: `Déplacement${servicesData.deplacement.afficherQuantite ? '' : ` (${km} km × ${nbDeplacements})`}`,
+        quantite,
+        unite: servicesData.deplacement.afficherQuantite ? 'déplacement' : 'forfait',
+        prix_min: prixUnitaire * 0.9,
+        prix_max: prixUnitaire * 1.1,
+        prix_default: prixUnitaire,
+        prix_ajuste: prixUnitaire,
+        offert: servicesData.deplacement.offert,
+      });
+    }
+    
+    if (servicesData.debarras.enabled) {
+      // Dépôt en déchèterie
+      if (servicesData.debarras.depot.enabled && servicesData.debarras.depot.volume) {
+        const volume = parseFloat(servicesData.debarras.depot.volume);
+        const forfait = volume * servicesData.debarras.depot.tarifM3;
+        postes.push({
+          categorie: 'service',
+          reference_id: 'debarras_depot',
+          reference_nom: `Débarras - Dépôt déchèterie (${volume} m³)`,
+          quantite: 1,
+          unite: 'forfait',
+          prix_min: forfait * 0.9,
+          prix_max: forfait * 1.1,
+          prix_default: forfait,
+          prix_ajuste: forfait,
+        });
+      }
+      
+      // Gravats lourds
+      if (servicesData.debarras.gravats.enabled && servicesData.debarras.gravats.volume) {
+        const volume = parseFloat(servicesData.debarras.gravats.volume);
+        const forfait = volume * servicesData.debarras.gravats.tarifM3;
+        postes.push({
+          categorie: 'service',
+          reference_id: 'debarras_gravats',
+          reference_nom: `Débarras - Gravats lourds (${volume} m³)`,
+          quantite: 1,
+          unite: 'forfait',
+          prix_min: forfait * 0.9,
+          prix_max: forfait * 1.1,
+          prix_default: forfait,
+          prix_ajuste: forfait,
+        });
+      }
+      
+      // Encombrants
+      if (servicesData.debarras.encombrants.enabled && servicesData.debarras.encombrants.volume) {
+        const volume = parseFloat(servicesData.debarras.encombrants.volume);
+        const forfait = volume * servicesData.debarras.encombrants.tarifM3;
+        postes.push({
+          categorie: 'service',
+          reference_id: 'debarras_encombrants',
+          reference_nom: `Débarras - Encombrants (${volume} m³)`,
+          quantite: 1,
+          unite: 'forfait',
+          prix_min: forfait * 0.9,
+          prix_max: forfait * 1.1,
+          prix_default: forfait,
+          prix_ajuste: forfait,
+        });
+      }
+    }
+
     if (errors.length > 0) {
       Alert.alert('Erreur', errors.join('\n\n'));
       return;
