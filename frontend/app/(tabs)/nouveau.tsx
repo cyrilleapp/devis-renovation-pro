@@ -164,9 +164,9 @@ export default function NouveauDevisScreen() {
       deplacement: { enabled: false, km: '', tarifKm: 0.55, forfaitCustom: '', nbDeplacements: '1', afficherQuantite: false, offert: false },
       debarras: {
         enabled: false,
-        depot: { enabled: false, volume: '', tarifM3: 30 },
-        gravats: { enabled: false, volume: '', tarifM3: 75 },
-        encombrants: { enabled: false, volume: '', tarifM3: 60 },
+        depot: { enabled: false, volume: '', tarifM3: 30, offert: false },
+        gravats: { enabled: false, volume: '', tarifM3: 75, offert: false },
+        encombrants: { enabled: false, volume: '', tarifM3: 60, offert: false },
       },
     });
     clearFormData();
