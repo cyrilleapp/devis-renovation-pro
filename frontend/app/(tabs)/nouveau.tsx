@@ -651,6 +651,7 @@ export default function NouveauDevisScreen() {
             const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
             // Quantité selon l'unité
             const quantite = (extra.unite === 'm²') ? totalSurface : 1;
+            const isOffert = posesOffertes[`peinture_${extraId}`] || false;
             postes.push({
               categorie: 'peinture',
               reference_id: extra.id,
@@ -661,6 +662,7 @@ export default function NouveauDevisScreen() {
               prix_max: extra.cout_max,
               prix_default: extra_prix_default,
               prix_ajuste: extra_prix_default,
+              offert: isOffert,
             });
           }
         });
