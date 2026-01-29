@@ -639,6 +639,7 @@ export default function NouveauDevisScreen() {
       client: clientData,
       tvaTaux: parseFloat(tvaTaux),
       postes,
+      editingDevisId: editingDevisId, // Passer l'ID du devis si en mode modification
     });
 
     // Navigate to recapitulatif
