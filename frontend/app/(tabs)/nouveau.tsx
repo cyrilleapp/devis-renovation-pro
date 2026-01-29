@@ -74,7 +74,7 @@ export default function NouveauDevisScreen() {
   const [plansTravail, setPlansTravail] = useState<any[]>([]);
   const [cloisons, setCloisons] = useState<any[]>([]);
   const [cloisonOptions, setCloisonOptions] = useState<any[]>([]);
-  const [selectedCloisonOptions, setSelectedCloisonOptions] = useState<string[]>([]);
+  const [selectedCloisonOptions, setSelectedCloisonOptions] = useState<{[key: string]: string}>({}); // {optionId: superficie}
   const [peintures, setPeintures] = useState<any[]>([]);
   const [parquets, setParquets] = useState<any[]>([]);
   const [parquetPoses, setParquetPoses] = useState<any[]>([]);
