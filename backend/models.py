@@ -17,6 +17,64 @@ class StatutDevis(str, Enum):
     ENVOYE = "envoye"
     ACCEPTE = "accepte"
     REFUSE = "refuse"
+    FACTURE = "facture"
+
+
+# ==================== ENTREPRISE (PROFIL) ====================
+class Acompte(BaseModel):
+    pourcentage: float  # Ex: 30
+    delai_jours: int  # Ex: 0 (à la commande), 30 (à 30 jours), etc.
+    description: Optional[str] = None  # Ex: "À la commande", "À la livraison"
+
+
+class ConditionsPaiement(BaseModel):
+    type: str = "jours"  # "jours" ou "acomptes"
+    delai_jours: int = 30  # Pour type "jours" : paiement à X jours
+    acomptes: List[Acompte] = []  # Pour type "acomptes" : liste des acomptes
+
+
+class EntrepriseInfo(BaseModel):
+    nom: str = ""
+    adresse: str = ""
+    code_postal: str = ""
+    ville: str = ""
+    telephone: str = ""
+    email: str = ""
+    siret: str = ""
+    tva_intracom: str = ""
+    logo_url: Optional[str] = None
+    conditions_paiement: ConditionsPaiement = ConditionsPaiement()
+    mentions_legales: str = """Les travaux seront réalisés selon les règles de l'art et conformément aux normes en vigueur.
+Le présent devis est valable 30 jours à compter de sa date d'émission.
+Tout retard de paiement entraînera l'application de pénalités de retard au taux légal en vigueur.
+En cas de litige, le tribunal compétent sera celui du siège social de l'entreprise."""
+    garantie: str = "Garantie décennale et responsabilité civile professionnelle."
+
+
+class EntrepriseUpdate(BaseModel):
+    nom: Optional[str] = None
+    adresse: Optional[str] = None
+    code_postal: Optional[str] = None
+    ville: Optional[str] = None
+    telephone: Optional[str] = None
+    email: Optional[str] = None
+    siret: Optional[str] = None
+    tva_intracom: Optional[str] = None
+    logo_url: Optional[str] = None
+    conditions_paiement: Optional[ConditionsPaiement] = None
+    mentions_legales: Optional[str] = None
+    garantie: Optional[str] = None
+
+
+# ==================== CLIENT ====================
+class ClientInfo(BaseModel):
+    nom: str
+    prenom: Optional[str] = ""
+    adresse: Optional[str] = ""
+    code_postal: Optional[str] = ""
+    ville: Optional[str] = ""
+    telephone: Optional[str] = ""
+    email: Optional[str] = ""
 
 
 # ==================== USER MODELS ====================
@@ -36,6 +94,7 @@ class User(BaseModel):
     email: str
     nom: str
     created_at: datetime
+    entreprise: Optional[EntrepriseInfo] = None
 
 
 class TokenResponse(BaseModel):
@@ -127,7 +186,7 @@ class PosteDevisOptions(BaseModel):
 
 
 class PosteDevisCreate(BaseModel):
-    categorie: CategoriePoste
+    categorie: str  # Changed from CategoriePoste to str for flexibility
     reference_id: str
     reference_nom: str
     quantite: float
@@ -142,7 +201,7 @@ class PosteDevisCreate(BaseModel):
 class PosteDevis(BaseModel):
     id: str
     devis_id: str
-    categorie: CategoriePoste
+    categorie: str
     reference_id: str
     reference_nom: str
     quantite: float
@@ -155,28 +214,45 @@ class PosteDevis(BaseModel):
     options: Optional[PosteDevisOptions] = None
 
 
+class DevisConditionsPaiement(BaseModel):
+    type: str = "jours"  # "jours" ou "acomptes"
+    delai_jours: int = 30
+    acomptes: List[Acompte] = []
+
+
 class DevisCreate(BaseModel):
-    client_nom: str
+    client: ClientInfo
     tva_taux: float = 20.0
+    validite_jours: int = 30
+    conditions_paiement: Optional[DevisConditionsPaiement] = None
+    notes: Optional[str] = ""
     postes: List[PosteDevisCreate]
 
 
 class DevisUpdate(BaseModel):
-    client_nom: Optional[str] = None
+    client: Optional[ClientInfo] = None
     tva_taux: Optional[float] = None
+    validite_jours: Optional[int] = None
+    conditions_paiement: Optional[DevisConditionsPaiement] = None
+    notes: Optional[str] = None
     statut: Optional[StatutDevis] = None
+    postes: Optional[List[PosteDevisCreate]] = None
 
 
 class Devis(BaseModel):
     id: str
     numero_devis: str
     user_id: str
-    client_nom: str
+    client: ClientInfo
     date_creation: datetime
+    date_validite: datetime
     tva_taux: float
     total_ht: float
+    total_tva: float
     total_ttc: float
     statut: StatutDevis
+    conditions_paiement: DevisConditionsPaiement
+    notes: Optional[str] = ""
     postes: List[PosteDevis]
 
 
