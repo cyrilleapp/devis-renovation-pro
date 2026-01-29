@@ -745,43 +745,6 @@ export default function NouveauDevisScreen() {
         }
       }
     }
-              });
-            }
-          }
-          
-          // Ajouter les extras sélectionnés
-          const surfaceParquet = parseFloat(parquetData.quantite);
-          // Calcul du périmètre approximatif (√surface × 4) pour les plinthes
-          const perimetreParquet = Math.round(Math.sqrt(surfaceParquet) * 4);
-          
-          parquetData.extras.forEach(extraId => {
-            const extra = extras.find(e => e.id === extraId);
-            if (extra) {
-              const extra_prix_default = (extra.cout_min + extra.cout_max) / 2;
-              // Déterminer la quantité selon l'unité
-              let quantite = surfaceParquet; // Par défaut: m²
-              if (extra.unite === 'm linéaire' || extra.unite.includes('linéaire')) {
-                quantite = perimetreParquet; // Périmètre pour les plinthes
-              } else if (extra.unite === 'prestation' || extra.unite === 'pièce' || extra.unite === 'point' || extra.unite === 'unité' || extra.unite === 'pose' || extra.unite === 'appareil') {
-                quantite = 1; // Forfait
-              }
-              
-              postes.push({
-                categorie: 'parquet',
-                reference_id: extra.id,
-                reference_nom: extra.nom,
-                quantite,
-                unite: extra.unite,
-                prix_min: extra.cout_min,
-                prix_max: extra.cout_max,
-                prix_default: extra_prix_default,
-                prix_ajuste: extra_prix_default,
-              });
-            }
-          });
-        }
-      }
-    }
 
     console.log('Erreurs:', errors);
     console.log('Postes crees:', postes);
