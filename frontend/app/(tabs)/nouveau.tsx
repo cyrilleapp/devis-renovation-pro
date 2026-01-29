@@ -1450,37 +1450,38 @@ export default function NouveauDevisScreen() {
               
               <Text style={[styles.fieldLabel, { marginTop: Spacing.md }]}>Extras (optionnel)</Text>
               {extras.filter(e => e.categorie === 'peinture').map((extra) => (
-                <View key={extra.id} style={styles.extraItem}>
-                  <View style={styles.extraRow}>
-                    <TouchableOpacity
-                      style={styles.checkboxContainer}
-                      onPress={() => {
-                        const newExtras = peintureData.extras.includes(extra.id)
-                          ? peintureData.extras.filter(id => id !== extra.id)
-                          : [...peintureData.extras, extra.id];
-                        setPeintureData({ ...peintureData, extras: newExtras });
-                      }}
-                    >
-                      <View style={[styles.checkbox, peintureData.extras.includes(extra.id) && styles.checkboxChecked]}>
-                        {peintureData.extras.includes(extra.id) && (
-                          <Ionicons name="checkmark" size={16} color={Colors.surface} />
-                        )}
-                      </View>
-                      <Text style={styles.checkboxLabel}>{extra.nom}</Text>
-                    </TouchableOpacity>
-                  </View>
+                <View key={extra.id} style={styles.extraItemContainer}>
+                  <TouchableOpacity
+                    style={styles.serviceHeader}
+                    onPress={() => {
+                      const newExtras = peintureData.extras.includes(extra.id)
+                        ? peintureData.extras.filter(id => id !== extra.id)
+                        : [...peintureData.extras, extra.id];
+                      setPeintureData({ ...peintureData, extras: newExtras });
+                    }}
+                  >
+                    <View style={[styles.checkbox, peintureData.extras.includes(extra.id) && styles.checkboxChecked]}>
+                      {peintureData.extras.includes(extra.id) && (
+                        <Ionicons name="checkmark" size={16} color={Colors.surface} />
+                      )}
+                    </View>
+                    <Text style={styles.serviceTitle}>{extra.nom}</Text>
+                  </TouchableOpacity>
+                  
                   {peintureData.extras.includes(extra.id) && (
-                    <TouchableOpacity
-                      style={styles.poseOfferteContainerFull}
-                      onPress={() => setPosesOffertes({ ...posesOffertes, [`peinture_${extra.id}`]: !posesOffertes[`peinture_${extra.id}`] })}
-                    >
-                      <View style={[styles.checkboxSmall, posesOffertes[`peinture_${extra.id}`] && styles.checkboxChecked]}>
-                        {posesOffertes[`peinture_${extra.id}`] && (
-                          <Ionicons name="checkmark" size={12} color={Colors.surface} />
-                        )}
-                      </View>
-                      <Text style={styles.poseOfferteLabel}>Offert</Text>
-                    </TouchableOpacity>
+                    <View style={styles.extraOfferteContent}>
+                      <TouchableOpacity
+                        style={styles.poseOfferteContainerFull}
+                        onPress={() => setPosesOffertes({ ...posesOffertes, [`peinture_${extra.id}`]: !posesOffertes[`peinture_${extra.id}`] })}
+                      >
+                        <View style={[styles.checkboxSmall, posesOffertes[`peinture_${extra.id}`] && styles.checkboxChecked]}>
+                          {posesOffertes[`peinture_${extra.id}`] && (
+                            <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                          )}
+                        </View>
+                        <Text style={styles.poseOfferteLabel}>Offert</Text>
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </View>
               ))}
