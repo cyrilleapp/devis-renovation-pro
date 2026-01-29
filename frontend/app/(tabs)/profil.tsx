@@ -79,7 +79,7 @@ export default function ProfilScreen() {
   const loadEntreprise = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/entreprise');
+      const response = await api.get('/entreprise');
       if (response.data) {
         setEntreprise({
           ...DEFAULT_ENTREPRISE,
