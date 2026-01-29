@@ -12,7 +12,7 @@ export interface PosteOptions {
 }
 
 export interface PosteCreate {
-  categorie: 'cuisine' | 'cloison' | 'peinture' | 'parquet';
+  categorie: 'cuisine' | 'cloison' | 'peinture' | 'parquet' | string;
   reference_id: string;
   reference_nom: string;
   quantite: number;
@@ -24,9 +24,21 @@ export interface PosteCreate {
   options?: PosteOptions;
 }
 
+export interface ClientInfo {
+  nom: string;
+  prenom?: string;
+  adresse?: string;
+  code_postal?: string;
+  ville?: string;
+  telephone?: string;
+  email?: string;
+}
+
 export interface DevisCreate {
-  client_nom: string;
+  client: ClientInfo;
   tva_taux: number;
+  validite_jours?: number;
+  notes?: string;
   postes: PosteCreate[];
 }
 
@@ -34,12 +46,16 @@ export interface Devis {
   id: string;
   numero_devis: string;
   user_id: string;
-  client_nom: string;
+  client: ClientInfo;
   date_creation: string;
+  date_validite: string;
   tva_taux: number;
   total_ht: number;
+  total_tva: number;
   total_ttc: number;
   statut: string;
+  conditions_paiement: any;
+  notes: string;
   postes: any[];
 }
 
@@ -70,7 +86,12 @@ export const devisService = {
   },
 
   async update(id: string, data: any): Promise<Devis> {
-    const response = await api.patch(`/devis/${id}`, data);
+    const response = await api.put(`/devis/${id}`, data);
+    return response.data;
+  },
+
+  async updateStatus(id: string, statut: string): Promise<Devis> {
+    const response = await api.patch(`/devis/${id}`, { statut });
     return response.data;
   },
 
