@@ -106,7 +106,7 @@ export default function ProfilScreen() {
   const handleSaveEntreprise = async () => {
     try {
       setSaving(true);
-      await api.put('/api/entreprise', entreprise);
+      await api.put('/entreprise', entreprise);
       Alert.alert('Succès', 'Profil entreprise enregistré avec succès');
       setShowEntrepriseForm(false);
     } catch (error) {
