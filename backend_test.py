@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 # Configuration
-BASE_URL = "https://renoquote-2.preview.emergentagent.com/api"
+BASE_URL = "https://renovpricing.preview.emergentagent.com/api"
 HEADERS = {"Content-Type": "application/json"}
 
 class DevisAPITester:
