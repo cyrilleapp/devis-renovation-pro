@@ -888,7 +888,7 @@ export default function NouveauDevisScreen() {
       postes.push({
         categorie: 'service',
         reference_id: 'deplacement',
-        reference_nom: `Déplacement${servicesData.deplacement.afficherQuantite ? '' : ` (${km} km × ${nbDeplacements})`}`,
+        reference_nom: `Déplacement (${km} km × ${nbDeplacements})`,
         quantite,
         unite: servicesData.deplacement.afficherQuantite ? 'déplacement' : 'forfait',
         prix_min: prixUnitaire * 0.9,
