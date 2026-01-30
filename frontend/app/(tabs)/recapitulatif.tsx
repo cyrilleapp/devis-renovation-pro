@@ -380,6 +380,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.primary,
   },
+  tvaNote: {
+    fontSize: FontSize.xs,
+    color: Colors.textLight,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+    fontStyle: 'italic',
+  },
   actions: {
     marginTop: Spacing.lg,
     marginBottom: Spacing.xl,
