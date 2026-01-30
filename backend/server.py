@@ -1342,6 +1342,75 @@ async def delete_facture(
     return {"message": "Facture supprimée"}
 
 
+# ==================== ADMIN - RECHARGEMENT CONFIGURATION ====================
+
+@api_router.post("/admin/reload-tarifs")
+async def reload_tarifs(user_id: str = Depends(get_current_user_id)):
+    """
+    Recharge les tarifs depuis le fichier de configuration.
+    ATTENTION: Cela supprime toutes les données de référence et les recrée.
+    Les devis/factures existants ne sont pas affectés.
+    """
+    try:
+        # Charger les nouvelles données depuis le fichier config
+        ref_data = get_reference_data()
+        
+        # Supprimer les anciennes données de référence
+        await db.ref_cuisine_types.delete_many({})
+        await db.ref_plans_travail.delete_many({})
+        await db.ref_cloisons.delete_many({})
+        await db.ref_cloison_options.delete_many({})
+        await db.ref_peintures.delete_many({})
+        await db.ref_parquets.delete_many({})
+        await db.ref_parquet_poses.delete_many({})
+        await db.ref_extras.delete_many({})
+        
+        # Insérer les nouvelles données
+        if ref_data['cuisine_types']:
+            await db.ref_cuisine_types.insert_many(ref_data['cuisine_types'])
+        if ref_data['plans_travail']:
+            await db.ref_plans_travail.insert_many(ref_data['plans_travail'])
+        if ref_data['cloisons']:
+            await db.ref_cloisons.insert_many(ref_data['cloisons'])
+        if ref_data['cloison_options']:
+            await db.ref_cloison_options.insert_many(ref_data['cloison_options'])
+        if ref_data['peintures']:
+            await db.ref_peintures.insert_many(ref_data['peintures'])
+        if ref_data['parquets']:
+            await db.ref_parquets.insert_many(ref_data['parquets'])
+        if ref_data['parquet_poses']:
+            await db.ref_parquet_poses.insert_many(ref_data['parquet_poses'])
+        if ref_data['extras']:
+            await db.ref_extras.insert_many(ref_data['extras'])
+        
+        return {
+            "message": "Tarifs rechargés avec succès",
+            "stats": {
+                "cuisine_types": len(ref_data['cuisine_types']),
+                "plans_travail": len(ref_data['plans_travail']),
+                "cloisons": len(ref_data['cloisons']),
+                "cloison_options": len(ref_data['cloison_options']),
+                "peintures": len(ref_data['peintures']),
+                "parquets": len(ref_data['parquets']),
+                "parquet_poses": len(ref_data['parquet_poses']),
+                "extras": len(ref_data['extras'])
+            }
+        }
+    except Exception as e:
+        logger.error(f"Erreur rechargement tarifs: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+
+
+@api_router.get("/admin/tarifs")
+async def get_tarifs_config(user_id: str = Depends(get_current_user_id)):
+    """Récupère le contenu actuel du fichier de configuration des tarifs"""
+    try:
+        tarifs = load_tarifs()
+        return tarifs
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lecture config: {str(e)}")
+
+
 # Root route
 @api_router.get("/")
 async def root():
