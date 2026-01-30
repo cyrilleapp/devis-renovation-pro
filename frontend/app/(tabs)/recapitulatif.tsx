@@ -133,7 +133,7 @@ export default function RecapitulatifScreen() {
     return null;
   }
 
-  const { totalHT, totalTTC } = calculateTotal();
+  const { totalTTC } = calculateTotal();
 
   return (
     <ScrollView style={styles.container}>
