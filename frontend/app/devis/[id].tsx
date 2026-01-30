@@ -123,6 +123,40 @@ export default function DevisDetailScreen() {
     );
   };
 
+  const handleGenerateFacture = () => {
+    Alert.alert(
+      'Générer une facture',
+      'Voulez-vous créer une facture à partir de ce devis ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Générer',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const facture = await factureService.create(id);
+              Alert.alert(
+                'Facture créée',
+                `La facture ${facture.numero_facture} a été créée avec succès.`,
+                [
+                  { text: 'Voir la facture', onPress: () => router.push(`/facture/${facture.id}`) },
+                  { text: 'OK' },
+                ]
+              );
+              // Recharger le devis pour mettre à jour le statut
+              loadDevis();
+            } catch (error: any) {
+              const message = error?.response?.data?.detail || 'Impossible de créer la facture';
+              Alert.alert('Erreur', message);
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', {
