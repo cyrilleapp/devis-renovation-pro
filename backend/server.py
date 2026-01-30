@@ -945,6 +945,402 @@ Tout retard de paiement entraînera l'application de pénalités de retard au ta
     )
 
 
+# ==================== FACTURES ====================
+
+@api_router.post("/factures", response_model=Facture)
+async def create_facture(
+    facture_data: FactureCreate,
+    user_id: str = Depends(get_current_user_id)
+):
+    """Créer une facture à partir d'un devis"""
+    # Vérifier que le devis existe et appartient à l'utilisateur
+    devis_doc = await db.devis.find_one({"id": facture_data.devis_id, "user_id": user_id})
+    if not devis_doc:
+        raise HTTPException(status_code=404, detail="Devis non trouvé")
+    
+    # Vérifier qu'une facture n'existe pas déjà pour ce devis
+    existing_facture = await db.factures.find_one({"devis_id": facture_data.devis_id})
+    if existing_facture:
+        raise HTTPException(status_code=400, detail="Une facture existe déjà pour ce devis")
+    
+    # Générer le numéro de facture
+    now = datetime.utcnow()
+    count = await db.factures.count_documents({"user_id": user_id})
+    numero_facture = f"FAC-{now.strftime('%Y%m%d%H%M%S')}"
+    
+    # Recalculer les totaux en excluant les postes offerts
+    total_ttc = sum(
+        poste.get("sous_total", 0) 
+        for poste in devis_doc["postes"] 
+        if not poste.get("offert", False)
+    )
+    tva_taux = devis_doc["tva_taux"]
+    total_ht = total_ttc / (1 + tva_taux / 100)
+    total_tva = total_ttc - total_ht
+    
+    # Créer la facture
+    facture_id = str(uuid.uuid4())
+    facture = {
+        "id": facture_id,
+        "numero_facture": numero_facture,
+        "devis_id": facture_data.devis_id,
+        "devis_numero": devis_doc["numero_devis"],
+        "user_id": user_id,
+        "client": devis_doc.get("client", {}),
+        "date_creation": now,
+        "date_paiement": None,
+        "tva_taux": tva_taux,
+        "total_ht": round(total_ht, 2),
+        "total_tva": round(total_tva, 2),
+        "total_ttc": round(total_ttc, 2),
+        "statut": StatutFacture.EN_ATTENTE,
+        "postes": devis_doc["postes"],
+        "conditions_paiement": devis_doc.get("conditions_paiement"),
+        "notes": devis_doc.get("notes", "")
+    }
+    
+    await db.factures.insert_one(facture)
+    
+    # Mettre à jour le statut du devis
+    await db.devis.update_one(
+        {"id": facture_data.devis_id},
+        {"$set": {"statut": StatutDevis.FACTURE}}
+    )
+    
+    return Facture(**facture)
+
+
+@api_router.get("/factures", response_model=List[FactureListItem])
+async def list_factures(user_id: str = Depends(get_current_user_id)):
+    """Liste des factures de l'utilisateur"""
+    factures = []
+    cursor = db.factures.find({"user_id": user_id}).sort("date_creation", -1)
+    
+    async for f in cursor:
+        client = f.get("client", {})
+        client_nom = f"{client.get('prenom', '')} {client.get('nom', '')}".strip() if isinstance(client, dict) else str(client)
+        factures.append(FactureListItem(
+            id=f["id"],
+            numero_facture=f["numero_facture"],
+            devis_numero=f.get("devis_numero", ""),
+            client_nom=client_nom,
+            date_creation=f["date_creation"],
+            date_paiement=f.get("date_paiement"),
+            total_ttc=f["total_ttc"],
+            statut=f["statut"]
+        ))
+    
+    return factures
+
+
+@api_router.get("/factures/{facture_id}", response_model=Facture)
+async def get_facture(
+    facture_id: str,
+    user_id: str = Depends(get_current_user_id)
+):
+    """Récupérer une facture"""
+    facture_doc = await db.factures.find_one({"id": facture_id, "user_id": user_id})
+    if not facture_doc:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    return Facture(**facture_doc)
+
+
+@api_router.put("/factures/{facture_id}/statut")
+async def update_facture_statut(
+    facture_id: str,
+    statut: StatutFacture,
+    user_id: str = Depends(get_current_user_id)
+):
+    """Mettre à jour le statut d'une facture (marquer comme payée)"""
+    facture_doc = await db.factures.find_one({"id": facture_id, "user_id": user_id})
+    if not facture_doc:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    
+    update_data = {"statut": statut}
+    if statut == StatutFacture.PAYEE:
+        update_data["date_paiement"] = datetime.utcnow()
+    
+    await db.factures.update_one(
+        {"id": facture_id},
+        {"$set": update_data}
+    )
+    
+    return {"message": "Statut mis à jour", "statut": statut}
+
+
+@api_router.get("/factures/{facture_id}/pdf")
+async def generate_facture_pdf(
+    facture_id: str,
+    user_id: str = Depends(get_current_user_id)
+):
+    """Générer le PDF d'une facture"""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm, mm
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
+    import io
+    
+    # Get facture
+    facture_doc = await db.factures.find_one({"id": facture_id, "user_id": user_id})
+    if not facture_doc:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    
+    # Get user's entreprise info
+    user_doc = await db.users.find_one({"id": user_id})
+    entreprise = user_doc.get("entreprise", {}) if user_doc else {}
+    
+    # Client info
+    client = facture_doc.get("client", {})
+    if not isinstance(client, dict):
+        client = {"nom": str(client), "prenom": "", "adresse": "", "code_postal": "", "ville": "", "telephone": "", "email": ""}
+    
+    # Totals
+    tva_taux = facture_doc["tva_taux"]
+    total_ttc = facture_doc["total_ttc"]
+    total_ht = facture_doc["total_ht"]
+    total_tva = facture_doc["total_tva"]
+    
+    # Create PDF
+    buffer = io.BytesIO()
+    
+    def add_page_number(canvas, doc):
+        page_num = canvas.getPageNumber()
+        text = f"Page {page_num}"
+        canvas.saveState()
+        canvas.setFont('Helvetica', 8)
+        canvas.setFillColor(colors.HexColor('#7f8c8d'))
+        canvas.drawCentredString(A4[0]/2, 1*cm, text)
+        canvas.restoreState()
+    
+    doc = SimpleDocTemplate(
+        buffer, 
+        pagesize=A4,
+        leftMargin=1.5*cm,
+        rightMargin=1.5*cm,
+        topMargin=1.5*cm,
+        bottomMargin=2*cm
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    header_style = ParagraphStyle('Header', fontSize=10, textColor=colors.HexColor('#2c3e50'), leading=14)
+    small_style = ParagraphStyle('Small', fontSize=8, textColor=colors.HexColor('#7f8c8d'), leading=10)
+    section_title_style = ParagraphStyle('SectionTitle', fontSize=11, fontName='Helvetica-Bold', textColor=colors.HexColor('#1a5276'), spaceBefore=10, spaceAfter=5)
+    desc_style = ParagraphStyle('Description', fontSize=9, textColor=colors.HexColor('#2c3e50'), leading=11, wordWrap='CJK')
+    category_header_style = ParagraphStyle('CategoryHeader', fontSize=10, fontName='Helvetica-Bold', textColor=colors.HexColor('#1a5276'), leading=12)
+    
+    elements = []
+    
+    # ==== HEADER ====
+    entreprise_nom = entreprise.get("nom", "Votre Entreprise")
+    entreprise_text = f"""<b>{entreprise_nom}</b><br/>
+{entreprise.get("adresse", "")}<br/>
+{entreprise.get("code_postal", "")} {entreprise.get("ville", "")}<br/>
+{f'Tél: {entreprise.get("telephone", "")}' if entreprise.get("telephone") else ''}<br/>
+{f'Email: {entreprise.get("email", "")}' if entreprise.get("email") else ''}<br/>
+{f'SIRET: {entreprise.get("siret", "")}' if entreprise.get("siret") else ''}<br/>
+{f'TVA: {entreprise.get("tva_intracom", "")}' if entreprise.get("tva_intracom") else ''}"""
+    
+    # FACTURE au lieu de DEVIS
+    facture_info_text = f"""<b>FACTURE N° {facture_doc['numero_facture']}</b><br/>
+Date: {facture_doc['date_creation'].strftime('%d/%m/%Y')}<br/>
+Devis associé: {facture_doc.get('devis_numero', 'N/A')}"""
+    
+    if facture_doc.get("statut") == StatutFacture.PAYEE and facture_doc.get("date_paiement"):
+        facture_info_text += f"<br/>Payée le: {facture_doc['date_paiement'].strftime('%d/%m/%Y')}"
+    
+    header_table = Table([[
+        Paragraph(entreprise_text, header_style),
+        Paragraph(facture_info_text, header_style)
+    ]], colWidths=[10*cm, 7*cm])
+    header_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+    ]))
+    elements.append(header_table)
+    elements.append(Spacer(1, 1*cm))
+    
+    # ==== CLIENT ====
+    elements.append(Paragraph("CLIENT", section_title_style))
+    client_nom_complet = f"{client.get('prenom', '')} {client.get('nom', '')}".strip()
+    client_text = f"""<b>{client_nom_complet}</b><br/>
+{client.get('adresse', '')}<br/>
+{client.get('code_postal', '')} {client.get('ville', '')}<br/>
+{f"Tél: {client.get('telephone', '')}" if client.get('telephone') else ''}<br/>
+{f"Email: {client.get('email', '')}" if client.get('email') else ''}"""
+    
+    client_box = Table([[Paragraph(client_text, header_style)]], colWidths=[9*cm])
+    client_box.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+        ('PADDING', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(client_box)
+    elements.append(Spacer(1, 0.8*cm))
+    
+    # ==== POSTES - Même structure que le devis ====
+    elements.append(Paragraph("DÉTAIL DES PRESTATIONS", section_title_style))
+    
+    # Grouper par catégorie
+    postes_by_category = {}
+    category_order = ['cuisine', 'cloison', 'peinture', 'parquet', 'service']
+    category_labels = {'cuisine': 'CUISINE', 'cloison': 'CLOISON', 'peinture': 'PEINTURE', 'parquet': 'PARQUET', 'service': 'SERVICES'}
+    
+    for poste in facture_doc["postes"]:
+        cat = poste.get("categorie", "autre").lower()
+        if cat not in postes_by_category:
+            postes_by_category[cat] = []
+        postes_by_category[cat].append(poste)
+    
+    table_data = [["Description", "Qté", "Unité", "P.U. TTC", "Total TTC"]]
+    row_styles = []
+    current_row = 1
+    
+    for cat in category_order:
+        if cat not in postes_by_category:
+            continue
+        
+        postes = postes_by_category[cat]
+        cat_label = category_labels.get(cat, cat.upper())
+        
+        table_data.append([Paragraph(f"<b>{cat_label}</b>", category_header_style), "", "", "", ""])
+        row_styles.append(('BACKGROUND', (0, current_row), (-1, current_row), colors.HexColor('#e8f4f8')))
+        row_styles.append(('SPAN', (0, current_row), (-1, current_row)))
+        current_row += 1
+        
+        cat_subtotal = 0
+        for poste in postes:
+            is_offert = poste.get("offert", False)
+            description = poste['reference_nom']
+            sous_total = poste.get('sous_total', 0)
+            if not is_offert:
+                cat_subtotal += sous_total
+            
+            table_data.append([
+                Paragraph(description, desc_style),
+                f"{poste['quantite']:.2f}",
+                poste['unite'],
+                f"{poste['prix_ajuste']:.2f} €",
+                "OFFERT" if is_offert else f"{sous_total:.2f} €"
+            ])
+            current_row += 1
+        
+        table_data.append([Paragraph(f"<i>Sous-total {cat_label}</i>", desc_style), "", "", "", f"{cat_subtotal:.2f} €"])
+        row_styles.append(('BACKGROUND', (0, current_row), (-1, current_row), colors.HexColor('#f5f5f5')))
+        row_styles.append(('FONTNAME', (4, current_row), (4, current_row), 'Helvetica-Bold'))
+        current_row += 1
+    
+    postes_table = Table(table_data, colWidths=[8*cm, 1.8*cm, 2.2*cm, 2.5*cm, 3*cm])
+    base_styles = [
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a5276')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (3, 1), (-1, -1), 'RIGHT'),
+        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+        ('TOPPADDING', (0, 1), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]
+    postes_table.setStyle(TableStyle(base_styles + row_styles))
+    elements.append(postes_table)
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # ==== TOTALS ====
+    totals_data = [
+        ["", "Total HT:", f"{total_ht:.2f} €"],
+        ["", f"TVA ({tva_taux}%):", f"{total_tva:.2f} €"],
+        ["", "TOTAL TTC:", f"{total_ttc:.2f} €"]
+    ]
+    totals_table = Table(totals_data, colWidths=[11*cm, 3.5*cm, 3*cm])
+    totals_table.setStyle(TableStyle([
+        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+        ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTSIZE', (1, -1), (-1, -1), 12),
+        ('TEXTCOLOR', (1, -1), (-1, -1), colors.HexColor('#1a5276')),
+        ('LINEABOVE', (1, -1), (-1, -1), 1.5, colors.HexColor('#1a5276')),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(totals_table)
+    elements.append(Spacer(1, 0.8*cm))
+    
+    # ==== CONDITIONS DE PAIEMENT ====
+    conditions = facture_doc.get("conditions_paiement", {})
+    if conditions:
+        conditions_elements = []
+        conditions_elements.append(Paragraph("CONDITIONS DE PAIEMENT", section_title_style))
+        
+        if conditions.get("type") == "acomptes" and conditions.get("acomptes"):
+            acomptes_text = "Règlement en plusieurs versements :<br/>"
+            for i, acompte in enumerate(conditions["acomptes"]):
+                desc = acompte.get("description", f"Versement {i+1}")
+                pourcentage = acompte.get("pourcentage", 0)
+                montant = total_ttc * (pourcentage / 100)
+                acomptes_text += f"• {desc}: {pourcentage}% soit {montant:.2f} € TTC<br/>"
+            conditions_elements.append(Paragraph(acomptes_text, header_style))
+        else:
+            delai = conditions.get("delai_jours", 30)
+            conditions_elements.append(Paragraph(f"Paiement à {delai} jours à réception de facture.", header_style))
+        
+        conditions_elements.append(Spacer(1, 0.5*cm))
+        elements.append(KeepTogether(conditions_elements))
+    
+    # ==== MENTIONS LÉGALES ====
+    footer_elements = []
+    mentions = entreprise.get("mentions_legales", "")
+    if mentions:
+        footer_elements.append(Spacer(1, 0.3*cm))
+        footer_elements.append(Paragraph("MENTIONS LÉGALES", section_title_style))
+        footer_elements.append(Paragraph(mentions.replace("\n", "<br/>"), small_style))
+    
+    if footer_elements:
+        elements.append(KeepTogether(footer_elements))
+    
+    # Build PDF
+    doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
+    buffer.seek(0)
+    
+    temp_path = f"/tmp/facture_{facture_id}.pdf"
+    with open(temp_path, "wb") as f:
+        f.write(buffer.getvalue())
+    
+    return FileResponse(
+        temp_path,
+        media_type="application/pdf",
+        filename=f"Facture_{facture_doc['numero_facture']}.pdf"
+    )
+
+
+@api_router.delete("/factures/{facture_id}")
+async def delete_facture(
+    facture_id: str,
+    user_id: str = Depends(get_current_user_id)
+):
+    """Supprimer une facture"""
+    facture_doc = await db.factures.find_one({"id": facture_id, "user_id": user_id})
+    if not facture_doc:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    
+    # Remettre le devis au statut ACCEPTE
+    await db.devis.update_one(
+        {"id": facture_doc["devis_id"]},
+        {"$set": {"statut": StatutDevis.ACCEPTE}}
+    )
+    
+    await db.factures.delete_one({"id": facture_id})
+    return {"message": "Facture supprimée"}
+
+
 # Root route
 @api_router.get("/")
 async def root():
