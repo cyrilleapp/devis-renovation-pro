@@ -219,29 +219,19 @@ export default function DevisDetailScreen() {
       })}
 
       <Card style={styles.totalsCard}>
-        {/* Recalculer les totaux en excluant les postes offerts */}
+        {/* Les prix sont déjà en TTC - recalculer le total en excluant les offerts */}
         {(() => {
-          const totalHT = devis.postes
+          const totalTTC = devis.postes
             .filter((p: any) => !p.offert)
             .reduce((sum: number, p: any) => sum + (p.sous_total || 0), 0);
-          const totalTVA = totalHT * (devis.tva_taux / 100);
-          const totalTTC = totalHT + totalTVA;
           
           return (
             <>
               <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Total HT</Text>
-                <Text style={styles.totalValue}>{formatPrice(totalHT)}</Text>
-              </View>
-              <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>TVA ({devis.tva_taux}%)</Text>
-                <Text style={styles.totalValue}>{formatPrice(totalTVA)}</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.totalRow}>
                 <Text style={styles.totalLabelMain}>Total TTC</Text>
                 <Text style={styles.totalValueMain}>{formatPrice(totalTTC)}</Text>
               </View>
+              <Text style={styles.tvaNote}>TVA incluse ({devis.tva_taux}%)</Text>
             </>
           );
         })()}
