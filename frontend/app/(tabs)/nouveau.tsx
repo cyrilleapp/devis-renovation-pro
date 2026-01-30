@@ -422,6 +422,8 @@ export default function NouveauDevisScreen() {
       setParquets(parquetsData);
       setParquetPoses(parquetPosesData);
       setExtras(extrasData);
+      // Marquer les données de référence comme chargées
+      setReferenceDataLoaded(true);
     } catch (error) {
       console.error('Error loading reference data:', error);
     }
