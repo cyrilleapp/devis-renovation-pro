@@ -552,7 +552,7 @@ async def generate_pdf(
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
     from reportlab.lib.units import cm, mm
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image, KeepTogether, PageBreak
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
     import io
@@ -590,8 +590,19 @@ async def generate_pdf(
     total_ht = total_ttc / (1 + tva_taux / 100)
     total_tva = total_ttc - total_ht
     
-    # Create PDF
+    # Create PDF with page numbering
     buffer = io.BytesIO()
+    
+    # Page numbering function
+    def add_page_number(canvas, doc):
+        page_num = canvas.getPageNumber()
+        text = f"Page {page_num}"
+        canvas.saveState()
+        canvas.setFont('Helvetica', 8)
+        canvas.setFillColor(colors.HexColor('#7f8c8d'))
+        canvas.drawCentredString(A4[0]/2, 1*cm, text)
+        canvas.restoreState()
+    
     doc = SimpleDocTemplate(
         buffer, 
         pagesize=A4,
@@ -634,6 +645,24 @@ async def generate_pdf(
         textColor=colors.HexColor('#1a5276'),
         spaceBefore=10,
         spaceAfter=5
+    )
+    
+    # Style pour les descriptions dans le tableau (avec retour à la ligne)
+    desc_style = ParagraphStyle(
+        'Description',
+        fontSize=9,
+        textColor=colors.HexColor('#2c3e50'),
+        leading=11,
+        wordWrap='CJK'  # Permet le retour à la ligne sans coupure de mot
+    )
+    
+    # Style pour les entêtes de catégorie
+    category_header_style = ParagraphStyle(
+        'CategoryHeader',
+        fontSize=10,
+        fontName='Helvetica-Bold',
+        textColor=colors.HexColor('#1a5276'),
+        leading=12
     )
     
     elements = []
@@ -699,38 +728,108 @@ Validité: {date_validite.strftime('%d/%m/%Y')}"""
     elements.append(client_box)
     elements.append(Spacer(1, 0.8*cm))
     
-    # ==== POSTES TABLE ====
+    # ==== POSTES TABLE - Groupés par catégorie avec sous-totaux ====
     elements.append(Paragraph("DÉTAIL DES PRESTATIONS", section_title_style))
     
-    table_data = [["Description", "Qté", "Unité", "P.U. TTC", "Total TTC"]]
+    # Grouper les postes par catégorie
+    postes_by_category = {}
+    category_order = ['cuisine', 'cloison', 'peinture', 'parquet', 'service']
+    category_labels = {
+        'cuisine': 'CUISINE',
+        'cloison': 'CLOISON',
+        'peinture': 'PEINTURE',
+        'parquet': 'PARQUET',
+        'service': 'SERVICES'
+    }
     
     for poste in devis_doc["postes"]:
-        categorie = poste.get("categorie", "").capitalize() if isinstance(poste.get("categorie"), str) else str(poste.get("categorie", ""))
-        is_offert = poste.get("offert", False)
-        description = f"{categorie} - {poste['reference_nom']}"
-        if is_offert:
-            description += " (OFFERT)"
-        table_data.append([
-            description,
-            f"{poste['quantite']:.2f}",
-            poste['unite'],
-            f"{poste['prix_ajuste']:.2f} €",
-            "OFFERT" if is_offert else f"{poste['sous_total']:.2f} €"
-        ])
+        cat = poste.get("categorie", "autre").lower()
+        if cat not in postes_by_category:
+            postes_by_category[cat] = []
+        postes_by_category[cat].append(poste)
     
-    postes_table = Table(table_data, colWidths=[8*cm, 2*cm, 2.5*cm, 2.5*cm, 2.5*cm])
-    postes_table.setStyle(TableStyle([
+    # Construire le tableau avec groupement par catégorie
+    table_data = [["Description", "Qté", "Unité", "P.U. TTC", "Total TTC"]]
+    
+    # Style des lignes (pour alterner les couleurs et marquer les entêtes)
+    row_styles = []
+    current_row = 1  # Commence à 1 car row 0 = header
+    
+    for cat in category_order:
+        if cat not in postes_by_category:
+            continue
+        
+        postes = postes_by_category[cat]
+        cat_label = category_labels.get(cat, cat.upper())
+        
+        # Ligne d'entête de catégorie
+        table_data.append([
+            Paragraph(f"<b>{cat_label}</b>", category_header_style),
+            "", "", "", ""
+        ])
+        row_styles.append(('BACKGROUND', (0, current_row), (-1, current_row), colors.HexColor('#e8f4f8')))
+        row_styles.append(('SPAN', (0, current_row), (-1, current_row)))
+        current_row += 1
+        
+        # Sous-total de la catégorie
+        cat_subtotal = 0
+        
+        # Lignes des postes
+        for poste in postes:
+            is_offert = poste.get("offert", False)
+            # Description sans préfixe de catégorie
+            description = poste['reference_nom']
+            
+            # Utiliser Paragraph pour le retour à la ligne automatique
+            desc_para = Paragraph(description, desc_style)
+            
+            sous_total = poste.get('sous_total', 0)
+            if not is_offert:
+                cat_subtotal += sous_total
+            
+            table_data.append([
+                desc_para,
+                f"{poste['quantite']:.2f}",
+                poste['unite'],
+                f"{poste['prix_ajuste']:.2f} €",
+                "OFFERT" if is_offert else f"{sous_total:.2f} €"
+            ])
+            current_row += 1
+        
+        # Ligne de sous-total de la catégorie
+        table_data.append([
+            Paragraph(f"<i>Sous-total {cat_label}</i>", desc_style),
+            "", "", "",
+            f"{cat_subtotal:.2f} €"
+        ])
+        row_styles.append(('BACKGROUND', (0, current_row), (-1, current_row), colors.HexColor('#f5f5f5')))
+        row_styles.append(('FONTNAME', (4, current_row), (4, current_row), 'Helvetica-Bold'))
+        current_row += 1
+    
+    # Créer le tableau
+    postes_table = Table(table_data, colWidths=[8*cm, 1.8*cm, 2.2*cm, 2.5*cm, 3*cm])
+    
+    # Styles de base
+    base_styles = [
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a5276')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
         ('ALIGN', (3, 1), (-1, -1), 'RIGHT'),
+        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, -1), 9),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
         ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+        ('TOPPADDING', (0, 1), (-1, -1), 6),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8f9fa')])
-    ]))
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]
+    
+    # Ajouter les styles spécifiques aux lignes
+    all_styles = base_styles + row_styles
+    postes_table.setStyle(TableStyle(all_styles))
+    
     elements.append(postes_table)
     elements.append(Spacer(1, 0.5*cm))
     
@@ -755,10 +854,11 @@ Validité: {date_validite.strftime('%d/%m/%Y')}"""
     elements.append(totals_table)
     elements.append(Spacer(1, 0.8*cm))
     
-    # ==== CONDITIONS DE PAIEMENT ====
+    # ==== CONDITIONS DE PAIEMENT (bloc non coupé) ====
     conditions = devis_doc.get("conditions_paiement", {})
     if conditions:
-        elements.append(Paragraph("CONDITIONS DE PAIEMENT", section_title_style))
+        conditions_elements = []
+        conditions_elements.append(Paragraph("CONDITIONS DE PAIEMENT", section_title_style))
         
         if conditions.get("type") == "acomptes" and conditions.get("acomptes"):
             acomptes_text = "Règlement en plusieurs versements :<br/>"
@@ -767,12 +867,15 @@ Validité: {date_validite.strftime('%d/%m/%Y')}"""
                 pourcentage = acompte.get("pourcentage", 0)
                 montant = total_ttc * (pourcentage / 100)
                 acomptes_text += f"• {desc}: {pourcentage}% soit {montant:.2f} € TTC<br/>"
-            elements.append(Paragraph(acomptes_text, header_style))
+            conditions_elements.append(Paragraph(acomptes_text, header_style))
         else:
             delai = conditions.get("delai_jours", 30)
-            elements.append(Paragraph(f"Paiement à {delai} jours à réception de facture.", header_style))
+            conditions_elements.append(Paragraph(f"Paiement à {delai} jours à réception de facture.", header_style))
         
-        elements.append(Spacer(1, 0.5*cm))
+        conditions_elements.append(Spacer(1, 0.5*cm))
+        
+        # KeepTogether pour éviter la coupure
+        elements.append(KeepTogether(conditions_elements))
     
     # ==== NOTES ====
     notes = devis_doc.get("notes", "")
@@ -781,7 +884,7 @@ Validité: {date_validite.strftime('%d/%m/%Y')}"""
         elements.append(Paragraph(notes, header_style))
         elements.append(Spacer(1, 0.5*cm))
     
-    # ==== MENTIONS LÉGALES ====
+    # ==== MENTIONS LÉGALES + GARANTIE + SIGNATURE (bloc non coupé) ====
     mentions = entreprise.get("mentions_legales", """Les travaux seront réalisés selon les règles de l'art et conformément aux normes en vigueur.
 Le présent devis est valable 30 jours à compter de sa date d'émission.
 Tout retard de paiement entraînera l'application de pénalités de retard au taux légal en vigueur.""")
@@ -789,16 +892,19 @@ Tout retard de paiement entraînera l'application de pénalités de retard au ta
     garantie = entreprise.get("garantie", "Garantie décennale et responsabilité civile professionnelle.")
     afficher_garantie = entreprise.get("afficher_garantie", True)
     
-    elements.append(Spacer(1, 0.5*cm))
-    elements.append(Paragraph("MENTIONS LÉGALES", section_title_style))
-    elements.append(Paragraph(mentions.replace("\n", "<br/>"), small_style))
+    # Créer le bloc mentions + garantie + signature
+    footer_elements = []
+    
+    footer_elements.append(Spacer(1, 0.3*cm))
+    footer_elements.append(Paragraph("MENTIONS LÉGALES", section_title_style))
+    footer_elements.append(Paragraph(mentions.replace("\n", "<br/>"), small_style))
     
     if afficher_garantie and garantie:
-        elements.append(Spacer(1, 0.3*cm))
-        elements.append(Paragraph(f"<b>Garantie:</b> {garantie}", small_style))
+        footer_elements.append(Spacer(1, 0.3*cm))
+        footer_elements.append(Paragraph(f"<b>Garantie:</b> {garantie}", small_style))
     
-    # ==== SIGNATURE ====
-    elements.append(Spacer(1, 1*cm))
+    # Signature
+    footer_elements.append(Spacer(1, 0.8*cm))
     
     signature_data = [
         [
@@ -817,10 +923,13 @@ Tout retard de paiement entraînera l'application de pénalités de retard au ta
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
-    elements.append(signature_table)
+    footer_elements.append(signature_table)
     
-    # Build PDF
-    doc.build(elements)
+    # KeepTogether pour éviter la coupure du bloc footer
+    elements.append(KeepTogether(footer_elements))
+    
+    # Build PDF with page numbering
+    doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
     buffer.seek(0)
     
     # Save to temp file and return
