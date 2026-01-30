@@ -695,17 +695,20 @@ Validité: {date_validite.strftime('%d/%m/%Y')}"""
     # ==== POSTES TABLE ====
     elements.append(Paragraph("DÉTAIL DES PRESTATIONS", section_title_style))
     
-    table_data = [["Description", "Qté", "Unité", "P.U. HT", "Total HT"]]
+    table_data = [["Description", "Qté", "Unité", "P.U. TTC", "Total TTC"]]
     
     for poste in devis_doc["postes"]:
         categorie = poste.get("categorie", "").capitalize() if isinstance(poste.get("categorie"), str) else str(poste.get("categorie", ""))
+        is_offert = poste.get("offert", False)
         description = f"{categorie} - {poste['reference_nom']}"
+        if is_offert:
+            description += " (OFFERT)"
         table_data.append([
             description,
             f"{poste['quantite']:.2f}",
             poste['unite'],
             f"{poste['prix_ajuste']:.2f} €",
-            f"{poste['sous_total']:.2f} €"
+            "OFFERT" if is_offert else f"{poste['sous_total']:.2f} €"
         ])
     
     postes_table = Table(table_data, colWidths=[8*cm, 2*cm, 2.5*cm, 2.5*cm, 2.5*cm])
