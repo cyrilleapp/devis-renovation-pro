@@ -570,11 +570,18 @@ async def generate_pdf(
     from datetime import timedelta
     date_validite = devis_doc.get("date_validite", devis_doc["date_creation"] + timedelta(days=30))
     
-    # Calculate TVA
-    total_ht = devis_doc["total_ht"]
-    total_ttc = devis_doc["total_ttc"]
-    total_tva = devis_doc.get("total_tva", total_ttc - total_ht)
+    # Calculate totals - les prix sont en TTC, recalculer le HT
     tva_taux = devis_doc["tva_taux"]
+    
+    # Calculer le total TTC en excluant les postes offerts
+    total_ttc = sum(
+        poste.get("sous_total", 0) 
+        for poste in devis_doc["postes"] 
+        if not poste.get("offert", False)
+    )
+    # Recalculer le HT à partir du TTC
+    total_ht = total_ttc / (1 + tva_taux / 100)
+    total_tva = total_ttc - total_ht
     
     # Create PDF
     buffer = io.BytesIO()
