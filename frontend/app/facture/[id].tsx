@@ -4,16 +4,19 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  Alert,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
-  Linking,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { factureService, Facture } from '../../services/factureService';
 import { Card } from '../../components/Card';
+import { Button } from '../../components/Button';
+import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function FactureDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -38,12 +41,55 @@ export default function FactureDetailScreen() {
     }
   };
 
-  const handleExportPdf = async () => {
+  const handleExportPDF = async () => {
     try {
-      const pdfUrl = factureService.getPdfUrl(id as string);
-      await Linking.openURL(pdfUrl);
-    } catch (error) {
-      Alert.alert('Erreur', 'Impossible d\'ouvrir le PDF');
+      setLoading(true);
+      
+      // Get auth token
+      const token = await AsyncStorage.getItem('auth_token');
+      if (!token) {
+        Alert.alert('Erreur', 'Vous devez être connecté pour télécharger le PDF');
+        return;
+      }
+      
+      const API_URL = 'https://quotemaster-35.preview.emergentagent.com';
+      const pdfUrl = `${API_URL}/api/factures/${id}/pdf`;
+      
+      // Create filename
+      const filename = `Facture_${facture?.numero_facture || id}.pdf`;
+      const fileUri = `${FileSystem.documentDirectory}${filename}`;
+      
+      // Download with authentication
+      const downloadResult = await FileSystem.downloadAsync(
+        pdfUrl,
+        fileUri,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      if (downloadResult.status === 200) {
+        // Check if sharing is available
+        const isSharingAvailable = await Sharing.isAvailableAsync();
+        if (isSharingAvailable) {
+          await Sharing.shareAsync(downloadResult.uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Partager la facture',
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          Alert.alert('Succès', `PDF téléchargé : ${filename}`);
+        }
+      } else {
+        throw new Error('Échec du téléchargement');
+      }
+    } catch (error: any) {
+      console.error('Error exporting PDF:', error);
+      Alert.alert('Erreur', 'Impossible d\'exporter le PDF');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,7 +127,9 @@ export default function FactureDetailScreen() {
           onPress: async () => {
             try {
               await factureService.delete(id as string);
-              router.back();
+              Alert.alert('Succès', 'Facture supprimée', [
+                { text: 'OK', onPress: () => router.back() },
+              ]);
             } catch (error) {
               Alert.alert('Erreur', 'Impossible de supprimer la facture');
             }
@@ -125,7 +173,7 @@ export default function FactureDetailScreen() {
     }
   };
 
-  if (loading) {
+  if (loading && !facture) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -145,33 +193,41 @@ export default function FactureDetailScreen() {
     <>
       <Stack.Screen
         options={{
-          title: facture.numero_facture,
+          title: 'Détail Facture',
           headerStyle: { backgroundColor: Colors.primary },
           headerTintColor: Colors.surface,
         }}
       />
       <ScrollView style={styles.container}>
-        {/* Header avec statut */}
-        <Card style={styles.headerCard}>
+        {/* Header */}
+        <Card>
           <View style={styles.headerRow}>
             <View>
               <Text style={styles.factureNumber}>{facture.numero_facture}</Text>
               <Text style={styles.factureDate}>
-                Créée le {formatDate(facture.date_creation)}
+                Date: {formatDate(facture.date_creation)}
+              </Text>
+              <Text style={styles.devisRef}>
+                Devis: {(facture as any).devis_numero || 'N/A'}
               </Text>
               {facture.date_paiement && (
                 <Text style={styles.paidDate}>
-                  Payée le {formatDate(facture.date_paiement)}
+                  Payée le: {formatDate(facture.date_paiement)}
                 </Text>
               )}
             </View>
-            <View style={[styles.statutBadge, { backgroundColor: getStatutColor(facture.statut) }]}>
-              <Text style={styles.statutText}>{getStatutLabel(facture.statut)}</Text>
+            <View
+              style={[
+                styles.statusBadge,
+                { backgroundColor: getStatutColor(facture.statut) },
+              ]}
+            >
+              <Text style={styles.statusText}>{getStatutLabel(facture.statut)}</Text>
             </View>
           </View>
         </Card>
 
-        {/* Client */}
+        {/* Client Info */}
         <Card>
           <Text style={styles.sectionTitle}>Client</Text>
           <Text style={styles.clientName}>
@@ -193,25 +249,16 @@ export default function FactureDetailScreen() {
           )}
         </Card>
 
-        {/* Totaux */}
-        <Card style={styles.totalsCard}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total HT</Text>
-            <Text style={styles.totalValue}>{formatPrice(facture.total_ht)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>TVA ({facture.tva_taux}%)</Text>
-            <Text style={styles.totalValue}>{formatPrice(facture.total_tva)}</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabelMain}>Total TTC</Text>
-            <Text style={styles.totalValueMain}>{formatPrice(facture.total_ttc)}</Text>
+        {/* Informations */}
+        <Card>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>TVA</Text>
+            <Text style={styles.infoValue}>{facture.tva_taux}%</Text>
           </View>
         </Card>
 
         {/* Postes */}
-        <Text style={styles.sectionTitleOutside}>Détail des prestations</Text>
+        <Text style={styles.sectionTitle}>Postes de travaux</Text>
         {facture.postes.map((poste, index) => {
           const isOffert = poste.offert === true;
           return (
@@ -241,36 +288,50 @@ export default function FactureDetailScreen() {
           );
         })}
 
+        {/* Totaux */}
+        <Card style={styles.totalsCard}>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total HT</Text>
+            <Text style={styles.totalValue}>{formatPrice(facture.total_ht)}</Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>TVA ({facture.tva_taux}%)</Text>
+            <Text style={styles.totalValue}>{formatPrice(facture.total_tva)}</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabelMain}>Total TTC</Text>
+            <Text style={styles.totalValueMain}>{formatPrice(facture.total_ttc)}</Text>
+          </View>
+        </Card>
+
         {/* Actions */}
         <View style={styles.actions}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.primaryButton]}
-            onPress={handleExportPdf}
-          >
-            <Ionicons name="download-outline" size={20} color={Colors.surface} />
-            <Text style={styles.primaryButtonText}>Exporter PDF</Text>
-          </TouchableOpacity>
-
+          <Button
+            title="Exporter en PDF"
+            onPress={handleExportPDF}
+            style={styles.actionButton}
+          />
           {facture.statut === 'en_attente' && (
-            <TouchableOpacity
-              style={[styles.actionButton, styles.successButton]}
+            <Button
+              title="Marquer comme payée"
               onPress={handleMarkAsPaid}
-            >
-              <Ionicons name="checkmark-circle-outline" size={20} color={Colors.surface} />
-              <Text style={styles.primaryButtonText}>Marquer payée</Text>
-            </TouchableOpacity>
+              style={[styles.actionButton, { backgroundColor: Colors.success }]}
+            />
           )}
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.dangerButton]}
+          {facture.statut === 'payee' && (
+            <View style={styles.paidBadge}>
+              <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+              <Text style={styles.paidText}>Facture payée</Text>
+            </View>
+          )}
+          <Button
+            title="Supprimer"
             onPress={handleDelete}
-          >
-            <Ionicons name="trash-outline" size={20} color={Colors.error} />
-            <Text style={styles.dangerButtonText}>Supprimer</Text>
-          </TouchableOpacity>
+            variant="outline"
+            style={[styles.actionButton, { borderColor: Colors.error }]}
+          />
         </View>
-
-        <View style={{ height: 40 }} />
       </ScrollView>
     </>
   );
@@ -287,9 +348,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerCard: {
-    marginBottom: Spacing.md,
-  },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -305,28 +363,27 @@ const styles = StyleSheet.create({
     color: Colors.textLight,
     marginTop: 4,
   },
+  devisRef: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+    marginTop: 2,
+  },
   paidDate: {
     fontSize: FontSize.sm,
     color: Colors.success,
     marginTop: 4,
   },
-  statutBadge: {
+  statusBadge: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.md,
+    borderRadius: 20,
   },
-  statutText: {
+  statusText: {
     color: Colors.surface,
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: FontSize.sm,
   },
   sectionTitle: {
-    fontSize: FontSize.md,
-    fontWeight: '600',
-    color: Colors.primary,
-    marginBottom: Spacing.sm,
-  },
-  sectionTitleOutside: {
     fontSize: FontSize.md,
     fontWeight: '600',
     color: Colors.primary,
@@ -343,36 +400,19 @@ const styles = StyleSheet.create({
     color: Colors.textLight,
     marginTop: 2,
   },
-  totalsCard: {
-    marginTop: Spacing.md,
-  },
-  totalRow: {
+  infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
   },
-  totalLabel: {
+  infoLabel: {
     fontSize: FontSize.sm,
     color: Colors.textLight,
   },
-  totalValue: {
+  infoValue: {
     fontSize: FontSize.sm,
     color: Colors.text,
-  },
-  totalLabelMain: {
-    fontSize: FontSize.lg,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  totalValueMain: {
-    fontSize: FontSize.lg,
-    fontWeight: 'bold',
-    color: Colors.primary,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: Spacing.sm,
+    fontWeight: '500',
   },
   posteHeader: {
     flexDirection: 'row',
@@ -384,9 +424,9 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xs,
     fontWeight: 'bold',
     color: Colors.primary,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.primary + '20',
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 4,
     borderRadius: BorderRadius.sm,
   },
   offertBadge: {
@@ -440,37 +480,57 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     color: Colors.textLight,
   },
+  totalsCard: {
+    marginTop: Spacing.md,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  totalLabel: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+  },
+  totalValue: {
+    fontSize: FontSize.sm,
+    color: Colors.text,
+  },
+  totalLabelMain: {
+    fontSize: FontSize.lg,
+    fontWeight: 'bold',
+    color: Colors.text,
+  },
+  totalValueMain: {
+    fontSize: FontSize.xl,
+    fontWeight: 'bold',
+    color: Colors.primary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.sm,
+  },
   actions: {
     marginTop: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   actionButton: {
+    marginBottom: Spacing.md,
+  },
+  paidBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.md,
-    marginBottom: Spacing.sm,
+    backgroundColor: Colors.success + '20',
+    padding: Spacing.md,
+    borderRadius: 8,
+    marginBottom: Spacing.md,
     gap: Spacing.sm,
   },
-  primaryButton: {
-    backgroundColor: Colors.primary,
-  },
-  successButton: {
-    backgroundColor: Colors.success,
-  },
-  dangerButton: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.error,
-  },
-  primaryButtonText: {
-    color: Colors.surface,
-    fontSize: FontSize.md,
+  paidText: {
+    color: Colors.success,
     fontWeight: '600',
-  },
-  dangerButtonText: {
-    color: Colors.error,
     fontSize: FontSize.md,
-    fontWeight: '600',
   },
 });
