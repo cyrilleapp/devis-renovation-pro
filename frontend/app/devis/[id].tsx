@@ -456,6 +456,21 @@ const styles = StyleSheet.create({
   actionButton: {
     marginBottom: Spacing.md,
   },
+  facturedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.success + '20',
+    padding: Spacing.md,
+    borderRadius: 8,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  facturedText: {
+    color: Colors.success,
+    fontWeight: '600',
+    fontSize: FontSize.md,
+  },
   cardOffert: {
     opacity: 0.8,
     borderWidth: 2,
