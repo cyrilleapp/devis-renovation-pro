@@ -27,8 +27,8 @@ export default function RecapitulatifScreen() {
 
   useEffect(() => {
     if (!formData) {
-      Alert.alert('Erreur', 'Aucune donnée de devis trouvée');
-      router.back();
+      // Naviguer silencieusement vers la page de création
+      router.replace('/(tabs)/nouveau');
       return;
     }
     setPostes(formData.postes);
