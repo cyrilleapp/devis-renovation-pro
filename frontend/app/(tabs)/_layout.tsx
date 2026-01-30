@@ -43,9 +43,18 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="mes-devis"
         options={{
-          title: 'Mes Devis',
+          title: 'Devis',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="document-text" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="mes-factures"
+        options={{
+          title: 'Factures',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="receipt" size={size} color={color} />
           ),
         }}
       />
@@ -56,6 +65,12 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="recapitulatif"
+        options={{
+          href: null, // Cacher de la barre de navigation
         }}
       />
     </Tabs>
