@@ -276,7 +276,13 @@ def calculate_devis_totals(postes_data: list, tva_taux: float):
             prix_ajuste = poste_data.prix_default
         
         sous_total = poste_data.quantite * prix_ajuste
-        total_ht += sous_total
+        
+        # Récupérer le flag offert (False par défaut)
+        is_offert = getattr(poste_data, 'offert', False) or False
+        
+        # Ne pas comptabiliser les postes offerts dans le total
+        if not is_offert:
+            total_ht += sous_total
         
         poste = PosteDevis(
             id=poste_id,
@@ -291,7 +297,8 @@ def calculate_devis_totals(postes_data: list, tva_taux: float):
             prix_default=poste_data.prix_default,
             prix_ajuste=prix_ajuste,
             sous_total=sous_total,
-            options=poste_data.options
+            options=poste_data.options,
+            offert=is_offert  # Préserver le flag offert
         )
         postes.append(poste)
     
