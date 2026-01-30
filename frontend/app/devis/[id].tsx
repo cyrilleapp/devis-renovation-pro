@@ -295,6 +295,19 @@ export default function DevisDetailScreen() {
           onPress={handleExportPDF}
           style={styles.actionButton}
         />
+        {devis.statut !== 'facture' && (
+          <Button
+            title="Générer une facture"
+            onPress={handleGenerateFacture}
+            style={[styles.actionButton, { backgroundColor: Colors.success }]}
+          />
+        )}
+        {devis.statut === 'facture' && (
+          <View style={styles.facturedBadge}>
+            <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+            <Text style={styles.facturedText}>Facture générée</Text>
+          </View>
+        )}
         <Button
           title="Supprimer"
           onPress={handleDelete}
