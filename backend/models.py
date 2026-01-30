@@ -283,7 +283,7 @@ class Facture(BaseModel):
     numero_facture: str
     devis_id: str
     user_id: str
-    client: Client
+    client: ClientInfo
     date_creation: datetime
     date_paiement: Optional[datetime] = None
     tva_taux: float
