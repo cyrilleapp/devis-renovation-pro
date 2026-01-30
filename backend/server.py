@@ -16,7 +16,8 @@ from models import (
     RefCloison, RefPeinture, RefParquet, RefExtra,
     DevisCreate, Devis, DevisListItem, DevisUpdate, PosteDevis,
     CategoriePoste, StatutDevis, EntrepriseInfo, EntrepriseUpdate,
-    ClientInfo, DevisConditionsPaiement, Acompte
+    ClientInfo, DevisConditionsPaiement, Acompte,
+    FactureCreate, Facture, FactureListItem, StatutFacture
 )
 from auth import (
     verify_password, get_password_hash, create_access_token,
