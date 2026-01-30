@@ -13,6 +13,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devisService, Devis } from '../../services/devisService';
+import { factureService } from '../../services/factureService';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Colors, Spacing, FontSize } from '../../constants/theme';
