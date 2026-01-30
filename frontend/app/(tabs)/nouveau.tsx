@@ -331,6 +331,8 @@ export default function NouveauDevisScreen() {
         
         // Services
         else if (categorie === 'service') {
+          console.log('Service trouvé:', refId, refNom, 'quantite:', quantite);
+          
           if (refId === 'livraison') {
             newServicesData.livraison.enabled = true;
             newServicesData.livraison.offert = isOffert;
@@ -339,34 +341,51 @@ export default function NouveauDevisScreen() {
             if (match) newServicesData.livraison.km = match[1];
             const matchNb = refNom.match(/×\s*(\d+)/);
             if (matchNb) newServicesData.livraison.nbLivraisons = matchNb[1];
+            console.log('Livraison chargée:', newServicesData.livraison);
           } else if (refId === 'deplacement') {
             newServicesData.deplacement.enabled = true;
             newServicesData.deplacement.offert = isOffert;
+            // Extraire km et nb depuis le nom (ex: "Déplacement (50 km × 2)" ou "Déplacement")
             const match = refNom.match(/\((\d+)\s*km/);
-            if (match) newServicesData.deplacement.km = match[1];
+            if (match) {
+              newServicesData.deplacement.km = match[1];
+            }
             const matchNb = refNom.match(/×\s*(\d+)/);
-            if (matchNb) newServicesData.deplacement.nbDeplacements = matchNb[1];
+            if (matchNb) {
+              newServicesData.deplacement.nbDeplacements = matchNb[1];
+            }
+            // Si pas de km dans le nom mais quantité > 1, utiliser la quantité comme nb de déplacements
+            if (!match && parseFloat(quantite) > 1) {
+              newServicesData.deplacement.afficherQuantite = true;
+              newServicesData.deplacement.nbDeplacements = quantite;
+            }
+            console.log('Déplacement chargé:', newServicesData.deplacement);
           } else if (refId === 'debarras_depot') {
             newServicesData.debarras.enabled = true;
             newServicesData.debarras.depot.enabled = true;
             newServicesData.debarras.depot.offert = isOffert;
             const match = refNom.match(/\((\d+(?:\.\d+)?)\s*m³/);
             if (match) newServicesData.debarras.depot.volume = match[1];
+            console.log('Débarras dépôt chargé:', newServicesData.debarras.depot);
           } else if (refId === 'debarras_gravats') {
             newServicesData.debarras.enabled = true;
             newServicesData.debarras.gravats.enabled = true;
             newServicesData.debarras.gravats.offert = isOffert;
             const match = refNom.match(/\((\d+(?:\.\d+)?)\s*m³/);
             if (match) newServicesData.debarras.gravats.volume = match[1];
+            console.log('Débarras gravats chargé:', newServicesData.debarras.gravats);
           } else if (refId === 'debarras_encombrants') {
             newServicesData.debarras.enabled = true;
             newServicesData.debarras.encombrants.enabled = true;
             newServicesData.debarras.encombrants.offert = isOffert;
             const match = refNom.match(/\((\d+(?:\.\d+)?)\s*m³/);
             if (match) newServicesData.debarras.encombrants.volume = match[1];
+            console.log('Débarras encombrants chargé:', newServicesData.debarras.encombrants);
           }
         }
       });
+      
+      console.log('Services finaux:', JSON.stringify(newServicesData, null, 2));
       
       // Appliquer les données collectées
       setSelectedCategories(Array.from(categories));
