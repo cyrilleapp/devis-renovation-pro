@@ -196,6 +196,7 @@ class PosteDevisCreate(BaseModel):
     prix_default: float
     prix_ajuste: Optional[float] = None
     options: Optional[PosteDevisOptions] = None
+    offert: Optional[bool] = False  # Indique si le poste est offert (gratuit)
 
 
 class PosteDevis(BaseModel):
@@ -212,6 +213,7 @@ class PosteDevis(BaseModel):
     prix_ajuste: float
     sous_total: float
     options: Optional[PosteDevisOptions] = None
+    offert: bool = False  # Indique si le poste est offert (gratuit)
 
 
 class DevisConditionsPaiement(BaseModel):
