@@ -183,8 +183,27 @@ export default function DevisDetailScreen() {
         return Colors.primary;
       case 'refuse':
         return Colors.error;
+      case 'facture':
+        return Colors.success;
       default:
         return Colors.textLight;
+    }
+  };
+
+  const getStatutLabel = (statut: string) => {
+    switch (statut) {
+      case 'valide':
+        return 'Validé';
+      case 'brouillon':
+        return 'Brouillon';
+      case 'accepte':
+        return 'Accepté';
+      case 'refuse':
+        return 'Refusé';
+      case 'facture':
+        return 'Facturé';
+      default:
+        return statut;
     }
   };
 
