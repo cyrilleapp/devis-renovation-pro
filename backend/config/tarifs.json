@@ -1,0 +1,106 @@
+{
+  "_commentaire": "Fichier de configuration des tarifs - Modifiez les valeurs et redéployez pour mettre à jour",
+  "_derniere_modification": "2025-01-30",
+  
+  "cuisine_types": [
+    {"nom": "Kit Semi-équipée", "cout_min": 5000, "cout_max": 14000, "pose_min": 250, "pose_max": 2000},
+    {"nom": "Équipée", "cout_min": 12000, "cout_max": 15000, "pose_min": 2500, "pose_max": 5000},
+    {"nom": "Sur mesure", "cout_min": 6000, "cout_max": 25000, "pose_min": 3000, "pose_max": 8000}
+  ],
+  
+  "plans_travail": [
+    {"nom": "Stratifié / mélaminé", "pose_seule_min": 30, "pose_seule_max": 90, "fourniture_pose_min": 70, "fourniture_pose_max": 150, "unite": "m²"},
+    {"nom": "Bois massif", "pose_seule_min": 50, "pose_seule_max": 100, "fourniture_pose_min": 120, "fourniture_pose_max": 300, "unite": "m²"},
+    {"nom": "Granite", "pose_seule_min": 100, "pose_seule_max": 300, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"},
+    {"nom": "Quartz", "pose_seule_min": 30, "pose_seule_max": 100, "fourniture_pose_min": 400, "fourniture_pose_max": 650, "unite": "m²"},
+    {"nom": "Marbre", "pose_seule_min": 150, "pose_seule_max": 300, "fourniture_pose_min": 500, "fourniture_pose_max": 800, "unite": "m²"},
+    {"nom": "Céramique / grès cérame", "pose_seule_min": 150, "pose_seule_max": 300, "fourniture_pose_min": 600, "fourniture_pose_max": 1000, "unite": "m²"},
+    {"nom": "Résine (Corian, etc.)", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 400, "fourniture_pose_max": 700, "unite": "m²"},
+    {"nom": "Carrelage", "pose_seule_min": 50, "pose_seule_max": 100, "fourniture_pose_min": 80, "fourniture_pose_max": 250, "unite": "m²"},
+    {"nom": "Béton ciré", "pose_seule_min": 150, "pose_seule_max": 200, "fourniture_pose_min": 350, "fourniture_pose_max": 600, "unite": "m²"}
+  ],
+  
+  "cloisons": [
+    {"nom": "Plaque de plâtre", "fourniture_min": 10, "fourniture_max": 25, "pose_incluse_min": 30, "pose_incluse_max": 80, "pose_seule_min": 40, "pose_seule_max": 90, "unite": "m²"},
+    {"nom": "Cloison en bois", "fourniture_min": 25, "fourniture_max": 60, "pose_incluse_min": 60, "pose_incluse_max": 120, "pose_seule_min": 40, "pose_seule_max": 70, "unite": "m²"},
+    {"nom": "Béton cellulaire", "fourniture_min": 20, "fourniture_max": 45, "pose_incluse_min": 40, "pose_incluse_max": 90, "pose_seule_min": 80, "pose_seule_max": 160, "unite": "m²"},
+    {"nom": "Briques de verre", "fourniture_min": 40, "fourniture_max": 70, "pose_incluse_min": 70, "pose_incluse_max": 200, "pose_seule_min": 120, "pose_seule_max": 300, "unite": "m²"},
+    {"nom": "Cloison amovible", "fourniture_min": 50, "fourniture_max": 100, "pose_incluse_min": 150, "pose_incluse_max": 500, "pose_seule_min": 250, "pose_seule_max": 700, "unite": "m²"}
+  ],
+  
+  "cloison_options": [
+    {"nom": "Supplément hydrofuge", "supplement_min": 5, "supplement_max": 5, "description": "Placo hydrofuge pour pièces humides", "unite": "m²"},
+    {"nom": "Supplément phonique", "supplement_min": 5, "supplement_max": 5, "description": "Placo acoustique pour réduction des bruits", "unite": "m²"},
+    {"nom": "Supplément coupe-feu", "supplement_min": 10, "supplement_max": 15, "description": "Placo ignifugé retardant la propagation du feu", "unite": "m²"},
+    {"nom": "Supplément isolation", "supplement_min": 15, "supplement_max": 20, "description": "Isolation intérieure (matériau + main d'œuvre)", "unite": "m²"},
+    {"nom": "Supplément doublage mur", "supplement_min": 3, "supplement_max": 10, "description": "Doublage mural avec isolant", "unite": "m²"},
+    {"nom": "Supplément double peau", "supplement_min": 20, "supplement_max": 25, "description": "Double épaisseur de placo", "unite": "m²"}
+  ],
+  
+  "peintures": [
+    {"nom": "Peinture mur", "type": "support", "prix_min": 20, "prix_max": 30, "unite": "m²"},
+    {"nom": "Peinture plafond", "type": "support", "prix_min": 25, "prix_max": 50, "unite": "m²"}
+  ],
+  
+  "parquets": [
+    {"nom": "Stratifié AC1", "type": "stratifie", "classe_ac": "AC1", "fourniture_min": 4, "fourniture_max": 6, "unite": "m²"},
+    {"nom": "Stratifié AC2", "type": "stratifie", "classe_ac": "AC2", "fourniture_min": 7, "fourniture_max": 13, "unite": "m²"},
+    {"nom": "Stratifié AC3", "type": "stratifie", "classe_ac": "AC3", "fourniture_min": 10, "fourniture_max": 20, "unite": "m²"},
+    {"nom": "Stratifié AC4", "type": "stratifie", "classe_ac": "AC4", "fourniture_min": 15, "fourniture_max": 30, "unite": "m²"},
+    {"nom": "Stratifié AC5", "type": "stratifie", "classe_ac": "AC5", "fourniture_min": 20, "fourniture_max": 45, "unite": "m²"},
+    {"nom": "Contrecollé", "type": "contrecolle", "classe_ac": null, "fourniture_min": 20, "fourniture_max": 120, "unite": "m²"},
+    {"nom": "Massif", "type": "massif", "classe_ac": null, "fourniture_min": 30, "fourniture_max": 150, "unite": "m²"}
+  ],
+  
+  "parquet_poses": [
+    {"nom": "Pose flottante", "prix_min": 20, "prix_max": 40, "unite": "m²"},
+    {"nom": "Pose collée", "prix_min": 30, "prix_max": 50, "unite": "m²"},
+    {"nom": "Pose clouée", "prix_min": 40, "prix_max": 60, "unite": "m²"}
+  ],
+  
+  "extras": {
+    "cuisine": [
+      {"nom": "Dépose ancienne cuisine", "description": "Retrait de l'ancienne cuisine", "cout_min": 200, "cout_max": 500, "unite": "prestation"},
+      {"nom": "Pose crédence", "description": "Installation crédence (hors fourniture)", "cout_min": 16, "cout_max": 115, "unite": "m²"},
+      {"nom": "Raccordements électricité/plomberie (ajustements)", "description": "Déplacement arrivées d'eau/prises", "cout_min": 80, "cout_max": 140, "unite": "m linéaire"},
+      {"nom": "Raccordements électricité/plomberie (complets)", "description": "Installation complète électricité + plomberie", "cout_min": 200, "cout_max": 300, "unite": "prestation"},
+      {"nom": "Meuble haut supplémentaire", "description": "Pose unitaire meuble haut", "cout_min": 60, "cout_max": 60, "unite": "unité"},
+      {"nom": "Évier + robinet (installation)", "description": "Mise en service évier et robinetterie", "cout_min": 170, "cout_max": 340, "unite": "pose"},
+      {"nom": "Plaque de cuisson (installation)", "description": "Installation plaque de cuisson", "cout_min": 50, "cout_max": 50, "unite": "pose"},
+      {"nom": "Hotte (installation)", "description": "Installation hotte aspirante", "cout_min": 70, "cout_max": 300, "unite": "pose"},
+      {"nom": "Électroménager (installation)", "description": "Mise en service appareil électroménager (hors hotte et plaque)", "cout_min": 40, "cout_max": 40, "unite": "appareil"}
+    ],
+    "cloison": [
+      {"nom": "Modification électrique", "description": "Ajout prise ou interrupteur", "cout_min": 60, "cout_max": 120, "unite": "point"},
+      {"nom": "Bloc-porte intérieur", "description": "Fourniture + pose bloc-porte", "cout_min": 80, "cout_max": 300, "unite": "unité"},
+      {"nom": "Pose chassis porte coulissante", "description": "Installation chassis à galandage", "cout_min": 15, "cout_max": 35, "unite": "pièce"},
+      {"nom": "Enduits/joints et finitions", "description": "Bandes, ponçage pour cloison", "cout_min": 10, "cout_max": 30, "unite": "m²"}
+    ],
+    "peinture": [
+      {"nom": "Supplément préparation murs à rénover", "description": "Travaux lourds de préparation pour murs abîmés", "cout_min": 10, "cout_max": 30, "unite": "m²"},
+      {"nom": "Pose de papier peint", "description": "Pose des rouleaux (main d'œuvre)", "cout_min": 6, "cout_max": 6, "unite": "m²"},
+      {"nom": "Pose parement décoratif", "description": "Pierre, brique, PVC", "cout_min": 5, "cout_max": 15, "unite": "m²"}
+    ],
+    "parquet": [
+      {"nom": "Dépose parquet existant", "description": "Retrait ancien parquet", "cout_min": 10, "cout_max": 35, "unite": "m²"},
+      {"nom": "Ragréage", "description": "Préparation et nivellement du sol", "cout_min": 15, "cout_max": 25, "unite": "m²"},
+      {"nom": "Plinthes / Quarts-de-rond", "description": "Finition périmètre (calcul auto)", "cout_min": 3, "cout_max": 4, "unite": "m linéaire"},
+      {"nom": "Ponçage préalable", "description": "Rénovation parquet existant", "cout_min": 15, "cout_max": 35, "unite": "m²"},
+      {"nom": "Teinte avant finition", "description": "Coloration du bois", "cout_min": 12, "cout_max": 20, "unite": "m²"},
+      {"nom": "Vieillissement de parquet", "description": "Effet vieilli/patiné", "cout_min": 60, "cout_max": 80, "unite": "m²"},
+      {"nom": "Finition vitrifiée", "description": "Protection par vitrification", "cout_min": 25, "cout_max": 50, "unite": "m²"},
+      {"nom": "Finition huilée", "description": "Protection par huile", "cout_min": 20, "cout_max": 50, "unite": "m²"},
+      {"nom": "Finition cirée", "description": "Protection par cire", "cout_min": 30, "cout_max": 60, "unite": "m²"}
+    ]
+  },
+  
+  "services": {
+    "livraison": {"tarif_km": 0.55, "description": "Livraison matériaux"},
+    "deplacement": {"tarif_km": 0.55, "description": "Frais de déplacement"},
+    "debarras": {
+      "depot": {"tarif_m3": 30, "description": "Évacuation vers déchetterie"},
+      "gravats": {"tarif_m3": 75, "description": "Évacuation gravats/déchets lourds"},
+      "encombrants": {"tarif_m3": 60, "description": "Évacuation encombrants"}
+    }
+  }
+}
