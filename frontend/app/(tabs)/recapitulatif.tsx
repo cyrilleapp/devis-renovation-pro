@@ -41,16 +41,16 @@ export default function RecapitulatifScreen() {
   };
 
   const calculateTotal = () => {
-    let totalHT = 0;
+    // Les prix sont déjà en TTC - pas de calcul HT/TVA supplémentaire
+    let totalTTC = 0;
     postes.forEach(poste => {
       // Ne pas comptabiliser les postes offerts
       if (!poste.offert) {
         const prix = poste.prix_ajuste || poste.prix_default;
-        totalHT += poste.quantite * prix;
+        totalTTC += poste.quantite * prix;
       }
     });
-    const totalTTC = totalHT * (1 + (formData?.tvaTaux || 20) / 100);
-    return { totalHT, totalTTC };
+    return { totalTTC };
   };
 
   const handleCreate = async () => {
