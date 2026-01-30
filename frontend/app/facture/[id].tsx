@@ -13,7 +13,7 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
 import { factureService, Facture } from '../../services/factureService';
-import Card from '../../components/Card';
+import { Card } from '../../components/Card';
 
 export default function FactureDetailScreen() {
   const { id } = useLocalSearchParams();
