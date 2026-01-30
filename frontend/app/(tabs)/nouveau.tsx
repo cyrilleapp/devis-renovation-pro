@@ -122,14 +122,20 @@ export default function NouveauDevisScreen() {
   const [parquets, setParquets] = useState<any[]>([]);
   const [parquetPoses, setParquetPoses] = useState<any[]>([]);
   const [extras, setExtras] = useState<any[]>([]);
+  const [referenceDataLoaded, setReferenceDataLoaded] = useState(false);
 
   useEffect(() => {
     loadReferenceData();
   }, []);
 
-  // Reset form or load existing devis data
+  // Reset form or load existing devis data - attendre que les données de référence soient chargées
   useFocusEffect(
     useCallback(() => {
+      if (!referenceDataLoaded) {
+        // Les données de référence ne sont pas encore chargées, on attend
+        return;
+      }
+      
       if (devisId) {
         // Mode édition : charger le devis existant
         loadExistingDevis(devisId);
@@ -137,7 +143,7 @@ export default function NouveauDevisScreen() {
         // Mode création : reset du formulaire
         resetForm();
       }
-    }, [devisId])
+    }, [devisId, referenceDataLoaded])
   );
 
   const resetForm = () => {
