@@ -47,6 +47,8 @@ export default function FactureDetailScreen() {
       
       // Get auth token
       const token = await AsyncStorage.getItem('auth_token');
+      console.log('Token récupéré:', token ? 'Oui' : 'Non');
+      
       if (!token) {
         Alert.alert('Erreur', 'Vous devez être connecté pour télécharger le PDF');
         return;
@@ -54,21 +56,26 @@ export default function FactureDetailScreen() {
       
       const API_URL = 'https://quotemaster-35.preview.emergentagent.com';
       const pdfUrl = `${API_URL}/api/factures/${id}/pdf`;
+      console.log('URL PDF:', pdfUrl);
       
       // Create filename
       const filename = `Facture_${facture?.numero_facture || id}.pdf`;
       const fileUri = `${FileSystem.documentDirectory}${filename}`;
+      console.log('Fichier destination:', fileUri);
       
       // Download with authentication
+      console.log('Téléchargement en cours...');
       const downloadResult = await FileSystem.downloadAsync(
         pdfUrl,
         fileUri,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
+      
+      console.log('Résultat téléchargement:', downloadResult.status);
       
       if (downloadResult.status === 200) {
         // Check if sharing is available
@@ -83,11 +90,12 @@ export default function FactureDetailScreen() {
           Alert.alert('Succès', `PDF téléchargé : ${filename}`);
         }
       } else {
-        throw new Error('Échec du téléchargement');
+        console.log('Erreur HTTP:', downloadResult.status);
+        throw new Error(`Échec du téléchargement (${downloadResult.status})`);
       }
     } catch (error: any) {
       console.error('Error exporting PDF:', error);
-      Alert.alert('Erreur', 'Impossible d\'exporter le PDF');
+      Alert.alert('Erreur', 'Impossible d\'exporter le PDF. Vérifiez votre connexion.');
     } finally {
       setLoading(false);
     }
