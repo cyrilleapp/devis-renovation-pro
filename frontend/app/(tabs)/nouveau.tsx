@@ -380,10 +380,8 @@ export default function NouveauDevisScreen() {
       setPosesOffertes(newPosesOffertes);
       setServicesData(newServicesData);
       
-      Alert.alert(
-        'Mode Modification',
-        `Devis ${devis.numero_devis} chargé. Toutes les données ont été restaurées. Vous pouvez les modifier puis enregistrer.`
-      );
+      // Devis chargé silencieusement
+      console.log(`Devis ${devis.numero_devis} chargé pour modification`);
     } catch (error) {
       console.error('Erreur chargement devis:', error);
       Alert.alert('Erreur', 'Impossible de charger le devis');
