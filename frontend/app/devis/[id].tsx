@@ -225,7 +225,7 @@ export default function DevisDetailScreen() {
             { backgroundColor: getStatutColor(devis.statut) },
           ]}
         >
-          <Text style={styles.statusText}>{devis.statut}</Text>
+          <Text style={styles.statusText}>{getStatutLabel(devis.statut)}</Text>
         </View>
       </View>
 
