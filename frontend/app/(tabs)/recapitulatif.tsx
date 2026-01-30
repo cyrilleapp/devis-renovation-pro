@@ -41,7 +41,7 @@ export default function RecapitulatifScreen() {
   };
 
   const calculateTotal = () => {
-    // Les prix sont déjà en TTC - pas de calcul HT/TVA supplémentaire
+    // Les prix saisis sont en TTC
     let totalTTC = 0;
     postes.forEach(poste => {
       // Ne pas comptabiliser les postes offerts
@@ -50,7 +50,11 @@ export default function RecapitulatifScreen() {
         totalTTC += poste.quantite * prix;
       }
     });
-    return { totalTTC };
+    // Calculer le HT à partir du TTC
+    const tvaTaux = formData?.tvaTaux || 20;
+    const totalHT = totalTTC / (1 + tvaTaux / 100);
+    const totalTVA = totalTTC - totalHT;
+    return { totalHT, totalTVA, totalTTC };
   };
 
   const handleCreate = async () => {
