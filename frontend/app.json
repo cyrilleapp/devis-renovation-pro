@@ -1,32 +1,22 @@
 {
   "expo": {
-    "name": "Devis Rénovation Pro",
-    "slug": "devis-renovation-pro",
+    "name": "frontend",
+    "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "devisrenovationpro",
+    "scheme": "frontend",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.renovationpro.devis",
-      "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Enregistrer vos devis et factures en PDF"
-      }
+      "supportsTablet": true
     },
     "android": {
-      "package": "com.renovationpro.devis",
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#1E40AF"
+        "backgroundColor": "#000"
       },
-      "edgeToEdgeEnabled": true,
-      "permissions": [
-        "WRITE_EXTERNAL_STORAGE",
-        "READ_EXTERNAL_STORAGE"
-      ]
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
@@ -41,17 +31,12 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#1E40AF"
+          "backgroundColor": "#000"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "eas": {
-        "projectId": "your-project-id"
-      }
     }
   }
 }
