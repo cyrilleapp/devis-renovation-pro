@@ -28,6 +28,7 @@ from seed_data import (
     REF_CLOISONS, REF_CLOISON_OPTIONS, REF_PEINTURES, 
     REF_PARQUETS, REF_PARQUET_POSES, REF_EXTRAS, REF_PROFESSIONNELS
 )
+from config_loader import get_reference_data, load_tarifs
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
