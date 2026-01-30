@@ -218,10 +218,18 @@ export default function RecapitulatifScreen() {
 
       <Card style={styles.summaryCard}>
         <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Total HT</Text>
+          <Text style={styles.summaryValue}>{formatPrice(totalHT)}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>TVA ({formData.tvaTaux}%)</Text>
+          <Text style={styles.summaryValue}>{formatPrice(totalTVA)}</Text>
+        </View>
+        <View style={styles.divider} />
+        <View style={styles.summaryRow}>
           <Text style={styles.summaryLabelMain}>Total TTC</Text>
           <Text style={styles.summaryValueMain}>{formatPrice(totalTTC)}</Text>
         </View>
-        <Text style={styles.tvaNote}>TVA incluse ({formData.tvaTaux}%)</Text>
       </Card>
 
       <View style={styles.actions}>
