@@ -417,4 +417,11 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     color: Colors.textLight,
   },
+  tvaNote: {
+    fontSize: FontSize.xs,
+    color: Colors.textLight,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+    fontStyle: 'italic',
+  },
 });
