@@ -265,3 +265,43 @@ class DevisListItem(BaseModel):
     date_creation: datetime
     total_ttc: float
     statut: StatutDevis
+
+
+# ==================== FACTURE MODELS ====================
+class StatutFacture(str, Enum):
+    EN_ATTENTE = "en_attente"
+    PAYEE = "payee"
+    ANNULEE = "annulee"
+
+
+class FactureCreate(BaseModel):
+    devis_id: str
+
+
+class Facture(BaseModel):
+    id: str
+    numero_facture: str
+    devis_id: str
+    user_id: str
+    client: Client
+    date_creation: datetime
+    date_paiement: Optional[datetime] = None
+    tva_taux: float
+    total_ht: float
+    total_tva: float
+    total_ttc: float
+    statut: StatutFacture
+    postes: List[PosteDevis]
+    conditions_paiement: Optional[DevisConditionsPaiement] = None
+    notes: Optional[str] = ""
+
+
+class FactureListItem(BaseModel):
+    id: str
+    numero_facture: str
+    devis_numero: str
+    client_nom: str
+    date_creation: datetime
+    date_paiement: Optional[datetime] = None
+    total_ttc: float
+    statut: StatutFacture
