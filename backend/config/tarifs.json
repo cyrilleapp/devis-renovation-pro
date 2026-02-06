@@ -23,6 +23,7 @@
   "cloisons": [
     {"nom": "Plaque de plâtre", "fourniture_min": 10, "fourniture_max": 25, "pose_incluse_min": 30, "pose_incluse_max": 80, "pose_seule_min": 40, "pose_seule_max": 90, "unite": "m²"},
     {"nom": "Cloison en bois", "fourniture_min": 25, "fourniture_max": 60, "pose_incluse_min": 60, "pose_incluse_max": 120, "pose_seule_min": 40, "pose_seule_max": 70, "unite": "m²"},
+    {"nom": "Cloison en Fermacell", "fourniture_min": 15, "fourniture_max": 50, "pose_incluse_min": 30, "pose_incluse_max": 90, "pose_seule_min": 15, "pose_seule_max": 40, "unite": "m²"},
     {"nom": "Béton cellulaire", "fourniture_min": 20, "fourniture_max": 45, "pose_incluse_min": 40, "pose_incluse_max": 90, "pose_seule_min": 80, "pose_seule_max": 160, "unite": "m²"},
     {"nom": "Briques de verre", "fourniture_min": 40, "fourniture_max": 70, "pose_incluse_min": 70, "pose_incluse_max": 200, "pose_seule_min": 120, "pose_seule_max": 300, "unite": "m²"},
     {"nom": "Cloison amovible", "fourniture_min": 50, "fourniture_max": 100, "pose_incluse_min": 150, "pose_incluse_max": 500, "pose_seule_min": 250, "pose_seule_max": 700, "unite": "m²"}
