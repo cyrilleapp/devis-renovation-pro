@@ -7,17 +7,24 @@ interface AuthState {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  redirectAfterLogin: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, nom: string) => Promise<void>;
   logout: () => Promise<void>;
   loadToken: () => Promise<void>;
+  setRedirectAfterLogin: (path: string | null) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   isLoading: true,
   isAuthenticated: false,
+  redirectAfterLogin: null,
+
+  setRedirectAfterLogin: (path: string | null) => {
+    set({ redirectAfterLogin: path });
+  },
 
   login: async (email: string, password: string) => {
     try {
@@ -41,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async () => {
     await AsyncStorage.removeItem('auth_token');
-    set({ user: null, token: null, isAuthenticated: false });
+    set({ user: null, token: null, isAuthenticated: false, redirectAfterLogin: null });
   },
 
   loadToken: async () => {
