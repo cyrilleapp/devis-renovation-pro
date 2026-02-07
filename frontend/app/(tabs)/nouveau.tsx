@@ -1686,6 +1686,96 @@ export default function NouveauDevisScreen() {
           </View>
         )}
 
+        {/* Section Autre (lignes libres) */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Autre</Text>
+          <Card>
+            <Text style={styles.autreDescription}>
+              Ajoutez des lignes personnalisées qui n'entrent pas dans les catégories prédéfinies.
+            </Text>
+            
+            {autreData.map((ligne, index) => (
+              <View key={ligne.id} style={styles.autreLigneContainer}>
+                <View style={styles.autreLigneHeader}>
+                  <Text style={styles.autreLigneTitle}>Ligne {index + 1}</Text>
+                  {autreData.length > 1 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const newData = autreData.filter((l) => l.id !== ligne.id);
+                        setAutreData(newData);
+                      }}
+                      style={styles.autreLigneDelete}
+                    >
+                      <Ionicons name="trash-outline" size={18} color={Colors.error} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                
+                <Input
+                  label="Description"
+                  value={ligne.description}
+                  onChangeText={(v) => {
+                    const newData = autreData.map((l) =>
+                      l.id === ligne.id ? { ...l, description: v } : l
+                    );
+                    setAutreData(newData);
+                  }}
+                  placeholder="Ex: Fourniture spécifique, main d'oeuvre..."
+                />
+                
+                <View style={styles.autreLignePrixRow}>
+                  <View style={styles.autreLignePrixInput}>
+                    <Input
+                      label="Prix TTC (€)"
+                      value={ligne.prixTTC}
+                      onChangeText={(v) => {
+                        const newData = autreData.map((l) =>
+                          l.id === ligne.id ? { ...l, prixTTC: v } : l
+                        );
+                        setAutreData(newData);
+                      }}
+                      keyboardType="numeric"
+                      placeholder="150"
+                    />
+                  </View>
+                  
+                  <TouchableOpacity
+                    style={styles.autreLigneOffertContainer}
+                    onPress={() => {
+                      const newData = autreData.map((l) =>
+                        l.id === ligne.id ? { ...l, offert: !l.offert } : l
+                      );
+                      setAutreData(newData);
+                    }}
+                  >
+                    <View style={[styles.checkboxSmall, ligne.offert && styles.checkboxChecked]}>
+                      {ligne.offert && (
+                        <Ionicons name="checkmark" size={12} color={Colors.surface} />
+                      )}
+                    </View>
+                    <Text style={styles.poseOfferteLabel}>Offert</Text>
+                  </TouchableOpacity>
+                </View>
+                
+                {index < autreData.length - 1 && <View style={styles.autreLigneDivider} />}
+              </View>
+            ))}
+            
+            <TouchableOpacity
+              style={styles.autreAddButton}
+              onPress={() => {
+                setAutreData([
+                  ...autreData,
+                  { id: Date.now().toString(), description: '', prixTTC: '', offert: false }
+                ]);
+              }}
+            >
+              <Ionicons name="add-circle" size={24} color={Colors.primary} />
+              <Text style={styles.autreAddButtonText}>Ajouter une ligne</Text>
+            </TouchableOpacity>
+          </Card>
+        </View>
+
         {/* Section Services */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Services additionnels</Text>
