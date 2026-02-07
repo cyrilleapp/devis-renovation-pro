@@ -231,6 +231,7 @@ export default function NouveauDevisScreen() {
           encombrants: { enabled: false, volume: '', tarifM3: 60, offert: false },
         },
       };
+      let newAutreData: { id: string; description: string; prixTTC: string; offert: boolean }[] = [];
       
       devis.postes.forEach((poste: any) => {
         const categorie = poste.categorie;
