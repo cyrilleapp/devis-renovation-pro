@@ -986,6 +986,25 @@ export default function NouveauDevisScreen() {
       }
     }
 
+    // Ajouter les lignes "Autre"
+    autreData.forEach((ligne) => {
+      if (ligne.description && ligne.prixTTC) {
+        const prixTTC = parseFloat(ligne.prixTTC);
+        postes.push({
+          categorie: 'autre',
+          reference_id: ligne.id,
+          reference_nom: ligne.description,
+          quantite: 1,
+          unite: 'forfait',
+          prix_min: prixTTC,
+          prix_max: prixTTC,
+          prix_default: prixTTC,
+          prix_ajuste: prixTTC,
+          offert: ligne.offert,
+        });
+      }
+    });
+
     if (errors.length > 0) {
       Alert.alert('Erreur', errors.join('\n\n'));
       return;
