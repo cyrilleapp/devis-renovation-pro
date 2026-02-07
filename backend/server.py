@@ -735,12 +735,13 @@ Validité: {date_validite.strftime('%d/%m/%Y')}"""
     
     # Grouper les postes par catégorie
     postes_by_category = {}
-    category_order = ['cuisine', 'cloison', 'peinture', 'parquet', 'service']
+    category_order = ['cuisine', 'cloison', 'peinture', 'parquet', 'autre', 'service']
     category_labels = {
         'cuisine': 'CUISINE',
         'cloison': 'CLOISON',
         'peinture': 'PEINTURE',
         'parquet': 'PARQUET',
+        'autre': 'AUTRE',
         'service': 'SERVICES'
     }
     
