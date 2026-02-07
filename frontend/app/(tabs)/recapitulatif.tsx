@@ -20,7 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 export default function RecapitulatifScreen() {
   const router = useRouter();
   const { formData, clearFormData } = useDevisStore();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, setRedirectAfterLogin } = useAuthStore();
   
   const [postes, setPostes] = useState<PosteCreate[]>([]);
   const [loading, setLoading] = useState(false);
