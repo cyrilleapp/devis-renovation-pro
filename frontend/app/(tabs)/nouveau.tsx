@@ -395,7 +395,25 @@ export default function NouveauDevisScreen() {
             console.log('Débarras encombrants chargé:', newServicesData.debarras.encombrants);
           }
         }
+        
+        // Charger les lignes "Autre"
+        else if (categorie === 'autre') {
+          const prixTTC = poste.prix_ajuste || poste.prix_default || 0;
+          newAutreData.push({
+            id: `autre_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            description: refNom,
+            prixTTC: prixTTC.toString(),
+            offert: isOffert,
+          });
+        }
       });
+      
+      // Si des lignes "Autre" ont été trouvées, les utiliser, sinon garder une ligne vide
+      if (newAutreData.length > 0) {
+        setAutreData(newAutreData);
+      } else {
+        setAutreData([{ id: Date.now().toString(), description: '', prixTTC: '', offert: false }]);
+      }
       
       console.log('Services finaux:', JSON.stringify(newServicesData, null, 2));
       
