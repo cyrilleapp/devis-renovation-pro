@@ -2508,4 +2508,62 @@ const styles = StyleSheet.create({
     paddingLeft: Spacing.md + Spacing.sm,
     paddingTop: Spacing.xs,
   },
+  // Styles pour la section "Autre"
+  autreDescription: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+    marginBottom: Spacing.md,
+    fontStyle: 'italic',
+  },
+  autreLigneContainer: {
+    marginBottom: Spacing.sm,
+  },
+  autreLigneHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  autreLigneTitle: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  autreLigneDelete: {
+    padding: Spacing.xs,
+  },
+  autreLignePrixRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: Spacing.md,
+  },
+  autreLignePrixInput: {
+    flex: 1,
+  },
+  autreLigneOffertContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: Spacing.sm,
+    marginBottom: 4,
+  },
+  autreLigneDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: Spacing.md,
+  },
+  autreAddButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    marginTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  autreAddButtonText: {
+    fontSize: FontSize.sm,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginLeft: Spacing.xs,
+  },
 });
