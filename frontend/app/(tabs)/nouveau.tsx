@@ -186,6 +186,7 @@ export default function NouveauDevisScreen() {
         encombrants: { enabled: false, volume: '', tarifM3: 60, offert: false },
       },
     });
+    setAutreData([{ id: Date.now().toString(), description: '', prixTTC: '', offert: false }]);
     clearFormData();
   };
 
