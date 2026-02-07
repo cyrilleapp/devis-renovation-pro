@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'https://reno-quote-pro.preview.emergentagent.com';
+const API_URL = 'https://renovation-estimator.preview.emergentagent.com';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,

@@ -54,7 +54,7 @@ export default function FactureDetailScreen() {
         return;
       }
       
-      const API_URL = 'https://reno-quote-pro.preview.emergentagent.com';
+      const API_URL = 'https://renovation-estimator.preview.emergentagent.com';
       const pdfUrl = `${API_URL}/api/factures/${id}/pdf`;
       console.log('URL PDF:', pdfUrl);
       
