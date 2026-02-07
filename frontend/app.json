@@ -1,22 +1,23 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Devis Rénovation Pro",
+    "slug": "devis-renovation-pro",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "devisrenovationpro",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.renovationpro.devis"
     },
     "android": {
+      "package": "com.renovationpro.devis",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
-      },
-      "edgeToEdgeEnabled": true
+        "backgroundColor": "#1E40AF"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -31,12 +32,17 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#1E40AF"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ce5f31df-54da-468f-a211-a870614cbb81"
+      }
     }
   }
 }
