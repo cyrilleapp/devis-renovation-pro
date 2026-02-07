@@ -85,6 +85,17 @@ export default function NouveauDevisScreen() {
   // Poses offertes pour les extras (par catégorie et par extra ID)
   const [posesOffertes, setPosesOffertes] = useState<{[key: string]: boolean}>({});
   
+  // Lignes "Autre" (libres)
+  interface LigneAutre {
+    id: string;
+    description: string;
+    prixTTC: string;
+    offert: boolean;
+  }
+  const [autreData, setAutreData] = useState<LigneAutre[]>([
+    { id: Date.now().toString(), description: '', prixTTC: '', offert: false }
+  ]);
+  
   // Services
   const [servicesData, setServicesData] = useState({
     livraison: {
