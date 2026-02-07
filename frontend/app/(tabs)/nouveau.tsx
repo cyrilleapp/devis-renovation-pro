@@ -522,8 +522,11 @@ export default function NouveauDevisScreen() {
       return;
     }
 
-    if (selectedCategories.length === 0) {
-      Alert.alert('Erreur', 'Veuillez sélectionner au moins une catégorie');
+    // Vérifier si au moins une ligne "Autre" est remplie
+    const hasAutreLines = autreData.some(ligne => ligne.description && ligne.prixTTC);
+
+    if (selectedCategories.length === 0 && !hasAutreLines) {
+      Alert.alert('Erreur', 'Veuillez sélectionner au moins une catégorie ou ajouter une ligne dans "Autre"');
       return;
     }
 
