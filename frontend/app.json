@@ -34,7 +34,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#1E40AF"
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true
