@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,10 +17,24 @@ import { Colors, Spacing, FontSize } from '../../constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuthStore();
+  const { login, isAuthenticated, redirectAfterLogin, setRedirectAfterLogin } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Rediriger après connexion réussie
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (redirectAfterLogin) {
+        const targetPath = redirectAfterLogin;
+        setRedirectAfterLogin(null); // Réinitialiser
+        router.replace(targetPath as any);
+      } else {
+        // Redirection par défaut vers l'accueil
+        router.replace('/(tabs)/mes-devis');
+      }
+    }
+  }, [isAuthenticated, redirectAfterLogin]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -31,6 +45,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email, password);
+      // La redirection est gérée par le useEffect ci-dessus
     } catch (error: any) {
       Alert.alert('Erreur', error.response?.data?.detail || 'Erreur de connexion');
     } finally {
