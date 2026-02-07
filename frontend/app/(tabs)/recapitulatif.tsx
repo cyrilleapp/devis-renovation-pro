@@ -61,6 +61,8 @@ export default function RecapitulatifScreen() {
     if (!formData) return;
     
     if (!isAuthenticated) {
+      // Stocker le chemin de retour avant de rediriger vers login
+      setRedirectAfterLogin('/(tabs)/recapitulatif');
       Alert.alert(
         'Connexion requise',
         'Vous devez vous connecter pour créer un devis',
