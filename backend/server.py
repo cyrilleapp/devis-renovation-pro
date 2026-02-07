@@ -1188,8 +1188,8 @@ Devis associé: {facture_doc.get('devis_numero', 'N/A')}"""
     
     # Grouper par catégorie
     postes_by_category = {}
-    category_order = ['cuisine', 'cloison', 'peinture', 'parquet', 'service']
-    category_labels = {'cuisine': 'CUISINE', 'cloison': 'CLOISON', 'peinture': 'PEINTURE', 'parquet': 'PARQUET', 'service': 'SERVICES'}
+    category_order = ['cuisine', 'cloison', 'peinture', 'parquet', 'autre', 'service']
+    category_labels = {'cuisine': 'CUISINE', 'cloison': 'CLOISON', 'peinture': 'PEINTURE', 'parquet': 'PARQUET', 'autre': 'AUTRE', 'service': 'SERVICES'}
     
     for poste in facture_doc["postes"]:
         cat = poste.get("categorie", "autre").lower()
