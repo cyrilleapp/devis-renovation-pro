@@ -456,6 +456,33 @@ export default function ProfilScreen() {
     return renderEntrepriseForm();
   }
 
+  // Si l'utilisateur n'est pas connecté, afficher l'écran de connexion
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.notLoggedInContainer}>
+          <View style={styles.avatar}>
+            <Ionicons name="person" size={40} color={Colors.surface} />
+          </View>
+          <Text style={styles.notLoggedInTitle}>Bienvenue !</Text>
+          <Text style={styles.notLoggedInText}>
+            Connectez-vous pour accéder à votre profil et configurer votre entreprise.
+          </Text>
+          <Button
+            title="Se connecter"
+            onPress={() => router.push('/(auth)/login')}
+            style={styles.loginButton}
+          />
+          <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+            <Text style={styles.registerLink}>
+              Pas encore de compte ? <Text style={styles.registerLinkBold}>Créer un compte</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
