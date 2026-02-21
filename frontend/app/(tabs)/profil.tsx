@@ -789,4 +789,38 @@ const styles = StyleSheet.create({
     color: Colors.text,
     flex: 1,
   },
+  notLoggedInContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
+    backgroundColor: Colors.background,
+  },
+  notLoggedInTitle: {
+    fontSize: FontSize.xxl,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  notLoggedInText: {
+    fontSize: FontSize.md,
+    color: Colors.textLight,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    lineHeight: 22,
+  },
+  loginButton: {
+    width: '100%',
+    marginBottom: Spacing.md,
+  },
+  registerLink: {
+    fontSize: FontSize.sm,
+    color: Colors.textLight,
+    textAlign: 'center',
+  },
+  registerLinkBold: {
+    color: Colors.primary,
+    fontWeight: '600',
+  },
 });
