@@ -42,7 +42,9 @@
             "kotlinVersion": "1.9.25"
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
