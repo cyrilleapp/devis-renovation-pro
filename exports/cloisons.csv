@@ -1,0 +1,7 @@
+id,nom,fourniture_min,fourniture_max,pose_incluse_min,pose_incluse_max,pose_seule_min,pose_seule_max,unite
+34316167-d35d-42d7-8643-c6cd6a48ee8d,Plaque de plâtre,10,25,30,80,40,90,m²
+7d22a151-6231-4f03-be71-4f9194a19cec,Cloison en bois,25,60,60,120,40,70,m²
+b7a1af6e-cac3-46e5-9226-ec5cb38cd3d8,Cloison en Fermacell,15,50,30,90,15,40,m²
+a64bba06-4d07-458a-8ffc-996ec87fb497,Béton cellulaire,20,45,40,90,80,160,m²
+582629d2-f08e-45e8-bfe8-aa76c96e17c5,Briques de verre,40,70,70,200,120,300,m²
+235e5b0c-ec92-490e-ad5b-05ef7144f0b1,Cloison amovible,50,100,150,500,250,700,m²

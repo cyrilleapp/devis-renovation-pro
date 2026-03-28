@@ -1,0 +1,8 @@
+id,nom,type,classe_ac,fourniture_min,fourniture_max,unite
+276e800d-a100-40ad-b311-2078c7b8bdba,Stratifié AC1,stratifie,AC1,4,6,m²
+ddb34641-6e68-4b53-8370-24a5276a4b79,Stratifié AC2,stratifie,AC2,7,13,m²
+d7c90e4e-b645-411d-91ed-347a5f2d9b88,Stratifié AC3,stratifie,AC3,10,20,m²
+28a2618e-6c66-41c3-b68d-8d8e57acd637,Stratifié AC4,stratifie,AC4,15,30,m²
+2db50fab-dd7a-4646-b67c-73ace1cdebbe,Stratifié AC5,stratifie,AC5,20,45,m²
+435d0353-5c84-4dfa-a719-63fc4434e600,Contrecollé,contrecolle,,20,120,m²
+4c75e0e5-9b3c-42ac-bb40-019e98d4c45a,Massif,massif,,30,150,m²

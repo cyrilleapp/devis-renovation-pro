@@ -1,0 +1,26 @@
+id,categorie,nom,description,cout_min,cout_max,unite
+bad8da4d-ba0f-47ce-92ab-af9dd09acdd8,cuisine,Dépose ancienne cuisine,Retrait de l'ancienne cuisine,200,500,prestation
+91e8e38f-bb25-466a-9b01-7e3f79aa1f7c,cuisine,Pose crédence,Installation crédence (hors fourniture),16,115,m²
+c6f0a5b4-403b-4d3d-8669-c9034c1f3e0e,cuisine,Raccordements électricité/plomberie (ajustements),Déplacement arrivées d'eau/prises,80,140,m linéaire
+1679c029-5136-4098-9e8b-daeb49b10365,cuisine,Raccordements électricité/plomberie (complets),Installation complète électricité + plomberie,200,300,prestation
+15c1581d-8ca0-41a2-87fa-efec8c9621be,cuisine,Meuble haut supplémentaire,Pose unitaire meuble haut,60,60,unité
+46e71bb3-dc5c-4b95-b3ba-56ab87f8360d,cuisine,Évier + robinet (installation),Mise en service évier et robinetterie,170,340,pose
+50021e18-1a50-45dd-887f-5613a0157ddd,cuisine,Plaque de cuisson (installation),Installation plaque de cuisson,50,50,pose
+fdd80ec1-f879-4f64-81f6-15d14eb9fd55,cuisine,Hotte (installation),Installation hotte aspirante,70,300,pose
+c2839a7c-d321-4276-b8ea-4db474c8e7c0,cuisine,Électroménager (installation),Mise en service appareil électroménager (hors hotte et plaque),40,40,appareil
+c73b3f83-554d-4617-8fd4-086a0f6a9492,cloison,Modification électrique,Ajout prise ou interrupteur,60,120,point
+a3fbcef6-ac0b-422d-a817-623efbe7d2db,cloison,Bloc-porte intérieur,Fourniture + pose bloc-porte,80,300,unité
+29bbde0a-269e-452b-b18f-55ea407d8267,cloison,Pose chassis porte coulissante,Installation chassis à galandage,15,35,pièce
+e4662fb3-e658-4df6-8b6c-4a70ad1ca59f,cloison,Enduits/joints et finitions,Bandes; ponçage pour cloison,10,30,m²
+1df738ef-9a34-40f8-bbde-71478ce92759,peinture,Supplément préparation murs à rénover,Travaux lourds de préparation pour murs abîmés,10,30,m²
+16f3a4bf-ba35-4884-83da-4e1e7cb9dedf,peinture,Pose de papier peint,Pose des rouleaux (main d'œuvre),6,6,m²
+cc9e4e70-1b4d-4689-932b-1282af99d07e,peinture,Pose parement décoratif,Pierre; brique; PVC,5,15,m²
+ac3f5fed-fe12-4650-be04-974000dfb51a,parquet,Dépose parquet existant,Retrait ancien parquet,10,35,m²
+d150b13a-dc86-438f-b240-d98e7f04765f,parquet,Ragréage,Préparation et nivellement du sol,15,25,m²
+b729dd42-8d80-45f8-a11c-9b5b32c45eaa,parquet,Plinthes / Quarts-de-rond,Finition périmètre (calcul auto),3,4,m linéaire
+a04fae4c-1e87-41ea-82de-0efefc6210d0,parquet,Ponçage préalable,Rénovation parquet existant,15,35,m²
+b3782791-f580-43aa-a143-7e67a109284f,parquet,Teinte avant finition,Coloration du bois,12,20,m²
+b350da92-344f-47d5-a29d-6c27f75350ce,parquet,Vieillissement de parquet,Effet vieilli/patiné,60,80,m²
+4783b3e9-8289-44e0-9c7b-1e117672b56d,parquet,Finition vitrifiée,Protection par vitrification,25,50,m²
+da0886f9-31cc-47da-bc71-928c953d2379,parquet,Finition huilée,Protection par huile,20,50,m²
+b18d6bad-d0a9-48c6-8fc0-64bded026949,parquet,Finition cirée,Protection par cire,30,60,m²
